@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Receipt_Keeper</string>
+    <string name="action_settings">Settings</string>
+    <string name="continue_using_facebook">Continue using Facebook</string>
+    <string name="continue_using_google">Continue using Google+</string>
+    <string name="continue_using_email">Continue using Email</string>
+    <string name="create_account">Create New Receipt Keeper</string>
+
+
+
+
+</resources>
