@@ -7,6 +7,9 @@
     <string name="create_account">Create New Receipt Keeper</string>
 
 
+    <string name="sign_up_using_facebook">Sign up using Facebook</string>
+    <string name="title_activity_test">test</string>
+    <string name="title_activity_sign_up_using_facebook">SignUpUsingFacebookActivity</string>
 
 
 </resources>
