@@ -1,12 +1,34 @@
 package com.example.hassannahhal.receipt_keeper;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    // ========================================================================================
+    // ============================   About this Class       ==================================
+
+    /* This class will be the main class that runs after the app starts , all the initial
+   deceleration such as the main page and its content will be implemented here.
+   This class only includes where the user will move based on a specif choice*/
+    // ========================================================================================
+
+
+    // ========================================================================================
+    // ========================    Declaring attributes     ===================================
+
+    Button facebookLoginButton;
+
+
+    // ========================================================================================
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
+    }
+
+    public void signUpUsingFacebook(View view) {
+        Intent intent = new Intent(this, SignUpUsingFacebookActivity.class);
+        facebookLoginButton = (Button) findViewById(R.id.facebookLoginButton);
+        startActivity(intent);
     }
 
     @Override
