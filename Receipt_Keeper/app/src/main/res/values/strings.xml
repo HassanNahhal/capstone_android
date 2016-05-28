@@ -10,6 +10,7 @@
     <string name="sign_up_using_facebook">Sign up using Facebook</string>
     <string name="title_activity_test">test</string>
     <string name="title_activity_sign_up_using_facebook">SignUpUsingFacebookActivity</string>
+    <string name="title_activity_sign_up_using_google">SignUpUsingGoogleActivity</string>
 
 
 </resources>
