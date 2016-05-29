@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     // ========================    Declaring attributes     ===================================
 
     Button facebookLoginButton;
+    Button googleLoginButton;
 
 
     // ========================================================================================
@@ -41,10 +42,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signUpUsingFacebook(View view) {
-        Intent intent = new Intent(this, SignUpUsingFacebookActivity.class);
+        Intent facebookIntent = new Intent(this, SignUpUsingFacebookActivity.class);
         facebookLoginButton = (Button) findViewById(R.id.facebookLoginButton);
-        startActivity(intent);
+        startActivity(facebookIntent);
     }
+
+
+    public void signUpUsingGoogle(View view) {
+        Intent googleIntent = new Intent(this, SignUpUsingGoogleActivity.class);
+        googleLoginButton = (Button) findViewById(R.id.googleLoginButton);
+        startActivity(googleIntent);
+    }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the Home/Up googleSignUpbutton, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
