@@ -8,6 +8,10 @@
 
 
     <string name="sign_up_using_facebook">Sign up using Facebook</string>
+    <string name="sign_up_using_google">Sign up using Google</string>
+    <string name="sign_up">Sign up</string>
+
+
     <string name="title_activity_test">test</string>
     <string name="title_activity_sign_up_using_facebook">SignUpUsingFacebookActivity</string>
     <string name="title_activity_sign_up_using_google">SignUpUsingGoogleActivity</string>
