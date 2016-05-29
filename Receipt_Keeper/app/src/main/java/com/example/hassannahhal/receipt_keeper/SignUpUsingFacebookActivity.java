@@ -6,6 +6,20 @@ import android.support.v7.widget.Toolbar;
 
 public class SignUpUsingFacebookActivity extends AppCompatActivity {
 
+    // ========================================================================================
+    // ============================   About this Class       ==================================
+
+    /* This class will be the class that runs after the user press Continue using Facebook button.
+    */
+    // ========================================================================================
+
+
+    // ========================================================================================
+    // ========================    Declaring attributes     ===================================
+
+
+    // ========================================================================================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
