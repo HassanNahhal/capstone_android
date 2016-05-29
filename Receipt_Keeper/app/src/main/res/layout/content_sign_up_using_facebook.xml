@@ -14,7 +14,7 @@
 
 
     <TextView
-        android:id="@+id/signUpFacebookTextView"
+        android:id="@+id/signUpGoogleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.07"
@@ -26,36 +26,36 @@
         android:layout_alignParentStart="true" />
 
     <EditText
-        android:id="@+id/facebookEmailEditText"
+        android:id="@+id/googleEmailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="email"
         android:inputType="textEmailAddress"
-        android:layout_below="@+id/signUpFacebookTextView"
+        android:layout_below="@+id/signUpGoogleTextView"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="59dp" />
 
     <EditText
-        android:id="@+id/facebookPasswordEditText"
+        android:id="@+id/googlePasswordEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.07"
         android:ems="10"
         android:hint="password"
         android:inputType="textPassword"
-        android:layout_below="@+id/facebookEmailEditText"
+        android:layout_below="@+id/googleEmailEditText"
         android:layout_alignParentStart="true"
         android:layout_marginTop="44dp" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/facebookSignUpbutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="142dp"
         android:layout_weight="0.07"
-        android:text="New Button" />
+        android:text="@string/sign_up" />
 
 </RelativeLayout>
