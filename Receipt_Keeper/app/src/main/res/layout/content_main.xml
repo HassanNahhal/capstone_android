@@ -29,7 +29,8 @@
         android:id="@+id/googleLoginButton"
         android:layout_marginTop="51dp"
         android:layout_below="@+id/facebookLoginButton"
-        android:layout_alignStart="@+id/facebookLoginButton" />
+        android:layout_alignStart="@+id/facebookLoginButton"
+        android:onClick="signUpUsingGoogle"/>
 
     <Button
         android:layout_width="wrap_content"
