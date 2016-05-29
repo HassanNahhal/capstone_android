@@ -18,6 +18,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SignUpUsingFacebookActivity"
+            android:label="@string/title_activity_sign_up_using_facebook"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.hassannahhal.receipt_keeper.MainActivity" />
+        </activity>
+        <activity
+            android:name=".SignUpUsingGoogleActivity"
+            android:label="@string/title_activity_sign_up_using_google"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.hassannahhal.receipt_keeper.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

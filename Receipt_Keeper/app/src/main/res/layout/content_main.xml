@@ -19,7 +19,8 @@
         android:id="@+id/facebookLoginButton"
         android:layout_marginTop="51dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:onClick="signUpUsingFacebook"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -28,7 +29,8 @@
         android:id="@+id/googleLoginButton"
         android:layout_marginTop="51dp"
         android:layout_below="@+id/facebookLoginButton"
-        android:layout_alignStart="@+id/facebookLoginButton" />
+        android:layout_alignStart="@+id/facebookLoginButton"
+        android:onClick="signUpUsingGoogle"/>
 
     <Button
         android:layout_width="wrap_content"
