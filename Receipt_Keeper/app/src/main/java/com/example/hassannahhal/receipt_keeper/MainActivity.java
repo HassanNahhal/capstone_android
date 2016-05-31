@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -24,21 +23,20 @@ public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
 
-    //
     // ========================================================================================
     // ============================   About this Class       ==================================
 
-    /* This class will be the main class that runs after the app starts , all the initial
-   deceleration such as the main page and its content will be implemented here.
-   This class only includes where the user will move based on a specif choice*/
+    /*
+    * This class will be the main class that runs after the app starts , all the initial
+    * deceleration such as the main page and its content will be implemented here.
+    * This class only includes where the user will move based on a specif choice
+    */
     // ========================================================================================
 
 
     // ========================================================================================
     // ========================    Declaring attributes     ===================================
 
-    private Button facebookLoginButton;
-    private Button googleLoginButton;
     private GoogleApiClient mGoogleApiClient;
 
     private TextView mStatusTextView;
@@ -49,8 +47,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
     // ========================================================================================
-
-
     // ============================       Google Login       ==================================
 
     /*
@@ -161,12 +157,6 @@ public class MainActivity extends AppCompatActivity implements
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }*/
-
-    public void signUpUsingFacebook(View view) {
-        Intent facebookIntent = new Intent(this, SignUpUsingFacebookActivity.class);
-        facebookLoginButton = (Button) findViewById(R.id.facebookLoginButton);
-        startActivity(facebookIntent);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

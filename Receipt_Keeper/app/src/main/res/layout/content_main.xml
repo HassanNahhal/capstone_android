@@ -16,29 +16,21 @@
         android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:text="@string/signed_out"
         android:textColor="@android:color/black"
-        android:textSize="14sp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/facebookLoginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="signUpUsingFacebook"
-        android:text="@string/continue_using_facebook"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/emailLoginButton" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/facebookLoginButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="56dp" />
+        android:layout_marginBottom="84dp"
+        android:layout_above="@+id/emailLoginButton"
+        android:layout_centerHorizontal="true" />
 
 
     <Button
@@ -46,16 +38,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/continue_using_email"
-        android:layout_below="@+id/facebookLoginButton"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/createNewAccountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="@string/create_account"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_below="@+id/emailLoginButton"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="89dp" />
 </RelativeLayout>
