@@ -17,4 +17,10 @@
     <string name="title_activity_sign_up_using_google">SignUpUsingGoogleActivity</string>
 
 
+    <string name="signed_out">Signed out</string>
+    <string name="signed_in_fmt">Signed in as: %s</string>
+
+
+
+
 </resources>

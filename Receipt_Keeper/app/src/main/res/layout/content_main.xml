@@ -12,43 +12,50 @@
     tools:context="com.example.hassannahhal.receipt_keeper.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <Button
+    <TextView
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/continue_using_facebook"
-        android:id="@+id/facebookLoginButton"
-        android:layout_marginTop="51dp"
+        android:text="@string/signed_out"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="signUpUsingFacebook"/>
+        android:layout_alignParentStart="true" />
 
     <Button
+        android:id="@+id/facebookLoginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/continue_using_google"
-        android:id="@+id/googleLoginButton"
-        android:layout_marginTop="51dp"
-        android:layout_below="@+id/facebookLoginButton"
-        android:layout_alignStart="@+id/facebookLoginButton"
-        android:onClick="signUpUsingGoogle"/>
+        android:onClick="signUpUsingFacebook"
+        android:text="@string/continue_using_facebook"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/emailLoginButton" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/facebookLoginButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="56dp" />
+
 
     <Button
+        android:id="@+id/emailLoginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/continue_using_email"
-        android:id="@+id/emailLoginButton"
-        android:layout_centerVertical="true"
-        android:layout_alignEnd="@+id/googleLoginButton"
-        android:layout_alignStart="@+id/googleLoginButton"
-        android:layout_marginTop="51dp" />
+        android:layout_below="@+id/facebookLoginButton"
+        android:layout_centerHorizontal="true" />
 
     <TextView
+        android:id="@+id/createNewAccountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="50dp"
         android:text="@string/create_account"
-        android:id="@+id/createNewAccountTextView"
-        android:layout_marginTop="51dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_below="@+id/emailLoginButton"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
