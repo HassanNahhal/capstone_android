@@ -38,7 +38,7 @@ public class Translator {
     // Check preferences to determine which translation API to use--Google, or Bing.
     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
     String api = prefs.getString(PreferencesActivity.KEY_TRANSLATOR, CaptureActivity.DEFAULT_TRANSLATOR);
-    
+    /*
     // Delegate the translation based on the user's preference.
     if (api.equals(PreferencesActivity.TRANSLATOR_BING)) {
       
@@ -54,7 +54,7 @@ public class Translator {
           LanguageCodeHelper.getTranslationLanguageName(activity.getBaseContext(), sourceLanguageCode));      
       
       return TranslatorGoogle.translate(sourceLanguageCode, targetLanguageCode, sourceText);
-    }
+    }*/
     return BAD_TRANSLATION_MSG;
   }
 }
