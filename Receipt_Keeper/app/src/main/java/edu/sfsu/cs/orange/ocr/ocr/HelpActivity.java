@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.sfsu.cs.orange.ocr;
+package edu.sfsu.cs.orange.ocr.ocr;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,6 +30,8 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+
+import edu.sfsu.cs.orange.ocr.R;
 
 /**
  * Activity to display informational pages to the user in a WebView.

@@ -19,8 +19,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import edu.sfsu.cs.orange.ocr.CaptureActivity;
-import edu.sfsu.cs.orange.ocr.PreferencesActivity;
+import edu.sfsu.cs.orange.ocr.ocr.CaptureActivity;
+import edu.sfsu.cs.orange.ocr.ocr.PreferencesActivity;
 
 /**
  * Delegates translation requests to the appropriate translation service.

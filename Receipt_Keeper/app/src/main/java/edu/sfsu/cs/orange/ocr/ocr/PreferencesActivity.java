@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.sfsu.cs.orange.ocr;
+package edu.sfsu.cs.orange.ocr.ocr;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -23,6 +23,8 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+
+import edu.sfsu.cs.orange.ocr.R;
 import edu.sfsu.cs.orange.ocr.language.LanguageCodeHelper;
 
 /**

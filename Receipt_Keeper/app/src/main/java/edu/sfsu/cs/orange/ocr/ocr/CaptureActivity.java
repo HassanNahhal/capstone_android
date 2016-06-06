@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-package edu.sfsu.cs.orange.ocr;
-
-import java.io.File;
-import java.io.IOException;
+package edu.sfsu.cs.orange.ocr.ocr;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -62,6 +59,10 @@ import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import java.io.File;
+import java.io.IOException;
+
+import edu.sfsu.cs.orange.ocr.R;
 import edu.sfsu.cs.orange.ocr.camera.CameraManager;
 import edu.sfsu.cs.orange.ocr.camera.ShutterButton;
 import edu.sfsu.cs.orange.ocr.language.LanguageCodeHelper;

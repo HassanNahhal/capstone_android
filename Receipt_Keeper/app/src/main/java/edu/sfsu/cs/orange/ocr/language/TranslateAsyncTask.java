@@ -15,7 +15,7 @@
  */
 package edu.sfsu.cs.orange.ocr.language;
 
-import edu.sfsu.cs.orange.ocr.CaptureActivity;
+import edu.sfsu.cs.orange.ocr.ocr.CaptureActivity;
 import edu.sfsu.cs.orange.ocr.R;
 
 import android.graphics.Typeface;
