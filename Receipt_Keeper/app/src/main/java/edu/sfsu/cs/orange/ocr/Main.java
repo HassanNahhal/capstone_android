@@ -1,20 +1,24 @@
 package edu.sfsu.cs.orange.ocr;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+
+import edu.sfsu.cs.orange.ocr.ocr.CaptureActivity;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class MainActivity extends AppCompatActivity {
+public class Main extends AppCompatActivity {
 
 
     private static final String PREF_IS_FIRST_RUN = "firstRun";
     private SharedPreferences prefs;
-
 
     private static final String[] PERMS_TAKE_PICTURE = {
             CAMERA,
@@ -22,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private static final int RESULT_PERMS_INITIAL = 1339;
+
+    private Button goToOcrButton;
+    private Button goToLoginPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,29 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMS_TAKE_PICTURE,
                     RESULT_PERMS_INITIAL);
         }
+
+        goToOcrButton = (Button) findViewById(R.id.goToOcrButton);
+        goToOcrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ocrMainPage();
+            }
+        });
+
+
+        goToLoginPage = (Button) findViewById(R.id.goToLoginPage);
+        goToLoginPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO
+            }
+        });
+
+    }
+
+    private void ocrMainPage() {
+        Intent ocrIntent = new Intent(this, CaptureActivity.class);
+        startActivity(ocrIntent);
     }
 
 
