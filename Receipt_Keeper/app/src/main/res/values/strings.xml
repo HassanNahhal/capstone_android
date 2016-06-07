@@ -16,4 +16,6 @@
  -->
 <resources>
     <string name="app_name">Receipt Keeper</string>
+    <string name="go_to_ocr">Go to OCR</string>
+    <string name="go_to_login_page">Go to Login Page</string>
 </resources>
