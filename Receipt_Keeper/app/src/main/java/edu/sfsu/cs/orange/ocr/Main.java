@@ -20,6 +20,7 @@ public class Main extends AppCompatActivity {
     private static final String PREF_IS_FIRST_RUN = "firstRun";
     private SharedPreferences prefs;
 
+
     private static final String[] PERMS_TAKE_PICTURE = {
             CAMERA,
             WRITE_EXTERNAL_STORAGE
