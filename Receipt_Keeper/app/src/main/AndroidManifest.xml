@@ -47,12 +47,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name=".ocr.HelpActivity"
             android:screenOrientation="user">
@@ -62,11 +59,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-
         <activity android:name=".ocr.PreferencesActivity" />
-
-
         <activity
             android:name=".Main"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -78,6 +71,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>
