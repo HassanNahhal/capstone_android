@@ -22,7 +22,7 @@ import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import edu.sfsu.cs.orange.ocr.PreferencesActivity;
+import edu.sfsu.cs.orange.ocr.ocr.PreferencesActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;

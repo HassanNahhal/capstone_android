@@ -27,7 +27,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import edu.sfsu.cs.orange.ocr.PreferencesActivity;
+import edu.sfsu.cs.orange.ocr.ocr.PreferencesActivity;
 
 import java.util.ArrayList;
 import java.util.Collection;

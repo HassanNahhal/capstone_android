@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package edu.sfsu.cs.orange.ocr;
+package edu.sfsu.cs.orange.ocr.ocr;
 
-import edu.sfsu.cs.orange.ocr.CaptureActivity;
 import android.os.Handler;
 import android.os.Looper;
 import java.util.concurrent.CountDownLatch;
