@@ -62,9 +62,14 @@ import android.widget.Toast;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import edu.sfsu.cs.orange.ocr.R;
+import edu.sfsu.cs.orange.ocr.Receipt;
 import edu.sfsu.cs.orange.ocr.camera.CameraManager;
 import edu.sfsu.cs.orange.ocr.camera.ShutterButton;
 import edu.sfsu.cs.orange.ocr.language.LanguageCodeHelper;
@@ -827,7 +832,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         baseApi = new TessBaseAPI();
         new OcrInitAsyncTask(this, baseApi, dialog, indeterminateDialog, languageCode, languageName, ocrEngineMode)
                 .execute(storageRoot.toString());
+        isContinuousModeActive = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, false);
+        Receipt newreceipt = new Receipt();
+
     }
+
+
 
     /**
      * Displays information relating to the result of OCR, and requests a translation if necessary.
@@ -846,6 +858,34 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             return false;
         } else {
 
+            String currentSnippet = "";
+            int indexOfReturn;
+            String amounts = "";
+            String infoToDisplay = "";
+            for (int i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
+
+                    currentSnippet = ocrResult.getText().substring(i);
+            }
+
+            String multiLines = ocrResult.getText().toString();
+            String[] lines;
+            String delimiter = "\n";
+            lines = multiLines.split(delimiter);
+            indexOfReturn = currentSnippet.indexOf(".");
+            infoToDisplay += "Store Name:";
+            infoToDisplay += lines[0];
+            infoToDisplay += "\n";
+            infoToDisplay += "Amount:";
+            infoToDisplay += currentSnippet.substring(0, indexOfReturn + 3);
+            infoToDisplay += " ";
+            new AlertDialog.Builder(this)
+                    .setTitle("Data")
+                    .setMessage(amounts)
+                    .setMessage(infoToDisplay)
+                    .setOnCancelListener(new FinishListener(this))
+                    .setPositiveButton( "Done", new FinishListener(this))
+                    .show();
+
       /*String currentSnippet;
       int indexOfReturn;
       String amounts = "";
@@ -860,10 +900,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
               .setMessage(amounts)
               .setOnCancelListener(new FinishListener(this))
               .setPositiveButton( "Done", new FinishListener(this))
-              .show();
+              .show();*/
      // Toast toast = Toast.makeText(this, "Amounts:" + amounts, Toast.LENGTH_LONG);
      // toast.setGravity(Gravity.TOP, 0, 0);
-     // toast.show();*/
+     // toast.show();
         }
 
         // Turn off capture-related UI elements
@@ -882,6 +922,43 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         } else {
             bitmapImageView.setImageBitmap(lastBitmap);
         }
+
+        String state;
+        state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state))
+        {
+            File Root = Environment.getExternalStorageDirectory();
+            File Dir = new File(Root.getAbsolutePath() + "/ReceiptKeeperFolder");
+            if (!Dir.exists()) {
+                    Dir.mkdir();
+            }
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+            Date now = new Date();
+            String fileName = formatter.format(now) + ".Receipt.bmp";
+
+                      File file = new File(Dir, fileName);
+              try
+              {
+                       FileOutputStream fileOutPutStream = new FileOutputStream(file);
+                Bitmap bmpToSave = lastBitmap;
+                bmpToSave.compress(Bitmap.CompressFormat.PNG, 100, fileOutPutStream);
+                 fileOutPutStream.close();
+                 Toast.makeText(getApplicationContext(), "Message Saved", Toast.LENGTH_SHORT).show();
+               }
+              catch(FileNotFoundException e) {
+                   e.printStackTrace();
+                 }
+              catch (IOException e) {
+                    e.printStackTrace();
+                  }
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "SD Card Not Found", Toast.LENGTH_SHORT);
+            }
+
+
 
         // Display the recognized text
         TextView sourceLanguageTextView = (TextView) findViewById(R.id.source_language_text_view);
