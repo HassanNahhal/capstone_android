@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -219,6 +220,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private TextView statusViewBottom;
+    private TextView simpleConfidenceView;
     private TextView statusViewTop;
     private TextView ocrResultView;
     private TextView translationView;
@@ -283,6 +285,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         resultView = findViewById(R.id.result_view);
 
         statusViewBottom = (TextView) findViewById(R.id.status_view_bottom);
+        simpleConfidenceView = (TextView) findViewById(R.id.status_simple_confidence);
         registerForContextMenu(statusViewBottom);
         statusViewTop = (TextView) findViewById(R.id.status_view_top);
         registerForContextMenu(statusViewTop);
@@ -1046,6 +1049,47 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             statusViewBottom.setTextSize(14);
             statusViewBottom.setText("OCR: " + sourceLanguageReadable + " - Mean confidence: " +
                     meanConfidence.toString() + " - Time required: " + recognitionTimeRequired + " ms");
+            simpleConfidenceView.setTextSize(18);
+
+            if (meanConfidence < 50) {
+                simpleConfidenceView.setTextColor(Color.RED);
+            }
+            else if (meanConfidence < 70) {
+                simpleConfidenceView.setTextColor(Color.YELLOW);
+            }
+            else {
+                simpleConfidenceView.setTextColor(Color.GREEN);
+            }
+            String currentSnippet = "";
+            int indexOfReturn;
+            int i = -1;
+            String infoToDisplay2 = "";
+            String textRetrieved = ocrResult.getText();
+            for (i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
+                currentSnippet = ocrResult.getText().substring(i);
+            }
+
+
+            indexOfReturn = currentSnippet.indexOf(".");
+            if (indexOfReturn > -1) {
+                infoToDisplay2 += "Amount:";
+                if (indexOfReturn + 3 > currentSnippet.length()) {
+                    infoToDisplay2 += currentSnippet.substring(0, currentSnippet.length());
+                }
+                else {
+                    infoToDisplay2 += currentSnippet.substring(0, indexOfReturn + 3);
+
+                }
+
+            }
+            infoToDisplay2 += "\n";
+            String multiLines = ocrResult.getText().toString();
+            String[] lines;
+            String delimiter = "\n";
+            lines = multiLines.split(delimiter);
+            infoToDisplay2 += "Store Name:";
+            infoToDisplay2 += lines[0];
+            simpleConfidenceView.setText(infoToDisplay2);
         }
     }
 
