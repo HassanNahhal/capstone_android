@@ -1,8 +1,11 @@
 package edu.sfsu.cs.orange.ocr;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -113,4 +116,61 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public void addReceipt(Receipt receipt) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
+        values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
+        values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategroyId());
+        values.put(COMMENT, receipt.getComment());
+
+       // values.put(DATE, receipt.getDate());
+
+        // Inserting Row
+        db.insert(TABLE_RECEIPT, null, values);
+        db.close();
+
+        //Code below used for testing purposes to make sure saving data locally worked,
+        //can uncomment it if further testing is needed
+        /*
+        try{
+            String[] allColumns = new String[] { RECEIPT_ID, RECEIPT_FK_CUSTOMER_ID,
+                    RECEIPT_FK_STORE_ID, RECEIPT_FK_CATEGORY_ID, COMMENT};
+
+            Cursor c = db.query(TABLE_RECEIPT, allColumns, null, null, null,
+                    null, null);
+            if (c.moveToFirst()) {
+                do {
+                    Receipt receiptRetrieved = new Receipt();
+                    receiptRetrieved.setId(c.getInt(c.getColumnIndex(RECEIPT_ID)));
+                    receiptRetrieved.setCustomerId(c.getInt(c.getColumnIndex(RECEIPT_FK_CUSTOMER_ID)));
+                    receiptRetrieved.setStoreId(c.getInt(c.getColumnIndex(RECEIPT_FK_STORE_ID)));
+                    receiptRetrieved.setComment(c.getString(c.getColumnIndex(COMMENT.toString())));
+                    receiptRetrieved.setCategroyId(c.getInt(c.getColumnIndex(RECEIPT_FK_CATEGORY_ID)));
+
+
+                    /*String DateRetrieved = c.getString(c.getColumnIndex(DATE));
+
+                    SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+                    try{
+                        java.util.Date parsedDate = parser.parse(DateRetrieved);
+                        receiptRetrieved.setDate(parsedDate);
+                    }
+                    catch(Exception e)
+                    {
+                        Log.v("Error", e.toString());
+                    }
+
+                } while (c.moveToNext());
+            }
+        }
+        catch (Exception e) {
+            Log.v("Error", e.toString());
+        }*/
+        db.close();
+
+    }
+
 }
+
+

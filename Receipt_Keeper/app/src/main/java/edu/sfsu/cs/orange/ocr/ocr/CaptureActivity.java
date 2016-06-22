@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import edu.sfsu.cs.orange.ocr.DBHelper;
 import edu.sfsu.cs.orange.ocr.R;
 import edu.sfsu.cs.orange.ocr.Receipt;
 import edu.sfsu.cs.orange.ocr.camera.CameraManager;
@@ -835,8 +836,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         isContinuousModeActive = true;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, false);
-        Receipt newreceipt = new Receipt();
-
     }
 
 
@@ -926,37 +925,48 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         String state;
         state = Environment.getExternalStorageState();
 
+        String fullPathAndFilename = "";
         if (Environment.MEDIA_MOUNTED.equals(state))
         {
             File Root = Environment.getExternalStorageDirectory();
             File Dir = new File(Root.getAbsolutePath() + "/ReceiptKeeperFolder");
             if (!Dir.exists()) {
                     Dir.mkdir();
+                fullPathAndFilename += Dir.toString() + "/ReceiptKeeperFolder";
             }
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
             Date now = new Date();
             String fileName = formatter.format(now) + ".Receipt.bmp";
+            File file = new File(Dir, fileName);
+            fullPathAndFilename += fileName;
+           try
+           {
+               FileOutputStream fileOutPutStream = new FileOutputStream(file);
+               Bitmap bmpToSave = lastBitmap;
+               bmpToSave.compress(Bitmap.CompressFormat.PNG, 100, fileOutPutStream);
+               fileOutPutStream.close();
+               Toast.makeText(getApplicationContext(), "Message Saved", Toast.LENGTH_SHORT).show();
+           }
+          catch(FileNotFoundException e) {
+               e.printStackTrace();
+          }
+          catch (IOException e) {
+                e.printStackTrace();
+              }
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "SD Card Not Found", Toast.LENGTH_SHORT);
+        }
 
-                      File file = new File(Dir, fileName);
-              try
-              {
-                       FileOutputStream fileOutPutStream = new FileOutputStream(file);
-                Bitmap bmpToSave = lastBitmap;
-                bmpToSave.compress(Bitmap.CompressFormat.PNG, 100, fileOutPutStream);
-                 fileOutPutStream.close();
-                 Toast.makeText(getApplicationContext(), "Message Saved", Toast.LENGTH_SHORT).show();
-               }
-              catch(FileNotFoundException e) {
-                   e.printStackTrace();
-                 }
-              catch (IOException e) {
-                    e.printStackTrace();
-                  }
-            }
-            else
-            {
-                Toast.makeText(getApplicationContext(), "SD Card Not Found", Toast.LENGTH_SHORT);
-            }
+        Receipt newReceipt = new Receipt();
+        newReceipt.setComment(fullPathAndFilename);
+        DBHelper db = new DBHelper(this);
+        db.addReceipt(newReceipt);
+
+        //**************************************************
+
+        //**************************************************
 
 
 
