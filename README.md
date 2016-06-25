@@ -7,3 +7,4 @@ Any branching should start from dev_prod and merge back to dev_prod , no body sh
 Tools:
 - JDK 8
 - Android Studio 2.1
+- Android SDK: 23.0.3
