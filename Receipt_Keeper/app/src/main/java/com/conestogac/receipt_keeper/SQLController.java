@@ -2,6 +2,7 @@ package com.conestogac.receipt_keeper;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -14,12 +15,12 @@ public class SQLController {
 
     // Table receipts and columns
     private static final String TABLE_RECEIPT = "receipt";
-    private static final String RECEIPT_ID = "id";
+    private static final String RECEIPT_ID = "_id";
     private static final String RECEIPT_FK_CUSTOMER_ID = "customer_id";
     private static final String RECEIPT_FK_STORE_ID = "store_id";
     private static final String RECEIPT_FK_CATEGORY_ID = "category_id";
-    private static final String COMMENT = "comment";
-    private static final String DATE = "date";
+    private static final String RECEIPT_COMMENT = "comment";
+    private static final String RECEIPT_DATE = "date";
 
     private DBHelper dbhelper;
     private Context ourcontext;
@@ -75,9 +76,23 @@ public class SQLController {
     public long insertReceiptTag(long receiptId, long tagId) {
         ContentValues values = new ContentValues();
         values.put(FK_RECEIPT_ID, receiptId);
-        values.put(FK_TAG_ID, tagId);
+        //values.put(FK_TAG_ID, tagId);
 
         return database.insert(TABLE_RECEIPT_TAG, null, values);
+    }
+
+    public Cursor readAllReceipts() {
+
+        Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT,
+                new String[]{
+                        DBHelper.RECEIPT_ID,
+                        DBHelper.RECEIPT_DATE}
+                , null,
+                null, null, null, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
     }
 
     public long insertReceipt(Receipt receipt, long[] tag_ids) {
@@ -85,8 +100,8 @@ public class SQLController {
         values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
         values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
         values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategroyId());
-        values.put(COMMENT, receipt.getComment());
-        values.put(DATE, getDateTime());
+        values.put(RECEIPT_COMMENT, receipt.getComment());
+        values.put(RECEIPT_DATE, getDateTime());
 
         // Insert row
         long receiptId = database.insert(TABLE_RECEIPT, null, values);
@@ -115,6 +130,9 @@ public class SQLController {
         Date date = new Date();
         return dateFormat.format(date);
     }
+
+
+
 
    /* public void insertData(String firstName, String lastName, int marks) {
         ContentValues cv = new ContentValues();
