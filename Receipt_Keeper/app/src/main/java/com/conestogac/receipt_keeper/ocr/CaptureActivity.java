@@ -876,10 +876,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         ImageView bitmapImageView = (ImageView) findViewById(R.id.image_view);
         lastBitmap = ocrResult.getBitmap();
-        if (lastBitmap == null) {
-            bitmapImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
-                    R.drawable.ic_launcher));
-        } else {
+        if (lastBitmap != null) {
             bitmapImageView.setImageBitmap(lastBitmap);
         }
 

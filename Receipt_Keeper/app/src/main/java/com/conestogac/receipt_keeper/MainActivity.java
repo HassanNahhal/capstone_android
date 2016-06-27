@@ -14,7 +14,7 @@ import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class Main extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
 
     private static final String PREF_IS_FIRST_RUN = "firstRun";
