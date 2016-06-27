@@ -48,7 +48,7 @@ public class Main extends AppCompatActivity {
         goToOcrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ocrMainPage();
+                goToOcrCaptureActivity();
             }
         });
 
@@ -57,13 +57,18 @@ public class Main extends AppCompatActivity {
         goToLoginPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                goToHomeActivity();
             }
         });
 
     }
 
-    private void ocrMainPage() {
+    private void goToHomeActivity() {
+        Intent goToHomeActivity = new Intent(this, HomeActivity.class);
+        startActivity(goToHomeActivity);
+    }
+
+    private void goToOcrCaptureActivity() {
         Intent ocrIntent = new Intent(this, CaptureActivity.class);
         startActivity(ocrIntent);
     }
