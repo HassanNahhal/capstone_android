@@ -3,6 +3,7 @@ package com.conestogac.receipt_keeper;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
@@ -15,52 +16,53 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final int DB_VERSION = 1;
 
     // Logcat tag
-    private static final String DATABASE_LOG = "DatabaseHelper";
+    private static final String LOG_DATABASE = "DatabaseHelper";
 
     // Table receipts and columns
-    private static final String TABLE_RECEIPT = "receipt";
-    private static final String RECEIPT_ID = "id";
-    private static final String RECEIPT_FK_CUSTOMER_ID = "customer_id";
-    private static final String RECEIPT_FK_STORE_ID = "store_id";
-    private static final String RECEIPT_FK_CATEGORY_ID = "category_id";
-    private static final String COMMENT = "comment";
-    private static final String DATE = "date";
+    public static final String TABLE_RECEIPT = "receipt";
+    public static final String RECEIPT_ID = "_id";
+    public static final String RECEIPT_FK_CUSTOMER_ID = "customer_id";
+    public static final String RECEIPT_FK_STORE_ID = "store_id";
+    public static final String RECEIPT_FK_CATEGORY_ID = "category_id";
+    public static final String RECEIPT_COMMENT = "comment";
+    public static final String RECEIPT_DATE = "date";
+
 
 
     // Table ReceiptTag and columns
-    private static final String TABLE_RECEIPT_TAG = "receiptTag";
-    private static final String FK_RECEIPT_ID = "receipt_id";
-    private static final String FK_TAG_ID = "tag_id";
+    public static final String TABLE_RECEIPT_TAG = "receiptTag";
+    public static final String FK_RECEIPT_ID = "receipt_id";
+    public static final String FK_TAG_ID = "tag_id";
 
 
     // Table Tag and columns
-    private static final String TABLE_TAG = "tag";
-    private static final String TAG_ID = "id";
-    private static final String TAG_NAME = "tag_name";
+    public static final String TABLE_TAG = "tag";
+    public static final String TAG_ID = "id";
+    public static final String TAG_NAME = "tag_name";
 
 
     // Table Store and columns
-    private static final String TABLE_STORE = "store";
-    private static final String STORE_ID = "id";
-    private static final String STORE_NAME = "store_name";
+    public static final String TABLE_STORE = "store";
+    public static final String STORE_ID = "id";
+    public static final String STORE_NAME = "store_name";
 
 
     // Table Category and columns
-    private static final String TABLE_CATEGORY = "category";
-    private static final String CATEGORY_ID = "id";
-    private static final String CATEGORY_NAME = "category_name";
+    public static final String TABLE_CATEGORY = "category";
+    public static final String CATEGORY_ID = "id";
+    public static final String CATEGORY_NAME = "category_name";
 
 
     // Table StoreGategory and columns
-    private static final String TABLE_STORE_CATEGORY = "storeCategory";
-    private static final String STORECATEGORY_FK_CATEGORY_ID = "category_id";
-    private static final String STORE_CATEGORY_FK_STORE_ID = "store_id";
+    public static final String TABLE_STORE_CATEGORY = "storeCategory";
+    public static final String STORECATEGORY_FK_CATEGORY_ID = "category_id";
+    public static final String STORE_CATEGORY_FK_STORE_ID = "store_id";
 
     // Receipt table create statement
     private static final String CREATE_TABLE_RECEIPT = " CREATE TABLE " + TABLE_RECEIPT + "( "
             + RECEIPT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + RECEIPT_FK_CUSTOMER_ID
             + " INTEGER ," + RECEIPT_FK_STORE_ID + " INTEGER ," + RECEIPT_FK_CATEGORY_ID +
-            " INTEGER ," + COMMENT + " TEXT " + DATE + " TEXT " + ")";
+            " INTEGER ," + RECEIPT_COMMENT + " TEXT ," + RECEIPT_DATE + " TEXT " + ")";
 
     // Receipt_Tag table create statement
     private static final String CREATE_TABLE_RECEIPT_TAG = " CREATE TABLE " + TABLE_RECEIPT_TAG + "( "
@@ -96,7 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CATEGORY);
         db.execSQL(CREATE_TABLE_STORR_CATEGORY);
 
-
+        Log.d(LOG_DATABASE,"CREATED");
     }
 
     @Override
