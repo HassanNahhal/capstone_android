@@ -117,6 +117,15 @@
           android:layout_height="wrap_content"
           android:orientation="vertical">
 
+          <TextView android:id="@+id/ocr_result_data_gathered"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="@color/result_text"
+              android:textColorLink="@color/result_text"
+              android:textSize="22sp"
+              android:paddingLeft="12dip"
+              android:autoLink="web"/>
+
           <TextView android:id="@+id/ocr_result_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -125,6 +134,33 @@
                     android:textSize="22sp"
                     android:paddingLeft="12dip"
                     android:autoLink="web"/>
+
+          <EditText
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/etStoreName"
+              android:layout_below="@+id/firstNameEditText"
+              android:layout_alignEnd="@+id/firstNameEditText"
+              android:layout_toEndOf="@+id/tvFirstNameLabel"
+              android:gravity="bottom" />
+
+          <EditText
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/etAmount"
+              android:layout_below="@+id/lastNameEditText"
+              android:layout_alignStart="@+id/lastNameEditText"
+              android:layout_alignEnd="@+id/lastNameEditText"
+              android:gravity="bottom" />
+
+          <EditText
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/etDate"
+              android:gravity="bottom"
+              android:layout_below="@+id/IDeditText"
+              android:layout_alignParentEnd="true"
+              android:layout_toEndOf="@+id/textView" />
         
           <TextView android:id="@+id/translation_text_view"
                     android:layout_width="wrap_content"
@@ -197,6 +233,17 @@
               android:textSize="14sp"
               android:autoLink="web"   
               android:clickable="true" />
+    <TextView android:id="@+id/status_simple_confidence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:background="#0000"
+            android:text=""
+            android:textColor="@color/status_text"
+            android:textSize="14sp"
+            android:autoLink="web"
+            android:clickable="false" />
      
      <!-- 
      <ToggleButton android:id="@+id/torch_button"

@@ -104,7 +104,7 @@ public class SQLController {
         values.put(RECEIPT_DATE, getDateTime());
 
         // Insert row
-        long receiptId = database.insert(TABLE_RECEIPT, null, values);
+        long receiptId = this.database.insert(TABLE_RECEIPT, null, values);
 
         // Assigning tags to
         for (long tag_id : tag_ids) {

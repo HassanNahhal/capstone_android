@@ -55,20 +55,31 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.io.FileOutputStream;
+
+import com.conestogac.receipt_keeper.DBHelper;
+import com.conestogac.receipt_keeper.SQLController;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.camera.CameraManager;
 import com.conestogac.receipt_keeper.camera.ShutterButton;
 import com.conestogac.receipt_keeper.language.LanguageCodeHelper;
 import com.conestogac.receipt_keeper.language.TranslateAsyncTask;
+import com.conestogac.receipt_keeper.Receipt;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -213,6 +224,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private SurfaceView surfaceView;
     private SurfaceHolder surfaceHolder;
     private TextView statusViewBottom;
+    private TextView simpleConfidenceView;
     private TextView statusViewTop;
     private TextView ocrResultView;
     private TextView translationView;
@@ -277,6 +289,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         resultView = findViewById(R.id.result_view);
 
         statusViewBottom = (TextView) findViewById(R.id.status_view_bottom);
+        simpleConfidenceView = (TextView) findViewById(R.id.status_simple_confidence);
         registerForContextMenu(statusViewBottom);
         statusViewTop = (TextView) findViewById(R.id.status_view_top);
         registerForContextMenu(statusViewTop);
@@ -827,6 +840,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         baseApi = new TessBaseAPI();
         new OcrInitAsyncTask(this, baseApi, dialog, indeterminateDialog, languageCode, languageName, ocrEngineMode)
                 .execute(storageRoot.toString());
+        isContinuousModeActive = true;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, false);
     }
 
     /**
@@ -836,7 +852,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      * @return True if a non-null result was received for OCR
      */
     boolean handleOcrDecode(OcrResult ocrResult) {
+        String infoToDisplay = "";
         lastResult = ocrResult;
+        String yearToDisplay = "";
+        String dayToDisplay = "";
+        String storeName = "";
+        String amount = "";
+        String monthFound = "";
+        int monthNumber = 0;
 
         // Test whether the result is null
         if (ocrResult.getText() == null || ocrResult.getText().equals("")) {
@@ -845,6 +868,73 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             toast.show();
             return false;
         } else {
+
+            String currentSnippet = "";
+            int indexOfReturn;
+            String amounts = "";
+            for (int i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
+
+                currentSnippet = ocrResult.getText().substring(i);
+            }
+
+            String multiLines = ocrResult.getText().toString();
+            String[] lines;
+            String delimiter = "\n";
+            lines = multiLines.split(delimiter);
+            indexOfReturn = currentSnippet.indexOf(".");
+            infoToDisplay += "Store Name:";
+            infoToDisplay += lines[0];
+            storeName = lines[0];
+            infoToDisplay += "\n";
+            infoToDisplay += "Amount:";
+            if (currentSnippet != "") {
+                infoToDisplay += currentSnippet.substring(0, indexOfReturn + 3);
+                amount = currentSnippet.substring(0, indexOfReturn + 3);
+            }
+            infoToDisplay += " ";
+
+            String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+            int dateLine = -1;
+            int indexOfMonthInLne = -1;
+
+            for (int k = 0; k < lines.length; k++) {
+                for (int j = 0; j < months.length; j++) {
+                    for (int l = -1; (l = lines[k].indexOf(months[j], l + 1)) != -1; ) {
+                        monthFound = months[j];
+                        dateLine = k;
+                        indexOfMonthInLne = l;
+                        monthNumber = j;
+                    }
+                }
+            }
+
+            if (monthFound != "") {
+                String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
+                //for (int p = 0; p < daySnippet.length(); p++) {
+                int p = 0;
+                while (dayToDisplay == "") {
+                    if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
+
+                        dayToDisplay = daySnippet.substring(p, p + 2);
+                    }
+                    p++;
+                }
+            }
+
+            if (monthFound != "") {
+                String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
+                int p = 0;
+                while (yearToDisplay == "") {
+                    if (yearSnippet.substring(p, p + 4).matches("[0-9]{4}")) {
+                        yearToDisplay = yearSnippet.substring(p, p + 4);
+                    }
+                    p++;
+                }
+            }
+
+            infoToDisplay += "Month:" + monthFound;
+            infoToDisplay += "Day:" + dayToDisplay;
+            infoToDisplay += "Year:" + yearToDisplay;
 
       /*String currentSnippet;
       int indexOfReturn;
@@ -876,15 +966,87 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         ImageView bitmapImageView = (ImageView) findViewById(R.id.image_view);
         lastBitmap = ocrResult.getBitmap();
-        if (lastBitmap != null) {
+
+
+        if (lastBitmap == null) {
+                bitmapImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
+                          R.mipmap.ic_launcher));
+        } else {
             bitmapImageView.setImageBitmap(lastBitmap);
+
         }
+        String state;
+        state = Environment.getExternalStorageState();
+
+        String fullPathAndFilename = "";
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            File Root = Environment.getExternalStorageDirectory();
+            File Dir = new File(Root.getAbsolutePath() + "/ReceiptKeeperFolder");
+            if (!Dir.exists()) {
+                Dir.mkdir();
+                fullPathAndFilename += Dir.toString() + "/ReceiptKeeperFolder";
+            }
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+            Date now = new Date();
+            String fileName = formatter.format(now) + ".Receipt.bmp";
+            File file = new File(Dir, fileName);
+            fullPathAndFilename += fileName;
+            try {
+                FileOutputStream fileOutPutStream = new FileOutputStream(file);
+                Bitmap bmpToSave = lastBitmap;
+                bmpToSave.compress(Bitmap.CompressFormat.PNG, 100, fileOutPutStream);
+                fileOutPutStream.close();
+                Toast.makeText(getApplicationContext(), "Message Saved", Toast.LENGTH_SHORT).show();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "SD Card Not Found", Toast.LENGTH_SHORT);
+        }
+
+        Receipt newReceipt = new Receipt();
+        newReceipt.setComment(fullPathAndFilename);
+        if (yearToDisplay != "" && monthNumber != 0 && dayToDisplay != "") {
+            int yearFound = Integer.parseInt(yearToDisplay);
+            int dayFound = Integer.parseInt(dayToDisplay);
+            Date dateToSave = new Date();
+
+            String startDateString = String.valueOf(monthNumber) + "/" + dayToDisplay + "/" + yearFound;
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            Date startDate;
+            try {
+                startDate = df.parse(startDateString);
+                newReceipt.setDate(startDate);
+                //System.out.println(newDateString);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        DBHelper db = new DBHelper(this);
+        SQLController dbcontrol = new SQLController(this);
+        dbcontrol.open();
+        long[] tag_ids = {0};
+        dbcontrol.insertReceipt(newReceipt, tag_ids);
+        dbcontrol.close();
 
         // Display the recognized text
         TextView sourceLanguageTextView = (TextView) findViewById(R.id.source_language_text_view);
         sourceLanguageTextView.setText(sourceLanguageReadable);
         TextView ocrResultTextView = (TextView) findViewById(R.id.ocr_result_text_view);
-        ocrResultTextView.setText(ocrResult.getText());
+        //ocrResultTextView.setText(ocrResult.getText());
+        EditText etStoreName = (EditText) findViewById(R.id.etStoreName);
+        EditText etAmount = (EditText) findViewById(R.id.etAmount);
+        EditText etDate = (EditText) findViewById(R.id.etDate);
+        etStoreName.setText(storeName);
+        etAmount.setText(amount);
+        etDate.setText(dayToDisplay + "-" + monthFound + "-" + yearToDisplay);
+
+        TextView ocrResultDataGathered = (TextView) findViewById(R.id.ocr_result_data_gathered);
+
+        ocrResultDataGathered.setText(infoToDisplay);
         // Crudely scale betweeen 22 and 32 -- bigger font for shorter text
         int scaledSize = Math.max(22, 32 - ocrResult.getText().length() / 4);
         ocrResultTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
@@ -916,6 +1078,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
         return true;
     }
+
+
 
     /**
      * Displays information relating to the results of a successful real-time OCR request.
@@ -956,7 +1120,92 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             statusViewBottom.setTextSize(14);
             statusViewBottom.setText("OCR: " + sourceLanguageReadable + " - Mean confidence: " +
                     meanConfidence.toString() + " - Time required: " + recognitionTimeRequired + " ms");
-        }
+
+            simpleConfidenceView.setTextSize(18);
+            if (meanConfidence < 50) {
+                simpleConfidenceView.setTextColor(Color.RED);
+            } else if (meanConfidence < 70) {
+                simpleConfidenceView.setTextColor(Color.YELLOW);
+            } else {
+                simpleConfidenceView.setTextColor(Color.GREEN);
+            }
+            String currentSnippet = "";
+            int indexOfReturn;
+            int i = -1;
+            String infoToDisplay2 = "";
+            String textRetrieved = ocrResult.getText();
+            for (i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
+                currentSnippet = ocrResult.getText().substring(i);
+            }
+
+
+            indexOfReturn = currentSnippet.indexOf(".");
+            if (indexOfReturn > -1) {
+                infoToDisplay2 += "Amount:";
+                if (indexOfReturn + 3 > currentSnippet.length()) {
+                    infoToDisplay2 += currentSnippet.substring(0, currentSnippet.length());
+                } else {
+                    infoToDisplay2 += currentSnippet.substring(0, indexOfReturn + 3);
+                }
+            }
+
+            String yearToDisplay = "";
+            String dayToDisplay = "";
+            int monthNumber = 0;
+            String multiLines = ocrResult.getText().toString();
+            String[] lines;
+            String delimiter = "\n";
+            lines = multiLines.split(delimiter);
+            String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+            int dateLine = -1;
+            int indexOfMonthInLne = -1;
+            String monthFound = "";
+            for (int k = 0; k < lines.length; k++) {
+                for (int j = 0; j < months.length; j++) {
+                    for (int l = -1; (l = lines[k].indexOf(months[j], l + 1)) != -1; ) {
+                        monthFound = months[j];
+                        dateLine = k;
+                        indexOfMonthInLne = l;
+                        monthNumber = j;
+                    }
+                }
+            }
+                if (monthFound != "") {
+                    String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
+                    //for (int p = 0; p < daySnippet.length(); p++) {
+                    int p = 0;
+                    while (dayToDisplay == "") {
+                        if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
+
+                            dayToDisplay = daySnippet.substring(p, p + 2);
+                        }
+                        p++;
+                    }
+                }
+
+                if (monthFound != "") {
+                    String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
+                    int p = 0;
+                    while (yearToDisplay == "") {
+                        if (yearSnippet.substring(p, p + 4).matches("[0-9]{4}")) {
+                            yearToDisplay = yearSnippet.substring(p, p + 4);
+                        }
+                        p++;
+                    }
+                }
+
+                infoToDisplay2 += "Month:" + monthFound;
+                infoToDisplay2 += "Day:" + dayToDisplay;
+                infoToDisplay2 += "Year:" + yearToDisplay;
+
+                infoToDisplay2 += "\n";
+
+
+                infoToDisplay2 += "Store Name:";
+                infoToDisplay2 += lines[0];
+                simpleConfidenceView.setText(infoToDisplay2);
+            }
+
     }
 
     /**

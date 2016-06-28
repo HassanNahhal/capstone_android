@@ -16,6 +16,9 @@ package com.conestogac.receipt_keeper;
  * limitations under the License.
  */
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +26,19 @@ import android.view.View;
 
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = WelcomeActivity.class.getSimpleName();
+    private static final String[] PERMS_TAKE_PICTURE = {
+            CAMERA,
+            WRITE_EXTERNAL_STORAGE
+    };
+    private static final int RESULT_PERMS_INITIAL = 1339;
+    private static final String PREF_IS_FIRST_RUN = "firstRun";
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +50,12 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         //todo load customer infomation saved
 
-        //todo move loading image into Async
+        //Load camera related shared preference
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (isFirstRun()) {
+            ActivityCompat.requestPermissions(this, PERMS_TAKE_PICTURE,
+                    RESULT_PERMS_INITIAL);
+        }
 
         //todo incase of user already login, goto OCR directly
         if (false){//.getCurrentUserId() != null) {
@@ -62,5 +81,18 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(signInIntent);
                 break;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // TODO
+    }
+
+    private boolean isFirstRun() {
+        boolean result = prefs.getBoolean(PREF_IS_FIRST_RUN, true);
+        if (result) {
+            prefs.edit().putBoolean(PREF_IS_FIRST_RUN, false).apply();
+        }
+        return (result);
     }
 }

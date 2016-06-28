@@ -1,6 +1,9 @@
 package com.conestogac.receipt_keeper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,6 +21,10 @@ import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.User;
 import com.strongloop.android.loopback.UserRepository;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
+
+import com.conestogac.receipt_keeper.ocr.CaptureActivity;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +45,7 @@ public class UserProfileActivity extends BaseActivity {
     private RestAdapter adapter;
     private CustomerRepository userRepo;
     private Customer user;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,9 +148,13 @@ public class UserProfileActivity extends BaseActivity {
             public void onSuccess(AccessToken token, Customer currentUser) {
                 dismissProgressDialog();
                 showResult(getString(R.string.signin_success_message) +" "+ mUsernameEdiText.getText().toString());
+
+                /* Todo Goto OCR*/
                 Intent gotoOCR = new Intent(getApplicationContext(), CaptureActivity.class);
+                gotoOCR.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(gotoOCR);
                 finish();
+
                 Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
             }
             @Override
@@ -219,7 +230,5 @@ public class UserProfileActivity extends BaseActivity {
             super("Customer", null, Customer.class);
         }
     }
-
-
 
 }
