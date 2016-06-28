@@ -12,7 +12,7 @@ import android.widget.SimpleCursorAdapter;
 
 
 public class HomeActivity extends AppCompatActivity {
-
+    private static final String TAG = HomeActivity.class.getSimpleName();
     private ListView receiptListView;
     private SQLController dbContoller;
 

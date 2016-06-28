@@ -43,8 +43,13 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="login_progress_message">Signing in...</string>
+    <string name="signin_progress_message">Signing in...</string>
+    <string name="signup_progress_message">Signing up...</string>
     <string name="upload_progress_message">Uploading...</string>
+    <string name="signup_success_message">Success to sign up!!!</string>
+    <string name="signin_success_message">Welcome!!! </string>
+    <string name="sigin_fail_message">Error during sign in! Please try again later</string>
+    <string name="signup_fail_message">Error during sign up! Please try again later</string>
     <string name="action_logout">Logout</string>
 
 

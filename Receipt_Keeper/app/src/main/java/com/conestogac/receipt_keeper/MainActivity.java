@@ -16,7 +16,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String PREF_IS_FIRST_RUN = "firstRun";
     private SharedPreferences prefs;
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-// TODO
+        // TODO
     }
 
     private boolean isFirstRun() {

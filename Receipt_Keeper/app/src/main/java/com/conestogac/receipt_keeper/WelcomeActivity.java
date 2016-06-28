@@ -24,8 +24,8 @@ import android.view.View;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = WelcomeActivity.class.getSimpleName();
 
-    private static final String TAG = "WelcomeActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,11 +36,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
 
         //todo load customer infomation saved
 
+        //todo move loading image into Async
 
         //todo incase of user already login, goto OCR directly
         if (false){//.getCurrentUserId() != null) {
             Intent captureIntent = new Intent(this, CaptureActivity.class);
-
             //to prevent user back to this activity
             captureIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(captureIntent);
@@ -55,13 +55,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 Intent signUpIntent = new Intent(this, UserProfileActivity.class);
                 signUpIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME,UserProfileActivity.MODE_SIGNUP);
                 startActivity(signUpIntent);
-                finish();
                 break;
             case R.id.sign_in_button:
                 Intent signInIntent = new Intent(this, UserProfileActivity.class);
                 signInIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME,UserProfileActivity.MODE_SIGNIN);
                 startActivity(signInIntent);
-                finish();
                 break;
         }
     }
