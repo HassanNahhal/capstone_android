@@ -1,9 +1,11 @@
 package com.conestogac.receipt_keeper;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -37,15 +39,14 @@ public class UserProfileActivity extends BaseActivity {
 
     private EditText mEmailView;
     private EditText mPasswordView;
-
-    private int profile_mode;
     private EditText mUsernameEdiText;
+    private int profile_mode;
 
     private ReceiptKeeperApplication app;
     private RestAdapter adapter;
     private CustomerRepository userRepo;
     private Customer user;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,11 +151,13 @@ public class UserProfileActivity extends BaseActivity {
                 showResult(getString(R.string.signin_success_message) +" "+ mUsernameEdiText.getText().toString());
 
                 /* Todo Goto OCR*/
-                Intent gotoOCR = new Intent(getApplicationContext(), CaptureActivity.class);
-                gotoOCR.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(gotoOCR);
-                finish();
+                TaskStackBuilder.create(getApplicationContext())
+                        .addParentStack(WelcomeActivity.class)
+                        .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
+                        .addNextIntent(new Intent(getApplicationContext(), CaptureActivity.class))
+                        .startActivities();
 
+                finish();
                 Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
             }
             @Override
@@ -192,7 +195,7 @@ public class UserProfileActivity extends BaseActivity {
 
             @Override
             public void onError(Throwable t) {
-                Log.e(TAG, "Can not singup.", t);
+                Log.e(TAG, "Can not signup.", t);
                 dismissProgressDialog();
                 showResult(getString(R.string.signup_fail_message));
             }

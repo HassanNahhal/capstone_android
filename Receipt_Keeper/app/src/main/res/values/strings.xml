@@ -28,7 +28,7 @@
     <string name="save">Save</string>
     <string name="home_activity">HomeActivity</string>
     <string name="receipt_id">Receipt id</string>
-    <string name="welcome_screen_text">Welcome to ReceiptKeeper</string>
+    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
     <string name="sign_in_button_text">SIGN IN</string>
     <string name="sign_up_button_text">SIGN UP</string>
 
