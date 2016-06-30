@@ -26,7 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String RECEIPT_FK_CATEGORY_ID = "category_id";
     public static final String RECEIPT_COMMENT = "comment";
     public static final String RECEIPT_DATE = "date";
-
+    public static final String RECEIPT_TOTAL = "total";
 
 
     // Table ReceiptTag and columns
@@ -62,7 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_RECEIPT = " CREATE TABLE " + TABLE_RECEIPT + "( "
             + RECEIPT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + RECEIPT_FK_CUSTOMER_ID
             + " INTEGER ," + RECEIPT_FK_STORE_ID + " INTEGER ," + RECEIPT_FK_CATEGORY_ID +
-            " INTEGER ," + RECEIPT_COMMENT + " TEXT ," + RECEIPT_DATE + " TEXT " + ")";
+            " INTEGER ," + RECEIPT_COMMENT + " TEXT ," + RECEIPT_DATE + " TEXT ," + RECEIPT_TOTAL + " REAL " + ")";
 
     // Receipt_Tag table create statement
     private static final String CREATE_TABLE_RECEIPT_TAG = " CREATE TABLE " + TABLE_RECEIPT_TAG + "( "
@@ -98,7 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_CATEGORY);
         db.execSQL(CREATE_TABLE_STORR_CATEGORY);
 
-        Log.d(LOG_DATABASE,"CREATED");
+        Log.d(LOG_DATABASE, "CREATED");
     }
 
     @Override

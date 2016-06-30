@@ -13,19 +13,24 @@ public class Receipt {
     private int categroyId;
     private String comment;
     private Date date;
+    private float total;
 
 
     public Receipt() {
     }
 
-    public Receipt(int id, int customerId, int storeId, int categroyId, String comment, Date date) {
+
+    public Receipt(int id, int customerId, int storeId, int categroyId, String comment, Date date, float total) {
         this.id = id;
         this.customerId = customerId;
         this.storeId = storeId;
         this.categroyId = categroyId;
         this.comment = comment;
         this.date = date;
+        this.total = total;
     }
+
+
 
 
     // Attribute Getters
@@ -53,6 +58,10 @@ public class Receipt {
         return date;
     }
 
+    public float getTotal() {
+        return total;
+    }
+
     // Attribute Setters
     public void setId(int id) {
         this.id = id;
@@ -76,5 +85,9 @@ public class Receipt {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public void setTotal(float total) {
+        this.total = total;
     }
 }

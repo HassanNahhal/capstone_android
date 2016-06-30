@@ -21,6 +21,7 @@ public class SQLController {
     private static final String RECEIPT_FK_CATEGORY_ID = "category_id";
     private static final String RECEIPT_COMMENT = "comment";
     private static final String RECEIPT_DATE = "date";
+    public static final String RECEIPT_TOTAL = "total";
 
     private DBHelper dbhelper;
     private Context ourcontext;
@@ -86,13 +87,37 @@ public class SQLController {
         Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT,
                 new String[]{
                         DBHelper.RECEIPT_ID,
-                        DBHelper.RECEIPT_DATE}
+                        DBHelper.RECEIPT_DATE,
+                        DBHelper.RECEIPT_TOTAL
+                }
                 , null,
                 null, null, null, null);
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;
 
+    }
+
+
+    public long insertReceipt(Receipt receipt) {
+        ContentValues values = new ContentValues();
+        //values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
+        //values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
+        //values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategroyId());
+        //values.put(RECEIPT_COMMENT, receipt.getComment());
+        values.put(RECEIPT_DATE, getDateTime());
+        values.put(RECEIPT_TOTAL, receipt.getTotal());
+
+
+        // Insert row
+        long receiptId = database.insert(TABLE_RECEIPT, null, values);
+
+        // Assigning tags to
+        /*for (long tag_id : tag_ids) {
+            insertReceiptTag(receiptId, tag_id);
+        }*/
+
+        return receiptId;
     }
 
     public long insertReceipt(Receipt receipt, long[] tag_ids) {
@@ -104,7 +129,7 @@ public class SQLController {
         values.put(RECEIPT_DATE, getDateTime());
 
         // Insert row
-        long receiptId = this.database.insert(TABLE_RECEIPT, null, values);
+        long receiptId = database.insert(TABLE_RECEIPT, null, values);
 
         // Assigning tags to
         for (long tag_id : tag_ids) {

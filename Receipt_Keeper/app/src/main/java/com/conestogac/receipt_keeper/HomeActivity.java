@@ -29,7 +29,7 @@ public class HomeActivity extends AppCompatActivity {
         readAllDataFromDatabase();
 
 
-        // [ Go to AddUserActivity when clicked]
+        // [ Go to AddReceiptActivity when clicked]
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_add);
         if (fab != null) {
@@ -54,10 +54,10 @@ public class HomeActivity extends AppCompatActivity {
         cursor = dbContoller.readAllReceipts();
 
         // [ Get context of user table]
-        String[] from = new String[]{DBHelper.RECEIPT_ID, DBHelper.RECEIPT_DATE};
+        String[] from = new String[]{DBHelper.RECEIPT_ID, DBHelper.RECEIPT_DATE, DBHelper.RECEIPT_TOTAL};
 
         // [ Bind context to it's view]
-        int[] to = new int[]{R.id.idTextView, R.id.dateTextView};
+        int[] to = new int[]{R.id.idTextView, R.id.dateTextView, R.id.totalTextView};
 
         // [ Loop and add all the data in Cursor to the ListView using Adapter]
         adapter = new SimpleCursorAdapter(

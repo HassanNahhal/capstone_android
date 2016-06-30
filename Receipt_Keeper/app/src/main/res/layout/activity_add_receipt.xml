@@ -60,7 +60,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/dateEditText"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/dateTextView"
@@ -69,10 +69,10 @@
         android:inputType="date" />
 
     <Button
-        android:id="@+id/saveReciptButton"
+        android:id="@+id/saveReceiptButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/editText"
+        android:layout_alignEnd="@+id/dateEditText"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="53dp"
         android:text="@string/save" />
@@ -91,7 +91,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/receiptIdTextView"
-        android:layout_alignStart="@+id/editText"
+        android:layout_alignStart="@+id/dateEditText"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
