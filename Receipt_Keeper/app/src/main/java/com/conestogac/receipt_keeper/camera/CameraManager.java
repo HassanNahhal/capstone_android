@@ -57,6 +57,7 @@ public final class CameraManager {
   private boolean reverseImage;
   private int requestedFramingRectWidth;
   private int requestedFramingRectHeight;
+  public boolean paused = false;
   /**
    * Preview frames are delivered here, which we pass on to the registered handler. Make sure to
    * clear the handler so it will only receive one message.
@@ -163,7 +164,9 @@ public final class CameraManager {
    * @param delay Time delay to send with the request
    */
   public synchronized void requestAutoFocus(long delay) {
-  	autoFocusManager.start(delay);
+    if (paused == false) {
+      autoFocusManager.start(delay);
+    }
   }
   
   /**

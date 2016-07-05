@@ -1,44 +1,48 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.models;
+
+import com.strongloop.android.loopback.Model;
 
 import java.util.Date;
 
 /**
  * Created by hassannahhal on 2016-06-14.
  */
-public class Receipt {
+public class Receipt extends Model {
 
     private int id;
-    private int customerId;
+    private String customerId;
     private int storeId;
-    private int categroyId;
-    private String comment;
+    private int categoryId;
     private Date date;
     private float total;
-
+    private int numberOfItem;
+    private boolean error;
+    private String comment;
+    private String imageFilePath;
+    private String groupId;
 
     public Receipt() {
+
     }
 
-
-    public Receipt(int id, int customerId, int storeId, int categroyId, String comment, Date date, float total) {
+    //todo check contructor parameter
+    public Receipt(int id, String customerId, int storeId, int categoryId, String comment, Date date, float total, String imageFilePath) {
         this.id = id;
         this.customerId = customerId;
         this.storeId = storeId;
-        this.categroyId = categroyId;
+        this.categoryId = categoryId;
         this.comment = comment;
         this.date = date;
         this.total = total;
     }
 
 
-
-
     // Attribute Getters
-    public int getId() {
+    public int getLocalId() {
         return id;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
@@ -46,8 +50,8 @@ public class Receipt {
         return storeId;
     }
 
-    public int getCategroyId() {
-        return categroyId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
     public String getComment() {
@@ -67,7 +71,7 @@ public class Receipt {
         this.id = id;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
@@ -75,8 +79,8 @@ public class Receipt {
         this.storeId = storeId;
     }
 
-    public void setCategroyId(int categroyId) {
-        this.categroyId = categroyId;
+    public void setCategoryId(int categroyId) {
+        this.categoryId = categoryId;
     }
 
     public void setComment(String comment) {

@@ -1,4 +1,4 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.models;
 
 /**
  * Created by hassannahhal on 2016-06-14.

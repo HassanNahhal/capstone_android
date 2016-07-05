@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.conestogac.receipt_keeper.models.Receipt;
+import com.conestogac.receipt_keeper.models.Tag;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -124,7 +127,7 @@ public class SQLController {
         ContentValues values = new ContentValues();
         values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
         values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
-        values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategroyId());
+        values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategoryId());
         values.put(RECEIPT_COMMENT, receipt.getComment());
         values.put(RECEIPT_DATE, getDateTime());
 

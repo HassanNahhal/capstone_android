@@ -51,7 +51,7 @@
     <string name="sigin_fail_message">Error during sign in! Please try again later</string>
     <string name="signup_fail_message">Error during sign up! Please try again later</string>
     <string name="action_logout">Logout</string>
-
+    <string name="action_settings">upload test</string>
 
     <!-- Strings related to OCR -->
     <string name="error_upload_task_create">During upload, there is an error</string>

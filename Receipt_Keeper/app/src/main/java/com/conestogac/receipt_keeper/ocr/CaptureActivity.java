@@ -64,6 +64,7 @@ import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.io.FileOutputStream;
+import com.conestogac.receipt_keeper.AddReceiptActivity;
 
 import com.conestogac.receipt_keeper.DBHelper;
 import com.conestogac.receipt_keeper.SQLController;
@@ -79,7 +80,7 @@ import com.conestogac.receipt_keeper.camera.CameraManager;
 import com.conestogac.receipt_keeper.camera.ShutterButton;
 import com.conestogac.receipt_keeper.language.LanguageCodeHelper;
 import com.conestogac.receipt_keeper.language.TranslateAsyncTask;
-import com.conestogac.receipt_keeper.Receipt;
+import com.conestogac.receipt_keeper.models.Receipt;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -255,6 +256,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     private boolean isEngineReady;
     private boolean isPaused;
     private static boolean isFirstLaunch; // True if this is the first time the app is being run
+    public String storeName = "";
+    String amount = "";
+    String monthFound = "";
+    String yearToDisplay = "";
+    String dayToDisplay = "";
+    int monthNumber = 0;
     public com.conestogac.receipt_keeper.GatheredData gatheredData = new com.conestogac.receipt_keeper.GatheredData();
 
     Handler getHandler() {
@@ -498,6 +505,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     void resumeOCR() {
         Log.d(TAG, "resumeOCR()");
 
+        cameraManager.paused = false;
+        isContinuousModeActive = true;
         // This method is called when Tesseract has already been successfully initialized, so set
         // isEngineReady = true here.
         isEngineReady = true;
@@ -529,6 +538,29 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         beepManager.playBeepSoundAndVibrate();
         if (lastResult != null) {
             handleOcrDecode(lastResult);
+            //isContinuousModeActive = false;
+            Intent addReceiptIntent = new Intent(this, AddReceiptActivity.class);
+            if (storeName != "") {
+                addReceiptIntent.putExtra("StoreName", storeName);
+            }
+            if (amount != "") {
+                addReceiptIntent.putExtra("Amount", amount);
+            }
+            if (monthFound != "") {
+                addReceiptIntent.putExtra("Month", monthNumber);
+            }
+            if (yearToDisplay != "") {
+                addReceiptIntent.putExtra("Year", yearToDisplay);
+            }
+            if (dayToDisplay != "") {
+                addReceiptIntent.putExtra("Day", dayToDisplay);
+            }
+            addReceiptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            addReceiptIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            //  cameraManager = null;
+            //    finish();
+            cameraManager.paused = true;
+            startActivity(addReceiptIntent);
         } else {
             Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.TOP, 0, 0);
@@ -854,12 +886,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     boolean handleOcrDecode(OcrResult ocrResult) {
         String infoToDisplay = "";
         lastResult = ocrResult;
-        String yearToDisplay = "";
-        String dayToDisplay = "";
-        String storeName = "";
-        String amount = "";
-        String monthFound = "";
-        int monthNumber = 0;
 
         // Test whether the result is null
         if (ocrResult.getText() == null || ocrResult.getText().equals("")) {
@@ -877,6 +903,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 currentSnippet = ocrResult.getText().substring(i);
             }
 
+            monthFound = "";
             String multiLines = ocrResult.getText().toString();
             String[] lines;
             String delimiter = "\n";
@@ -904,6 +931,20 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         dateLine = k;
                         indexOfMonthInLne = l;
                         monthNumber = j;
+                    }
+                }
+            }
+
+            if (monthFound == "") {
+                String[] months2 = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+                for (int k = 0; k < lines.length; k++) {
+                    for (int j = 0; j < months2.length; j++) {
+                        for (int l = -1; (l = lines[k].indexOf(months2[j], l + 1)) != -1; ) {
+                            monthFound = months2[j];
+                            dateLine = k;
+                            indexOfMonthInLne = l;
+                            monthNumber = j;
+                        }
                     }
                 }
             }
@@ -1160,16 +1201,35 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             int dateLine = -1;
             int indexOfMonthInLne = -1;
             String monthFound = "";
-            for (int k = 0; k < lines.length; k++) {
-                for (int j = 0; j < months.length; j++) {
-                    for (int l = -1; (l = lines[k].indexOf(months[j], l + 1)) != -1; ) {
-                        monthFound = months[j];
-                        dateLine = k;
-                        indexOfMonthInLne = l;
-                        monthNumber = j;
+
+
+            try {
+                for (int k = 0; k < lines.length; k++) {
+                    for (int j = 0; j < months.length; j++) {
+                        for (int l = -1; (l = lines[k].indexOf(months[j], l + 1)) != -1; ) {
+                            monthFound = months[j];
+                            dateLine = k;
+                            indexOfMonthInLne = l;
+                            monthNumber = j;
+                        }
                     }
                 }
-            }
+
+                if (monthFound == "") {
+                    String[] months2 = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+
+                    for (int k = 0; k < lines.length; k++) {
+                        for (int j = 0; j < months2.length; j++) {
+                            for (int l = -1; (l = lines[k].indexOf(months2[j], l + 1)) != -1; ) {
+                                monthFound = months2[j];
+                                dateLine = k;
+                                indexOfMonthInLne = l;
+                                monthNumber = j;
+                            }
+                        }
+                    }
+                }
                 if (monthFound != "") {
                     String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
                     //for (int p = 0; p < daySnippet.length(); p++) {
@@ -1182,6 +1242,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         p++;
                     }
                 }
+
 
                 if (monthFound != "") {
                     String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
@@ -1197,13 +1258,16 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 infoToDisplay2 += "Month:" + monthFound;
                 infoToDisplay2 += "Day:" + dayToDisplay;
                 infoToDisplay2 += "Year:" + yearToDisplay;
+            }
 
-                infoToDisplay2 += "\n";
+            catch (Exception e) {
+            }
+            infoToDisplay2 += "\n";
 
 
-                infoToDisplay2 += "Store Name:";
-                infoToDisplay2 += lines[0];
-                simpleConfidenceView.setText(infoToDisplay2);
+            infoToDisplay2 += "Store Name:";
+            infoToDisplay2 += lines[0];
+            simpleConfidenceView.setText(infoToDisplay2);
             }
 
     }

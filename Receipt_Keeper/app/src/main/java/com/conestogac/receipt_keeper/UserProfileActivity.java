@@ -148,7 +148,10 @@ public class UserProfileActivity extends BaseActivity {
             @Override
             public void onSuccess(AccessToken token, Customer currentUser) {
                 dismissProgressDialog();
-                showResult(getString(R.string.signin_success_message) +" "+ mUsernameEdiText.getText().toString());
+
+                app.setCurrentUser(currentUser);
+
+                showResult(getString(R.string.signin_success_message) +" "+ currentUser.username);
 
                 /* Todo Goto OCR*/
                 TaskStackBuilder.create(getApplicationContext())
