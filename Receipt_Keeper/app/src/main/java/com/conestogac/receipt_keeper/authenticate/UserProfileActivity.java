@@ -1,12 +1,7 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.authenticate;
 
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,18 +10,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.conestogac.receipt_keeper.helpers.BaseActivity;
+import com.conestogac.receipt_keeper.HomeActivity;
+import com.conestogac.receipt_keeper.R;
+import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
-import com.google.common.collect.ImmutableBiMap;
 import com.strongloop.android.loopback.AccessToken;
-import com.strongloop.android.loopback.Model;
 import com.strongloop.android.loopback.RestAdapter;
-import com.strongloop.android.loopback.User;
-import com.strongloop.android.loopback.UserRepository;
 import com.strongloop.android.loopback.callbacks.VoidCallback;
-
-import com.conestogac.receipt_keeper.ocr.CaptureActivity;
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import java.util.HashMap;
 import java.util.Map;

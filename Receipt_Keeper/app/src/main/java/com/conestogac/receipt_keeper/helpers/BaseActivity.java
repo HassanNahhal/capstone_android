@@ -1,8 +1,10 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.helpers;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+
+import com.conestogac.receipt_keeper.helpers.ProgressDialogFragment;
 
 /**
  * BaseActivity to show progress bar which uses ProgressDialogFragment

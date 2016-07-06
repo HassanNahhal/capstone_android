@@ -60,27 +60,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
-import java.io.FileOutputStream;
 import com.conestogac.receipt_keeper.AddReceiptActivity;
-
-import com.conestogac.receipt_keeper.DBHelper;
-import com.conestogac.receipt_keeper.SQLController;
-import com.googlecode.tesseract.android.TessBaseAPI;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
-
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.R;
+import com.conestogac.receipt_keeper.SQLController;
 import com.conestogac.receipt_keeper.camera.CameraManager;
 import com.conestogac.receipt_keeper.camera.ShutterButton;
 import com.conestogac.receipt_keeper.language.LanguageCodeHelper;
 import com.conestogac.receipt_keeper.language.TranslateAsyncTask;
 import com.conestogac.receipt_keeper.models.Receipt;
+import com.conestogac.receipt_keeper.models.Tag;
+import com.googlecode.tesseract.android.TessBaseAPI;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -1054,12 +1054,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             int dayFound = Integer.parseInt(dayToDisplay);
             Date dateToSave = new Date();
 
+            // <====================I used startDateString rather than  startDate=========>
             String startDateString = String.valueOf(monthNumber) + "/" + dayToDisplay + "/" + yearFound;
             DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
             Date startDate;
             try {
                 startDate = df.parse(startDateString);
-                newReceipt.setDate(startDate);
+                newReceipt.setDate(startDateString);
                 //System.out.println(newDateString);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -1069,8 +1070,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         DBHelper db = new DBHelper(this);
         SQLController dbcontrol = new SQLController(this);
         dbcontrol.open();
+
+        // <====================I used tags of type linkedLinst rather than  tag_ids=========>
         long[] tag_ids = {0};
-        dbcontrol.insertReceipt(newReceipt, tag_ids);
+        LinkedList<Tag> tags = new LinkedList<>();
+
+        dbcontrol.insertReceipt(newReceipt, tags);
         dbcontrol.close();
 
         // Display the recognized text

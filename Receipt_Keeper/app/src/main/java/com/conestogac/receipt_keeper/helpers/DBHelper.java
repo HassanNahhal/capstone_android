@@ -1,4 +1,4 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.helpers;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -37,7 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Table Tag and columns
     public static final String TABLE_TAG = "tag";
-    public static final String TAG_ID = "id";
+    public static final String TAG_ID = "_id";
     public static final String TAG_NAME = "tag_name";
 
 

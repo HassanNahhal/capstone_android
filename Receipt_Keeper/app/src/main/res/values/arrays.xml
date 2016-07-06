@@ -20,7 +20,20 @@
 		<item>Single shot</item>
 	</string-array>
 
-    <string-array name="pagesegmentationmodes">
+	<string-array name="tags">
+		<item>Gift</item>
+		<item>Food</item>
+		<item>Cloth</item>
+		<item>Gas</item>
+		<item>Mobile</item>
+		<item>Hydro</item>
+		<item>Rent</item>
+		<item>Internet</item>
+		<item>Drugs</item>
+	</string-array>
+
+
+	<string-array name="pagesegmentationmodes">
         <item>Auto</item>
         <item>Auto (no OSD)</item>
         <item>Single block</item>

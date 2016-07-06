@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.conestogac.receipt_keeper.helpers.DBHelper;
+import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
+
 
 public class HomeActivity extends AppCompatActivity {
     private static final String TAG = HomeActivity.class.getSimpleName();
@@ -26,10 +29,25 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        dbContoller = new SQLController(this);
 
         receiptListView = (ListView) findViewById(R.id.receiptListView);
         readAllDataFromDatabase();
 
+
+        /*dbContoller.open();
+        Log.d("here", "here");
+        Cursor cursor = dbContoller.readAllTags();
+        Log.d("here", "here");
+
+        if (cursor != null) {
+            while (cursor.moveToFirst()) {
+                Log.d("here", "here");
+
+                Log.d("id cursor", cursor.getColumnName(0));
+            }
+        }
+        dbContoller.close();*/
 
         // [ Go to AddReceiptActivity when clicked]
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -52,14 +70,25 @@ public class HomeActivity extends AppCompatActivity {
         dbContoller = new SQLController(this);
         dbContoller.open();
 
-        // [ Cursor that incdulde data]
+        // [ Cursor that include data]
+        //LinkedList<Receipt> receipts = dbContoller.readAllReceipts();
         cursor = dbContoller.readAllReceipts();
+        dbContoller.close();
+        SimpleCursorAdapter adapter;
 
         // [ Get context of user table]
-        String[] from = new String[]{DBHelper.RECEIPT_ID, DBHelper.RECEIPT_DATE, DBHelper.RECEIPT_TOTAL};
+        String[] from = new String[]{DBHelper.RECEIPT_ID, DBHelper.RECEIPT_DATE, DBHelper.RECEIPT_TOTAL,
+                DBHelper.TAG_NAME};
 
         // [ Bind context to it's view]
-        int[] to = new int[]{R.id.idTextView, R.id.dateTextView, R.id.totalTextView};
+        int[] to = new int[]{R.id.idTextView, R.id.dateTextView, R.id.totalTextView,R.id.tagsTextView};
+
+        /*adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_list_item_1,
+                receipts);
+
+        receiptListView.setAdapter(adapter);*/
 
         // [ Loop and add all the data in Cursor to the ListView using Adapter]
         adapter = new SimpleCursorAdapter(

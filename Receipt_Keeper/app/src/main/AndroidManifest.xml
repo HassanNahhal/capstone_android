@@ -41,7 +41,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".authenticate.WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,12 +77,12 @@
         </activity>
         <activity android:name=".AddReceiptActivity" />
         <activity
-            android:name=".UserProfileActivity"
+            android:name=".authenticate.UserProfileActivity"
             android:excludeFromRecents="true"
             android:taskAffinity="">
         </activity>
-        <activity android:name=".TestUploadActivity"/>
-        <activity android:name=".BaseActivity" />
+        <activity android:name=".uploader.TestUploadActivity"/>
+        <activity android:name=".helpers.BaseActivity" />
     </application>
 
 </manifest>

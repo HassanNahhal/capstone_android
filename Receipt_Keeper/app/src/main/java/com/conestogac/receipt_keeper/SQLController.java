@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Locale;
 
 public class SQLController {
@@ -32,7 +34,7 @@ public class SQLController {
 
     // Table Tag and columns
     private static final String TABLE_TAG = "tag";
-    private static final String TAG_ID = "id";
+    private static final String TAG_ID = "_id";
     private static final String TAG_NAME = "tag_name";
 
     // Logcat tag
@@ -77,15 +79,19 @@ public class SQLController {
     }
 
 
-    public long insertReceiptTag(long receiptId, long tagId) {
-        ContentValues values = new ContentValues();
-        values.put(FK_RECEIPT_ID, receiptId);
-        //values.put(FK_TAG_ID, tagId);
+    public Cursor readAllReceipts() {
 
-        return database.insert(TABLE_RECEIPT_TAG, null, values);
+        String sqlQuery = "SELECT * FROM receipt, tag " +
+                "WHERE receipt._id= tag._id " +
+                "GROUP BY receipt._id";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
     }
 
-    public Cursor readAllReceipts() {
+    /*public Cursor readAllReceipts() {
 
         Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT,
                 new String[]{
@@ -99,10 +105,10 @@ public class SQLController {
             localCursor.moveToFirst();
         return localCursor;
 
-    }
+    }*/
 
 
-    public long insertReceipt(Receipt receipt) {
+    public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
         ContentValues values = new ContentValues();
         //values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
         //values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
@@ -116,39 +122,35 @@ public class SQLController {
         long receiptId = database.insert(TABLE_RECEIPT, null, values);
 
         // Assigning tags to
-        /*for (long tag_id : tag_ids) {
-            insertReceiptTag(receiptId, tag_id);
-        }*/
-
-        return receiptId;
-    }
-
-    public long insertReceipt(Receipt receipt, long[] tag_ids) {
-        ContentValues values = new ContentValues();
-        values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
-        values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
-        values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategoryId());
-        values.put(RECEIPT_COMMENT, receipt.getComment());
-        values.put(RECEIPT_DATE, getDateTime());
-
-        // Insert row
-        long receiptId = database.insert(TABLE_RECEIPT, null, values);
-
-        // Assigning tags to
-        for (long tag_id : tag_ids) {
-            insertReceiptTag(receiptId, tag_id);
+        for (Tag tag : tags) {
+            insertTag(tag);
+            //insertReceiptTag(receiptId, tag.getTagId());
         }
 
         return receiptId;
     }
 
-
     public long insertTag(Tag tag) {
         ContentValues values = new ContentValues();
-        values.put(TAG_ID, tag.getTagId());
+        //values.put(TAG_ID, tag.getTagId());
         values.put(TAG_NAME, tag.getTagName());
 
         return database.insert(TABLE_TAG, null, values);
+    }
+
+    public Cursor readAllTags() {
+
+        Cursor localCursor = this.database.query(DBHelper.TABLE_TAG,
+                new String[]{
+                        DBHelper.TAG_ID,
+                        DBHelper.TAG_NAME,
+                }
+                , null,
+                null, null, null, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
     }
 
 
@@ -158,6 +160,71 @@ public class SQLController {
         Date date = new Date();
         return dateFormat.format(date);
     }
+
+
+    /*public String convertDateToString() {
+        String datetime;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = new Date();
+        datetime = dateFormat.format(date);
+        System.out.println("Current Date Time : " + datetime);
+
+
+        return datetime;
+    }*/
+
+    /*  public long insertReceiptTag(long receiptId, long tagId) {
+        ContentValues values = new ContentValues();
+        values.put(FK_RECEIPT_ID, receiptId);
+        //values.put(FK_TAG_ID, tagId);
+
+        return database.insert(TABLE_RECEIPT_TAG, null, values);
+    }*/
+
+
+    /*public LinkedList<Receipt> readAllReceipts() {
+        String query = "Select * FROM " + DBHelper.TABLE_RECEIPT; *//*+ "," + DBHelper.TABLE_TAG;*//*+ " rec INNER JOIN " + DBHelper.TABLE_TAG +
+                " tag ON rec._id=tag.id";*//*
+
+        Log.d("query", query + "");
+        LinkedList<Receipt> receipts = new LinkedList<>();
+        Cursor localCursor = database.rawQuery(query, null);
+
+        if (localCursor.moveToFirst())
+            do {
+                Receipt receipt = new Receipt();
+                receipt.setId(localCursor.getColumnIndex(RECEIPT_ID));
+                receipt.setTotal(localCursor.getColumnIndex(RECEIPT_TOTAL));
+                receipt.setDate(localCursor.getString(localCursor.getColumnIndex(RECEIPT_DATE)));
+                //receipt.setTagId(localCursor.getColumnIndex(TAG_ID));
+
+
+                receipts.add(receipt);
+            } while (localCursor.moveToFirst());
+        return receipts;
+
+    }*/
+
+    /*public long insertReceipt(Receipt receipt) {
+        ContentValues values = new ContentValues();
+        //values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
+        //values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
+        //values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategroyId());
+        //values.put(RECEIPT_COMMENT, receipt.getComment());
+        values.put(RECEIPT_DATE, getDateTime());
+        values.put(RECEIPT_TOTAL, receipt.getTotal());
+
+
+        // Insert row
+        long receiptId = database.insert(TABLE_RECEIPT, null, values);
+
+        // Assigning tags to
+        *//*for (long tag_id : tag_ids) {
+            insertReceiptTag(receiptId, tag_id);
+        }*//*
+
+        return receiptId;
+    }*/
 
 
 

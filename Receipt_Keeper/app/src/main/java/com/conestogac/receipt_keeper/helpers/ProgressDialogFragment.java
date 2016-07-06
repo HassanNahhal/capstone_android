@@ -1,4 +1,4 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.helpers;
 
 
 import android.app.Dialog;

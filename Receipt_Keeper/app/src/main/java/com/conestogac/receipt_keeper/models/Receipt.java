@@ -2,8 +2,6 @@ package com.conestogac.receipt_keeper.models;
 
 import com.strongloop.android.loopback.Model;
 
-import java.util.Date;
-
 /**
  * Created by hassannahhal on 2016-06-14.
  */
@@ -13,20 +11,17 @@ public class Receipt extends Model {
     private String customerId;
     private int storeId;
     private int categoryId;
-    private Date date;
-    private float total;
-    private int numberOfItem;
-    private boolean error;
     private String comment;
-    private String imageFilePath;
-    private String groupId;
+    private String date;
+    private float total;
+    private int tagId;
+
 
     public Receipt() {
-
     }
 
-    //todo check contructor parameter
-    public Receipt(int id, String customerId, int storeId, int categoryId, String comment, Date date, float total, String imageFilePath) {
+
+    public Receipt(int id, String customerId, int storeId, int categoryId, String comment, String date, float total, int tagId) {
         this.id = id;
         this.customerId = customerId;
         this.storeId = storeId;
@@ -34,6 +29,7 @@ public class Receipt extends Model {
         this.comment = comment;
         this.date = date;
         this.total = total;
+        this.tagId = tagId;
     }
 
 
@@ -58,12 +54,16 @@ public class Receipt extends Model {
         return comment;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
     public float getTotal() {
         return total;
+    }
+
+    public int getTagId() {
+        return tagId;
     }
 
     // Attribute Setters
@@ -80,18 +80,22 @@ public class Receipt extends Model {
     }
 
     public void setCategoryId(int categroyId) {
-        this.categoryId = categoryId;
+        this.categoryId = categroyId;
     }
 
     public void setComment(String comment) {
         this.comment = comment;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
     public void setTotal(float total) {
         this.total = total;
+    }
+
+    public void setTagId(int tagId) {
+        this.tagId = tagId;
     }
 }

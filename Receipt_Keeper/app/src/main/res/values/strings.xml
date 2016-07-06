@@ -68,4 +68,9 @@
     <!-- Strings related to Settings -->
 
 
+    <!-- Strings related to tag spinner Search-->
+    <string name="type_to_search">Type to search</string>
+    <string name="tags">Tags</string>
+
+
 </resources>

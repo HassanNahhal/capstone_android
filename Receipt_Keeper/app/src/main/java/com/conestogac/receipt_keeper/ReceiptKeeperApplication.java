@@ -1,11 +1,8 @@
 package com.conestogac.receipt_keeper;
 
+import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.strongloop.android.loopback.RestAdapter;
 import android.app.Application;
-
-import com.strongloop.android.loopback.User;
-import com.strongloop.android.loopback.UserRepository;
-import com.strongloop.android.remoting.adapters.RestContractItem;
 
 
 /*

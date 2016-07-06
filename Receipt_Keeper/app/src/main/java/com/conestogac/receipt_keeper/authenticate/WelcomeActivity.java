@@ -1,4 +1,4 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.authenticate;
 
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 
 import static android.Manifest.permission.CAMERA;

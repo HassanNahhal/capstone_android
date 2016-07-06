@@ -6,13 +6,12 @@ package com.conestogac.receipt_keeper.models;
 public class Tag {
 
     private int tagId;
-    private int tagName;
+    private String tagName;
 
     public Tag() {
     }
 
-    public Tag(int tagId, int tagName) {
-        this.tagId = tagId;
+    public Tag(String tagName) {
         this.tagName = tagName;
     }
 
@@ -22,7 +21,7 @@ public class Tag {
         return tagId;
     }
 
-    public int getTagName() {
+    public String getTagName() {
         return tagName;
     }
 
@@ -32,7 +31,7 @@ public class Tag {
         this.tagId = tagId;
     }
 
-    public void setTagName(int tagName) {
+    public void setTagName(String tagName) {
         this.tagName = tagName;
     }
 }

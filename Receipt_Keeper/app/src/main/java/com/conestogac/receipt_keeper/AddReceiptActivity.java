@@ -11,12 +11,16 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.models.Receipt;
+import com.conestogac.receipt_keeper.models.Tag;
+import com.conestogac.receipt_keeper.MultiSpinnerSearch.MultiSpinnerSearchListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeMap;
 
 public class AddReceiptActivity extends Activity {
 
@@ -26,6 +30,8 @@ public class AddReceiptActivity extends Activity {
     private Button saveReceiptButton;
     private SQLController dbController;
     private Calendar dateAndTime = Calendar.getInstance();
+    private LinkedList<Tag> tags = new LinkedList<>();
+    private MultiSpinnerSearch searchSpinner;
 
 
     @Override
@@ -33,47 +39,18 @@ public class AddReceiptActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_receipt);
 
+        final List<String> list = Arrays.asList(getResources().getStringArray(R.array.tags));
+        TreeMap<String, Boolean> items = new TreeMap<>();
+        for (String item : list) {
+            items.put(item, Boolean.FALSE);
+        }
+
+
         dbController = new SQLController(this);
         totalEditText = (EditText) findViewById(R.id.totalEditText);
         dateEditText = (EditText) findViewById(R.id.dateEditText);
 
-        storeNamEditText = (EditText) findViewById(R.id.storeNamEditText);
-
         saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String storeName = extras.getString("StoreName");
-            if (storeName != null) {
-                storeNamEditText.setText(storeName);
-            }
-            String amount = extras.getString("Amount");
-            if (amount != null) {
-                totalEditText.setText(amount);
-            }
-            int yearToSet = 0;
-            String year = extras.getString("Year");
-            if (year != null) {
-                yearToSet = Integer.parseInt(year);
-            }
-            int monthToSet = 0;
-            int month = extras.getInt("Month");
-            if (month != 0) {
-                monthToSet = month;
-            }
-            int dayToSet = 0;
-            String day = extras.getString("Day");
-            if (day != null) {
-                dayToSet = Integer.parseInt(day);
-            }
-            dateAndTime.set(yearToSet, monthToSet, dayToSet);
-            dateEditText.setText(dateAndTime.toString());
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-            if (dateAndTime != null) {
-                dateEditText.setText(sdf.format(dateAndTime.getTime()));
-            }
-        }
-
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,14 +68,11 @@ public class AddReceiptActivity extends Activity {
             public void onClick(View v) {
                 Receipt receipt = new Receipt();
                 String dateString = dateEditText.getText().toString();
-                Date date = convertStringToDate(dateString);
-                receipt.setDate(date);
-
-                String strTotal = totalEditText.getText().toString();
-                strTotal = strTotal.replaceAll("[^\\d.]", "");
-                receipt.setTotal(Float.parseFloat(strTotal));
-
-                saveReceiptInDB(receipt);
+                //Date date = convertStringToDate(dateString);
+                receipt.setDate(dateString);
+                receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
+                tags = searchSpinner.getAllTags();
+                saveReceiptDataInDB(receipt, tags);
 
                 Intent goToHomePage = new Intent(AddReceiptActivity.this, HomeActivity.class);
                 startActivity(goToHomePage);
@@ -106,10 +80,48 @@ public class AddReceiptActivity extends Activity {
         });
 
 
+        /**
+         * Search MultiSelection Spinner (With Search/Filter Functionality)
+         *
+         *  Using MultiSpinnerSearch class
+         */
+        searchSpinner = (MultiSpinnerSearch) findViewById(R.id.searchMultiSpinner);
+        final LinkedList<KeyPairBoolData> listArray = new LinkedList<>();
+
+        for (int i = 0; i < list.size(); i++) {
+            KeyPairBoolData h = new KeyPairBoolData();
+            h.setId(i + 1);
+            h.setName(list.get(i));
+            h.setSelected(false);
+            listArray.add(h);
+        }
+
+        /*LinkedList<Tag> tags = searchSpinner.saveAllTags();
+        for (Tag tag : tags)
+            Log.d("tag.getTagName()", tag.getTagName());*/
+        /***
+         * -1 is no by default selection
+         * 0 to length will select corresponding values
+         */
+        searchSpinner.setItems(listArray, "Tag search", -1, new MultiSpinnerSearchListener() {
+
+            @Override
+            public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
+
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).isSelected()) {
+                        Log.i("TAG", i + " : " + items.get(i).getName() + " : " + items.get(i).isSelected());
+
+                    }
+                }
+
+            }
+        });
     }
 
+
     // [Convert string we got from the EditText to Date ]
-    private Date convertStringToDate(String dateString) {
+    /*private Date convertStringToDate(String dateString) {
         Date date = new Date();
         Log.d("dateString", dateString + "");
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -121,12 +133,12 @@ public class AddReceiptActivity extends Activity {
             e.printStackTrace();
         }
         return date;
-    }
+    }*/
 
     // []
-    private void saveReceiptInDB(Receipt receipt) {
+    private void saveReceiptDataInDB(Receipt receipt, LinkedList<Tag> tag) {
         dbController.open();
-        dbController.insertReceipt(receipt);
+        dbController.insertReceipt(receipt, tag);
         dbController.close();
     }
 

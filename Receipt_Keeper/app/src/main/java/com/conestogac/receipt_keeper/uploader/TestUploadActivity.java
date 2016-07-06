@@ -1,4 +1,4 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.uploader;
 
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -7,13 +7,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.conestogac.receipt_keeper.R;
+import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
+import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.ReceiptRepository;
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.Container;
 import com.strongloop.android.loopback.ContainerRepository;
 import com.strongloop.android.loopback.File;
-import com.strongloop.android.loopback.ModelRepository;
 import com.strongloop.android.loopback.RestAdapter;
 import com.strongloop.android.loopback.callbacks.ObjectCallback;
 import com.strongloop.android.loopback.callbacks.VoidCallback;

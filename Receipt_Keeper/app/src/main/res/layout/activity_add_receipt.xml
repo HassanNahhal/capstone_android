@@ -23,7 +23,7 @@
     <EditText
         android:id="@+id/storeNamEditText"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignBottom="@+id/storeNameTextView"
         android:layout_alignParentEnd="true"
         android:layout_marginRight="40dp" />
@@ -42,7 +42,7 @@
     <EditText
         android:id="@+id/totalEditText"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignBottom="@+id/totalTextView"
         android:layout_alignStart="@+id/storeNamEditText"
         android:ems="10"
@@ -62,7 +62,7 @@
     <EditText
         android:id="@+id/dateEditText"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignBottom="@+id/dateTextView"
         android:layout_alignStart="@+id/totalEditText"
         android:ems="10"
@@ -81,8 +81,9 @@
         android:id="@+id/receiptIdTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/saveReceiptButton"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="69dp"
         android:text="@string/receipt_id"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -94,5 +95,21 @@
         android:layout_alignStart="@+id/dateEditText"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/dateTextView"
+        android:layout_centerVertical="true"
+        android:text="Tag"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <com.conestogac.receipt_keeper.MultiSpinnerSearch
+        android:id="@+id/searchMultiSpinner"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/receiptIdTextView2" />
 
 </RelativeLayout>
