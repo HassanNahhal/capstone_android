@@ -54,35 +54,35 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".ocr.HelpActivity"
-            android:screenOrientation="user">
-        </activity>
+            android:screenOrientation="user" />
         <activity android:name=".ocr.PreferencesActivity" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:parentActivityName=".HomeActivity"
             android:theme="@style/Theme.AppCompat.Light"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".AddReceiptActivity" />
         <activity
             android:name=".authenticate.UserProfileActivity"
             android:excludeFromRecents="true"
-            android:taskAffinity="">
-        </activity>
-        <activity android:name=".uploader.TestUploadActivity"/>
+            android:taskAffinity="" />
+        <activity android:name=".uploader.TestUploadActivity" />
         <activity android:name=".helpers.BaseActivity" />
+        <activity
+            android:name=".LearnMoreActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_learn_more"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
     </application>
 
 </manifest>

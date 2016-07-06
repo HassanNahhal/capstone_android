@@ -22,8 +22,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.conestogac.receipt_keeper.HomeActivity;
+import com.conestogac.receipt_keeper.LearnMoreActivity;
+import com.conestogac.receipt_keeper.MainActivity;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 
@@ -40,16 +45,15 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     private static final int RESULT_PERMS_INITIAL = 1339;
     private static final String PREF_IS_FIRST_RUN = "firstRun";
     private SharedPreferences prefs;
+    private SharedPreferences loginPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_up_button).setOnClickListener(this);
-
-        //todo load customer infomation saved
+        findViewById(R.id.learnMore).setOnClickListener(this);
 
         //Load camera related shared preference
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -58,12 +62,33 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                     RESULT_PERMS_INITIAL);
         }
 
+        //Load User Info
+        //Todo Decrypt user info
+        loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        String userEmail = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_EMAIL,"");
+        String userPassword = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_PASSWORD,"");
+        String userName = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_USERNAME,"");
+        boolean autoLogin = loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false);
+
+        //Todo user signed up and with save password check -> then goto list
+        //Todo user signed up and without save passoword check -> then goto list
         //todo incase of user already login, goto OCR directly
-        if (false){//.getCurrentUserId() != null) {
-            Intent captureIntent = new Intent(this, CaptureActivity.class);
-            //to prevent user back to this activity
-            captureIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(captureIntent);
+        if (userEmail != "" && userPassword != "") {
+            if (autoLogin == true) {
+                Log.d(TAG, "Auto login");
+                showResult("Welcome "+userName);
+                Intent captureIntent = new Intent(this, HomeActivity.class);
+                //to prevent user back to this activity
+                captureIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(captureIntent);
+            } else {
+                Log.d(TAG, "Auto login off");
+                Intent signInIntent = new Intent(this, UserProfileActivity.class);
+                signInIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME,UserProfileActivity.MODE_SIGNIN);
+                startActivity(signInIntent);
+            }
+        } else {
+            Log.d(TAG, "Not signed up yet");
         }
     }
 
@@ -73,15 +98,19 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         switch (id) {
             case R.id.sign_up_button:
                 Intent signUpIntent = new Intent(this, UserProfileActivity.class);
-                signUpIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME,UserProfileActivity.MODE_SIGNUP);
+                signUpIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME, UserProfileActivity.MODE_SIGNUP);
                 startActivity(signUpIntent);
                 break;
-            case R.id.sign_in_button:
-                Intent signInIntent = new Intent(this, UserProfileActivity.class);
-                signInIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME,UserProfileActivity.MODE_SIGNIN);
-                startActivity(signInIntent);
+            case R.id.learnMore:
+                startActivity(new Intent(this, LearnMoreActivity.class));
                 break;
         }
+    }
+    /*
+        Toast Popup
+     */
+    void showResult(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -96,4 +125,5 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
         return (result);
     }
+
 }

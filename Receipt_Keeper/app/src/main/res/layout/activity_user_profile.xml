@@ -35,8 +35,7 @@
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true"
-                android:text="a@a.com"/>
+                android:singleLine="true" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -53,10 +52,8 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:singleLine="true"
-                android:text="111111"/>
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
-
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -72,6 +69,12 @@
                 android:singleLine="true"
                 android:visibility="gone"/>
         </android.support.design.widget.TextInputLayout>
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/auto_login"
+            android:id="@+id/auto_login"
+            android:checked="true" />
         <Button
             android:id="@+id/submit_button"
             style="?android:textAppearanceSmall"

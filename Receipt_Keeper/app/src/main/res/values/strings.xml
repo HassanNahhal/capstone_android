@@ -33,9 +33,10 @@
     <string name="sign_up_button_text">SIGN UP</string>
 
     <!-- Strings related to login -->
+    <string name="auto_login">Auto login</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
-    <string name="prompt_name">Name (optional)</string>
+    <string name="prompt_name">Name</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_up">Sign up</string>
     <string name="error_user_not_signed_in">It needs to be signed in</string>
@@ -71,6 +72,10 @@
     <!-- Strings related to tag spinner Search-->
     <string name="type_to_search">Type to search</string>
     <string name="tags">Tags</string>
+
+    <string name="title_activity_learn_more">LearnMore</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 
 </resources>

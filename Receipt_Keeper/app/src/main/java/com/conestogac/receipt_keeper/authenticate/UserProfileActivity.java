@@ -1,12 +1,14 @@
 package com.conestogac.receipt_keeper.authenticate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.TaskStackBuilder;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,14 +27,21 @@ import java.util.Map;
 public class UserProfileActivity extends BaseActivity {
     private static final String TAG = UserProfileActivity.class.getSimpleName();
     public static final String PROFILE_MODE_EXTRA_NAME = "profile_mode";
+    public static final String SHAREDPREF_KEY_EMAIL = "user_email";
+    public static final String SHAREDPREF_KEY_PASSWORD = "user_password";
+    public static final String SHAREDPREF_KEY_USERNAME = "user_name";
+    public static final String SHAREDPREF_KEY_AUTOLOGIN = "auto_login";
     public static final Integer MODE_SIGNIN = 1;
     public static final Integer MODE_SIGNUP = 2;
 
+    private SharedPreferences loginPreferences;
+    private SharedPreferences.Editor loginPrefsEditor;
+
     private EditText mEmailView;
     private EditText mPasswordView;
-    private EditText mUsernameEdiText;
+    private EditText mUsernameView;
+    private CheckBox mAutoLogin;
     private int profile_mode;
-
     private ReceiptKeeperApplication app;
     private RestAdapter adapter;
     private CustomerRepository userRepo;
@@ -42,10 +51,14 @@ public class UserProfileActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-        mUsernameEdiText  = (EditText) findViewById(R.id.username);
+        mUsernameView = (EditText) findViewById(R.id.username);
         mEmailView = (EditText) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
+        mAutoLogin = (CheckBox) findViewById(R.id.auto_login);
         profile_mode = getIntent().getExtras().getInt(PROFILE_MODE_EXTRA_NAME);
+        //Todo Encrypt user info
+        loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        loginPrefsEditor = loginPreferences.edit();
 
         //Init loopback objects
         // 1. Grab the shared RestAdapter instance.
@@ -55,7 +68,7 @@ public class UserProfileActivity extends BaseActivity {
         userRepo = adapter.createRepository(CustomerRepository.class);
 
         if (profile_mode == MODE_SIGNUP) {
-            mUsernameEdiText.setVisibility(View.VISIBLE);
+            mUsernameView.setVisibility(View.VISIBLE);
         }
 
         Button mSubmitButton = (Button) findViewById(R.id.submit_button);
@@ -76,10 +89,12 @@ public class UserProfileActivity extends BaseActivity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mUsernameView.setError(null);
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String username = mUsernameView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -99,6 +114,13 @@ public class UserProfileActivity extends BaseActivity {
         } else if (!isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
+            cancel = true;
+        }
+
+        // Check username valid
+        if (profile_mode == MODE_SIGNUP && !isUserNameValid(username)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -123,44 +145,9 @@ public class UserProfileActivity extends BaseActivity {
         return password.length() > 3;
     }
 
-    /*
-    User has to sign in to use server
-    */
-    private void attemptSignin() {
-        if (!validateForm()) {
-            return;
-        }
-
-        showProgressDialog(getString(R.string.signin_progress_message));
-
-        //Login
-        userRepo.loginUser(mEmailView.getText().toString() , mPasswordView.getText().toString()
-                , new CustomerRepository.LoginCallback() {
-            @Override
-            public void onSuccess(AccessToken token, Customer currentUser) {
-                dismissProgressDialog();
-
-                app.setCurrentUser(currentUser);
-
-                showResult(getString(R.string.signin_success_message) +" "+ currentUser.username);
-
-                /* Todo Goto OCR*/
-                TaskStackBuilder.create(getApplicationContext())
-                        .addParentStack(WelcomeActivity.class)
-                        .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
-                        .addNextIntent(new Intent(getApplicationContext(), CaptureActivity.class))
-                        .startActivities();
-
-                finish();
-                Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
-            }
-            @Override
-            public void onError(Throwable t) {
-                dismissProgressDialog();
-                showResult(getString(R.string.sigin_fail_message));
-                Log.e("Chatome", "Login E", t);
-            }
-        });
+    private boolean isUserNameValid(String username) {
+        //TODO: Replace this with your own logic
+        return username.length() > 0;
     }
 
     /*
@@ -173,7 +160,7 @@ public class UserProfileActivity extends BaseActivity {
 
         //Setup Map to send additional user information
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("username", mUsernameEdiText.getText().toString());
+        params.put("firstName", mUsernameView.getText().toString());
 
         //Create User
         user = userRepo.createUser(mEmailView.getText().toString(),
@@ -183,8 +170,14 @@ public class UserProfileActivity extends BaseActivity {
         user.save(new VoidCallback() {
             @Override
             public void onSuccess() {
-                showResult(getString(R.string.signup_success_message));
-                attemptSignin();
+                showResult("Welcome ! " + mUsernameView.getText().toString());
+                loginPrefsEditor.putString(SHAREDPREF_KEY_USERNAME, mUsernameView.getText().toString());
+                loginPrefsEditor.putString(SHAREDPREF_KEY_EMAIL, mEmailView.getText().toString());
+                loginPrefsEditor.putString(SHAREDPREF_KEY_PASSWORD, mPasswordView.getText().toString());
+                loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
+                loginPrefsEditor.commit();
+                dismissProgressDialog();
+                startActivity(new Intent(UserProfileActivity.this, HomeActivity.class));
             }
 
             @Override
@@ -195,7 +188,28 @@ public class UserProfileActivity extends BaseActivity {
             }
         });
     }
+    /*
+        User has to sign in to use server
+        Todo: This should be moved to Sync Package
+    */
+    private void attemptSignin() {
+        String userEmail = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_EMAIL,"");
+        String userPassword = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_PASSWORD,"");
+        String username = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_USERNAME,"");
 
+        if ((mEmailView.getText().toString() == userEmail) &&
+                (mPasswordView.getText().toString() == userPassword)) {
+            loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
+            loginPrefsEditor.commit();
+            showResult("Welcome ! " + username);
+            startActivity(new Intent(UserProfileActivity.this, HomeActivity.class));
+        } else {
+            showResult("Please check email or password");
+            //todo if user forgot password, there should reset password or send a newpassword to email
+        }
+
+
+    }
 
     /*
         Toast Popup
@@ -227,5 +241,41 @@ public class UserProfileActivity extends BaseActivity {
             super("Customer", null, Customer.class);
         }
     }
+
+
+    /**TODO****************/
+    private void attemptSignin_() {
+
+        showProgressDialog(getString(R.string.signin_progress_message));
+
+        //Login
+        userRepo.loginUser(mEmailView.getText().toString() , mPasswordView.getText().toString()
+                , new CustomerRepository.LoginCallback() {
+                    @Override
+                    public void onSuccess(AccessToken token, Customer currentUser) {
+                        dismissProgressDialog();
+                        app.setCurrentUser(currentUser);
+
+                        showResult(getString(R.string.signin_success_message) +" "+ currentUser.username);
+
+                /* Todo Goto OCR*/
+                        TaskStackBuilder.create(getApplicationContext())
+                                .addParentStack(WelcomeActivity.class)
+                                .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
+                                .addNextIntent(new Intent(getApplicationContext(), CaptureActivity.class))
+                                .startActivities();
+
+                        finish();
+                        Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        dismissProgressDialog();
+                        showResult(getString(R.string.sigin_fail_message));
+                        Log.e("Chatome", "Login E", t);
+                    }
+                });
+    }
+
 
 }

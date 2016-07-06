@@ -22,7 +22,8 @@ public class ReceiptKeeperApplication extends Application {
             // server - create as many Adapters as you need.
 
             adapter = new RestAdapter(
-                    getApplicationContext(), "http://receipt-keeper.herokuapp.com/api");
+                    getApplicationContext(), "http://192.168.2.22:3000/api");
+                   // getApplicationContext(), "http://receipt-keeper.herokuapp.com/api");
 
         }
         return adapter;
