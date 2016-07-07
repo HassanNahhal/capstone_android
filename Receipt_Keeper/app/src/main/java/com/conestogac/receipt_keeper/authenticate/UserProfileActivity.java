@@ -197,12 +197,14 @@ public class UserProfileActivity extends BaseActivity {
         String userPassword = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_PASSWORD,"");
         String username = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_USERNAME,"");
 
-        if ((mEmailView.getText().toString() == userEmail) &&
-                (mPasswordView.getText().toString() == userPassword)) {
+        if ((mEmailView.getText().toString().equals(userEmail)) &&
+                (mPasswordView.getText().toString().equals(userPassword))) {
             loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
             loginPrefsEditor.commit();
             showResult("Welcome ! " + username);
-            startActivity(new Intent(UserProfileActivity.this, HomeActivity.class));
+            Intent homeIntent = new Intent(UserProfileActivity.this, HomeActivity.class);
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(homeIntent);
         } else {
             showResult("Please check email or password");
             //todo if user forgot password, there should reset password or send a newpassword to email

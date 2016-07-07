@@ -1,6 +1,8 @@
 package com.conestogac.receipt_keeper;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,9 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Switch;
 
+import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
@@ -20,16 +25,21 @@ public class HomeActivity extends AppCompatActivity {
     private static final String TAG = HomeActivity.class.getSimpleName();
     private ListView receiptListView;
     private SQLController dbContoller;
+    SharedPreferences loginPreferences;
+    SharedPreferences.Editor loginPrefsEditor;
+    Switch swAutoLogin;
 
     private SimpleCursorAdapter adapter;
     private Cursor cursor;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         dbContoller = new SQLController(this);
+
+        loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+        loginPrefsEditor = loginPreferences.edit();
 
         receiptListView = (ListView) findViewById(R.id.receiptListView);
         readAllDataFromDatabase();
@@ -115,6 +125,18 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuItem myMenu = menu.findItem(R.id.action_auto_login);
+        View actionView = myMenu.getActionView();
+        // Get the action view used in your toggleservice item
+        swAutoLogin = (Switch) actionView.findViewById(R.id.sw_autoLogin);
+        swAutoLogin.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false));
+        swAutoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, isChecked);
+                loginPrefsEditor.commit();
+            }
+        });
         return true;
     }
 
@@ -126,9 +148,12 @@ public class HomeActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(this, TestUploadActivity.class));
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(this, TestUploadActivity.class));
+                return true;
+            default:
+                break;
         }
 
         return super.onOptionsItemSelected(item);

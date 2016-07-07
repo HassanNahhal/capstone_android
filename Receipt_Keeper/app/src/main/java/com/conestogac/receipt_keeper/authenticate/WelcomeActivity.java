@@ -84,6 +84,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             } else {
                 Log.d(TAG, "Auto login off");
                 Intent signInIntent = new Intent(this, UserProfileActivity.class);
+                signInIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 signInIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME,UserProfileActivity.MODE_SIGNIN);
                 startActivity(signInIntent);
             }

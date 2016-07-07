@@ -1,7 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ProfileActivity">
+    tools:context="com.conestogac.receipt_keeper.HomeActivity">
+    <item
+        android:id="@+id/action_auto_login"
+        android:title="Autologin"
+        app:showAsAction="always"
+        app:actionLayout="@layout/switch_layout"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
