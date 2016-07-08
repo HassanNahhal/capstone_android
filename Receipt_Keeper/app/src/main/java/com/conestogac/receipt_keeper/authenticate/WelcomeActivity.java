@@ -53,6 +53,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_welcome);
 
         findViewById(R.id.sign_up_button).setOnClickListener(this);
+        findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.learnMore).setOnClickListener(this);
 
         //Load camera related shared preference
@@ -102,6 +103,11 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 signUpIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME, UserProfileActivity.MODE_SIGNUP);
                 startActivity(signUpIntent);
                 break;
+            case R.id.sign_in_button:
+                Intent signInIntent = new Intent(this, UserProfileActivity.class);
+                signInIntent.putExtra(UserProfileActivity.PROFILE_MODE_EXTRA_NAME, UserProfileActivity.MODE_SIGNIN);
+                startActivity(signInIntent);
+                break;
             case R.id.learnMore:
                 startActivity(new Intent(this, LearnMoreActivity.class));
                 break;
@@ -111,7 +117,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         Toast Popup
      */
     void showResult(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

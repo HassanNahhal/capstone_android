@@ -3,14 +3,13 @@ package com.conestogac.receipt_keeper;
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.strongloop.android.loopback.RestAdapter;
 import android.app.Application;
-
+import com.conestogac.receipt_keeper.authenticate.UserProfileActivity.Customer;
 
 /*
   To be accessible from all activity
  */
 public class ReceiptKeeperApplication extends Application {
     RestAdapter adapter;
-    UserProfileActivity.CustomerRepository currentUserRepo;
     UserProfileActivity.Customer user;
 
     public RestAdapter getLoopBackAdapter() {
@@ -22,18 +21,18 @@ public class ReceiptKeeperApplication extends Application {
             // server - create as many Adapters as you need.
 
             adapter = new RestAdapter(
-                    getApplicationContext(), "http://192.168.2.22:3000/api");
-                   // getApplicationContext(), "http://receipt-keeper.herokuapp.com/api");
+                    //getApplicationContext(), "http://192.168.2.22:3000/api");
+                    getApplicationContext(), "http://receipt-keeper.herokuapp.com/api");
 
         }
         return adapter;
     }
 
-    public void setCurrentUser(UserProfileActivity.Customer user) {
+    public void setCurrentUser(Customer user) {
         this.user = user;
     }
 
-    public UserProfileActivity.Customer getCurrentUser() {
+    public Customer getCurrentUser() {
         return this.user;
     }
 }

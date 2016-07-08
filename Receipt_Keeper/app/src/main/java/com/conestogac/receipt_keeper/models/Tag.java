@@ -5,8 +5,11 @@ package com.conestogac.receipt_keeper.models;
  */
 public class Tag {
 
-    private int tagId;
+    private int id;
     private String tagName;
+
+    //For Sync
+    private String r_id;
 
     public Tag() {
     }
@@ -18,7 +21,7 @@ public class Tag {
 
     // Attribute Getters
     public int getTagId() {
-        return tagId;
+        return id;
     }
 
     public String getTagName() {
@@ -27,8 +30,8 @@ public class Tag {
 
 
     // Attribute Setters
-    public void setTagId(int tagId) {
-        this.tagId = tagId;
+    public void setTagId(int id) {
+        this.id = id;
     }
 
     public void setTagName(String tagName) {

@@ -193,24 +193,60 @@ public class UserProfileActivity extends BaseActivity {
         Todo: This should be moved to Sync Package
     */
     private void attemptSignin() {
-        String userEmail = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_EMAIL,"");
-        String userPassword = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_PASSWORD,"");
-        String username = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_USERNAME,"");
+        if (loginPreferences.contains(UserProfileActivity.SHAREDPREF_KEY_EMAIL)) {
+            String userEmail = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_EMAIL, "");
+            String userPassword = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_PASSWORD, "");
+            String username = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_USERNAME, "");
 
-        if ((mEmailView.getText().toString().equals(userEmail)) &&
-                (mPasswordView.getText().toString().equals(userPassword))) {
-            loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
-            loginPrefsEditor.commit();
-            showResult("Welcome ! " + username);
-            Intent homeIntent = new Intent(UserProfileActivity.this, HomeActivity.class);
-            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(homeIntent);
-        } else {
-            showResult("Please check email or password");
-            //todo if user forgot password, there should reset password or send a newpassword to email
+            if ((mEmailView.getText().toString().equals(userEmail)) &&
+                    (mPasswordView.getText().toString().equals(userPassword))) {
+                loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
+                loginPrefsEditor.commit();
+                showResult("Welcome ! " + username);
+                Intent homeIntent = new Intent(UserProfileActivity.this, HomeActivity.class);
+                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(homeIntent);
+            } else {
+                showResult("Please check email or password");
+                //todo if user forgot password, there should reset password or send a newpassword to email
+            }
+        } else {  //if user delete ID
+            attemptOnlineSignin();
         }
+    }
 
+    private void attemptOnlineSignin() {
+        showProgressDialog(getString(R.string.signin_progress_message));
+        //Login
+        userRepo.loginUser(mEmailView.getText().toString() , mPasswordView.getText().toString()
+                , new CustomerRepository.LoginCallback() {
+                    @Override
+                    public void onSuccess(AccessToken token, Customer currentUser) {
+                        dismissProgressDialog();
+                        loginPrefsEditor.putString(SHAREDPREF_KEY_EMAIL, mEmailView.getText().toString());
+                        loginPrefsEditor.putString(SHAREDPREF_KEY_PASSWORD, mPasswordView.getText().toString());
+                        loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
+                        loginPrefsEditor.commit();
 
+                        app.setCurrentUser(currentUser);
+                        showResult(getString(R.string.signin_success_message) +" "+ currentUser.getUsername());
+
+                        /* Todo Goto Home*/
+                        TaskStackBuilder.create(getApplicationContext())
+                                .addParentStack(WelcomeActivity.class)
+                                .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
+                                .startActivities();
+
+                        finish();
+                        Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        dismissProgressDialog();
+                        showResult(getString(R.string.sigin_fail_message));
+                        Log.e("Chatome", "Login E", t);
+                    }
+                });
     }
 
     /*
@@ -224,9 +260,9 @@ public class UserProfileActivity extends BaseActivity {
         Inherit Loopback User model
      */
     public static class Customer extends com.strongloop.android.loopback.User {
-        private String username;
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
+        private String firstName;
+        public String getUsername() { return firstName; }
+        public void setUsername(String firstName) { this.firstName = firstName; }
     }
 
     /*
@@ -243,41 +279,4 @@ public class UserProfileActivity extends BaseActivity {
             super("Customer", null, Customer.class);
         }
     }
-
-
-    /**TODO****************/
-    private void attemptSignin_() {
-
-        showProgressDialog(getString(R.string.signin_progress_message));
-
-        //Login
-        userRepo.loginUser(mEmailView.getText().toString() , mPasswordView.getText().toString()
-                , new CustomerRepository.LoginCallback() {
-                    @Override
-                    public void onSuccess(AccessToken token, Customer currentUser) {
-                        dismissProgressDialog();
-                        app.setCurrentUser(currentUser);
-
-                        showResult(getString(R.string.signin_success_message) +" "+ currentUser.username);
-
-                /* Todo Goto OCR*/
-                        TaskStackBuilder.create(getApplicationContext())
-                                .addParentStack(WelcomeActivity.class)
-                                .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
-                                .addNextIntent(new Intent(getApplicationContext(), CaptureActivity.class))
-                                .startActivities();
-
-                        finish();
-                        Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
-                    }
-                    @Override
-                    public void onError(Throwable t) {
-                        dismissProgressDialog();
-                        showResult(getString(R.string.sigin_fail_message));
-                        Log.e("Chatome", "Login E", t);
-                    }
-                });
-    }
-
-
 }

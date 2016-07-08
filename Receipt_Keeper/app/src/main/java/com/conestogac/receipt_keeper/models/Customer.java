@@ -3,7 +3,7 @@ package com.conestogac.receipt_keeper.models;
 /**
  * Created by hassannahhal on 2016-06-14.
  */
-public class Customer {
+public class Customer extends com.strongloop.android.loopback.User {
 
     private int id;
     private String email;
@@ -11,7 +11,13 @@ public class Customer {
     private String pathToImage;
     private int groupId;
 
+    //For Sync
+    private String r_id;
+    private String r_groupId;
+    private boolean isSync;
+
     public Customer() {
+
     }
 
     public Customer(int id, String email, String name, String pathToImage, int groupId) {
@@ -24,7 +30,7 @@ public class Customer {
 
 
     // Attribute Getters
-    public int getId() {
+    public int getLocalId() {
         return id;
     }
 
@@ -65,3 +71,4 @@ public class Customer {
         this.groupId = groupId;
     }
 }
+

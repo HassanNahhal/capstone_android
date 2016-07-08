@@ -9,9 +9,10 @@ import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
-import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
+import com.conestogac.receipt_keeper.authenticate.UserProfileActivity.CustomerRepository;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.ReceiptRepository;
+
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.Container;
 import com.strongloop.android.loopback.ContainerRepository;
@@ -26,7 +27,7 @@ public class TestUploadActivity extends AppCompatActivity {
     private static final String TAG = "TestUploadActivity";
     private ReceiptKeeperApplication app;
     private RestAdapter adapter;
-    private UserProfileActivity.CustomerRepository userRepo;
+    private CustomerRepository userRepo;
     private String remoteUrl;
     static private Container container;
 
@@ -37,7 +38,7 @@ public class TestUploadActivity extends AppCompatActivity {
 
         app = (ReceiptKeeperApplication)this.getApplication();
         adapter = app.getLoopBackAdapter();
-        userRepo = adapter.createRepository(UserProfileActivity.CustomerRepository.class);
+        userRepo = adapter.createRepository(CustomerRepository.class);
     }
 
     public void uploadImage(View view){
@@ -123,9 +124,8 @@ public class TestUploadActivity extends AppCompatActivity {
             )
         );
 
-
         Log.d(TAG, "Current User Id: "+userRepo.getCurrentUserId());
-        receipt.setCustomerId((String) (userRepo.getCurrentUserId()));
+        receipt.setCustomerRemoteId((String) (userRepo.getCurrentUserId()));
 
         receipt.save(new VoidCallback() {
             @Override
@@ -145,4 +145,40 @@ public class TestUploadActivity extends AppCompatActivity {
         Toast.makeText(TestUploadActivity.this, message,
                 Toast.LENGTH_SHORT).show();
     }
+
+
+    /**TODO****************/
+//    private void attemptSignin_() {
+//
+//        showProgressDialog(getString(R.string.signin_progress_message));
+//
+//        //Login
+//        userRepo.loginUser(mEmailView.getText().toString() , mPasswordView.getText().toString()
+//                , new CustomerRepository.LoginCallback() {
+//                    @Override
+//                    public void onSuccess(AccessToken token, Customer currentUser) {
+//                        dismissProgressDialog();
+//                        app.setCurrentUser(currentUser);
+//
+//                        showResult(getString(R.string.signin_success_message) +" "+ currentUser.username);
+//
+//                /* Todo Goto OCR*/
+//                        TaskStackBuilder.create(getApplicationContext())
+//                                .addParentStack(WelcomeActivity.class)
+//                                .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
+//                                .addNextIntent(new Intent(getApplicationContext(), CaptureActivity.class))
+//                                .startActivities();
+//
+//                        finish();
+//                        Log.d(TAG, "Goto OCR and current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
+//                    }
+//                    @Override
+//                    public void onError(Throwable t) {
+//                        dismissProgressDialog();
+//                        showResult(getString(R.string.sigin_fail_message));
+//                        Log.e("Chatome", "Login E", t);
+//                    }
+//                });
+//    }
+
 }
