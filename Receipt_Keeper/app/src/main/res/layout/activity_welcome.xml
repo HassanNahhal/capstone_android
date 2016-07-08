@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".authenticate.WelcomeActivity"
+    android:clickable="true"
+    android:onClick="onClick"
+    android:background="@drawable/welcome_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+
+        android:orientation="vertical"
+        android:background="@android:color/transparent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="@string/welcome_screen_text"
+            style="@style/WelcomeScreenHeaderTextStyle"
+            android:gravity="center_horizontal"
+            android:background="@android:color/transparent" />
+
+        <Button
+            android:id="@+id/sign_up_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/sign_up_button_text"
+            style="@style/Widget.AppCompat.Button.Colored"/>
+
+        <Button
+            android:id="@+id/sign_in_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/sign_in_button_text"
+            android:layout_marginTop="10dp"
+            style="@style/Widget.AppCompat.Button.Colored"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="LearnMore"
+            android:id="@+id/learnMore"
+            android:layout_gravity="center_horizontal"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/holo_orange_light"
+            android:clickable="true"
+            android:layout_marginTop="20dp"
+            android:nestedScrollingEnabled="true" />
+    </LinearLayout>
+
+</FrameLayout>

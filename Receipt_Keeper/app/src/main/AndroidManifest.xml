@@ -1,17 +1,48 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+ Copyright (C) 2008 ZXing authors
+ Copyright 2011 Robert Theis
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+      http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.hassannahhal.receipt_keeper">
+    package="com.conestogac.receipt_keeper"
+    android:installLocation="preferExternal"
+    android:versionCode="1"
+    android:versionName="0.1.0">
+
+    <supports-screens
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.screen.landscape" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:allowBackup="true"
+        android:name=".ReceiptKeeperApplication"
+        android:configChanges="orientation|screenSize"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".authenticate.WelcomeActivity"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,22 +50,39 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignUpUsingFacebookActivity"
-            android:label="@string/title_activity_sign_up_using_facebook"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.hassannahhal.receipt_keeper.MainActivity" />
-        </activity>
+            android:name=".ocr.CaptureActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".SignUpUsingGoogleActivity"
-            android:label="@string/title_activity_sign_up_using_google"
-            android:theme="@style/AppTheme.NoActionBar">
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.hassannahhal.receipt_keeper.MainActivity" />
-        </activity>
+            android:name=".ocr.HelpActivity"
+            android:screenOrientation="user" />
+        <activity android:name=".ocr.PreferencesActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".HomeActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity android:name=".AddReceiptActivity" />
+        <activity
+            android:name=".authenticate.UserProfileActivity"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+        <activity android:name=".uploader.TestUploadActivity" />
+        <activity android:name=".helpers.BaseActivity" />
+        <activity
+            android:name=".LearnMoreActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_learn_more"
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
     </application>
 
 </manifest>

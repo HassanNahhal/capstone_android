@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 16.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="512px"
+   height="512px"
+   viewBox="0 0 512 512"
+   enable-background="new 0 0 512 512"
+   xml:space="preserve"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Receipt.svg"
+   inkscape:export-filename="/Users/infomat/capstone_android/Receipt.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"><metadata
+     id="metadata6282"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs6280" /><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1230"
+     inkscape:window-height="704"
+     id="namedview6278"
+     showgrid="false"
+     inkscape:snap-text-baseline="true"
+     inkscape:zoom="0.65186406"
+     inkscape:cx="34.605662"
+     inkscape:cy="215.32986"
+     inkscape:window-x="22"
+     inkscape:window-y="42"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="Layer_1" /><path
+     d="m 5.9660999,2.1694906 0,512.3099294 352.5423801,0 141.01694,-128.07747 0,-384.2324594 -493.5593201,0 z M 358.50848,469.202 l 0,-82.80005 91.16524,0 -91.16524,82.80005 z m 105.7627,-114.81945 -35.25423,0 0,-32.01936 -35.25425,0 0,32.01936 -70.50847,0 0,128.07751 -282.033899,0 0,-448.271202 423.050849,0 0,320.193692 z m -35.25423,-224.13559 -352.54236,0 0,-64.038733 352.54236,0 0,64.038733 z m -141.01693,96.05813 -211.52543,0 0,-32.01936 211.52543,0 0,32.01936 z m 105.76268,-32.01936 35.25425,0 0,32.01936 -35.25425,0 0,-32.01936 z m 0,64.03873 35.25425,0 0,32.01936 -35.25425,0 0,-32.01936 z m -70.50847,32.01936 -246.77964,0 0,-32.01936 246.77964,0 0,32.01936 z m -105.76272,64.03873 -141.01692,0 0,-32.01936 141.01692,0 0,32.01936 z m 35.25424,64.03874 -176.27116,0 0,-32.01934 176.27116,0 0,32.01934 z"
+     id="path6276"
+     inkscape:connector-curvature="0"
+     style="fill:#6c5d53" /></svg>
