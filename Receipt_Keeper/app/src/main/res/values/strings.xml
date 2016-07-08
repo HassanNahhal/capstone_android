@@ -62,6 +62,7 @@
     <string name="permission_rationale_cam">"External Storage permissions are needed for taking picture
         completions."
     </string>
+    <string name="ocr_test">OCR Test</string>
 
     <!-- Strings related to Menu -->
 

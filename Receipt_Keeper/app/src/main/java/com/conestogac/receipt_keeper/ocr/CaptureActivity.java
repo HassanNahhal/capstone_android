@@ -55,6 +55,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -460,6 +461,74 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         });
 
         isEngineReady = false;
+
+        Button goToOcrButton = (Button) findViewById(R.id.Proceed);
+        goToOcrButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToAddReceipt();
+            }
+        });
+
+        Button goBack = (Button) findViewById(R.id.goBack);
+        goBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // First check if we're paused in continuous mode, and if so, just unpause.
+
+                setResult(RESULT_CANCELED);
+                lastResult = null;
+                resetStatusView();
+                handler.sendEmptyMessage(R.id.restart_preview);
+                resumeContinuousDecoding();
+                /*
+                if (isPaused) {
+                    Log.d(TAG, "only resuming continuous recognition, not quitting...");
+                    resumeContinuousDecoding();
+
+                }
+
+                // Exit the app if we're not viewing an OCR result.
+                if (lastResult == null) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+
+                }   else {
+                    // Go back to previewing in regular OCR mode.
+                    resetStatusView();
+                    if (handler != null) {
+                        handler.sendEmptyMessage(R.id.restart_preview);
+                    }
+
+                }*/
+            }
+        });
+    }
+
+    protected void goToAddReceipt()
+    {
+        Intent addReceiptIntent = new Intent(this, AddReceiptActivity.class);
+        if (storeName != "") {
+            addReceiptIntent.putExtra("StoreName", storeName);
+        }
+        if (amount != "") {
+            addReceiptIntent.putExtra("Amount", amount);
+        }
+        if (monthFound != "") {
+            addReceiptIntent.putExtra("Month", monthNumber);
+        }
+        if (yearToDisplay != "") {
+            addReceiptIntent.putExtra("Year", yearToDisplay);
+        }
+        if (dayToDisplay != "") {
+            addReceiptIntent.putExtra("Day", dayToDisplay);
+        }
+        addReceiptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        addReceiptIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //  cameraManager = null;
+        //    finish();
+        cameraManager.paused = true;
+        startActivity(addReceiptIntent);
     }
 
     @Override
@@ -560,7 +629,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             //  cameraManager = null;
             //    finish();
             cameraManager.paused = true;
-            startActivity(addReceiptIntent);
+           // startActivity(addReceiptIntent);
         } else {
             Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.TOP, 0, 0);
@@ -1503,8 +1572,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
                 // Show the default page on a clean install, and the what's new page on an upgrade.
-                String page = lastVersion == 0 ? HelpActivity.DEFAULT_PAGE : HelpActivity.WHATS_NEW_PAGE;
-                intent.putExtra(HelpActivity.REQUESTED_PAGE_KEY, page);
+
+                /*String page = lastVersion == 0 ? HelpActivity.DEFAULT_PAGE : HelpActivity.WHATS_NEW_PAGE;
+                intent.putExtra(HelpActivity.REQUESTED_PAGE_KEY, page);*/
                 startActivity(intent);
                 return true;
             }
