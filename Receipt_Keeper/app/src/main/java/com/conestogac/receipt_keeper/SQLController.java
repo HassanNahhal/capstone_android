@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
+import com.conestogac.receipt_keeper.models.Store;
 import com.conestogac.receipt_keeper.models.Tag;
 
 import java.text.SimpleDateFormat;
@@ -21,11 +22,12 @@ public class SQLController {
     // Table receipts and columns
     private static final String TABLE_RECEIPT = "receipt";
     private static final String RECEIPT_ID = "_id";
-    private static final String RECEIPT_FK_CUSTOMER_ID = "customer_id";
+    private static final String RECEIPT_CUSTOMER_ID = "customer_id";
     private static final String RECEIPT_FK_STORE_ID = "store_id";
     private static final String RECEIPT_FK_CATEGORY_ID = "category_id";
     private static final String RECEIPT_COMMENT = "comment";
     private static final String RECEIPT_DATE = "date";
+    private static final String RECEIPT_CREATEDATE = "createDate";
     public static final String RECEIPT_TOTAL = "total";
 
     private DBHelper dbhelper;
@@ -81,9 +83,10 @@ public class SQLController {
 
     public Cursor readAllReceipts() {
 
-        String sqlQuery = "SELECT * FROM receipt, tag " +
-                "WHERE receipt._id= tag._id " +
-                "GROUP BY receipt._id";
+        String sqlQuery = "SELECT * FROM "+ TABLE_RECEIPT + " re, "
+                                + TABLE_STORE + " st "
+                                + " WHERE re."+RECEIPT_FK_STORE_ID+"=st."+STORE_ID
+                                + " ORDER BY re."+RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -110,25 +113,28 @@ public class SQLController {
 
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
         ContentValues values = new ContentValues();
-        //values.put(RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
-        //values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
-        //values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategroyId());
-        //values.put(RECEIPT_COMMENT, receipt.getComment());
-        values.put(RECEIPT_DATE, getDateTime());
+        values.put(RECEIPT_CUSTOMER_ID, receipt.getCustomerId());
+        values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
+        values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategoryId());
+        values.put(RECEIPT_COMMENT, receipt.getComment());
+        values.put(RECEIPT_CREATEDATE, getDateTime());
+        values.put(RECEIPT_DATE, receipt.getDate());
         values.put(RECEIPT_TOTAL, receipt.getTotal());
-
 
         // Insert row
         long receiptId = database.insert(TABLE_RECEIPT, null, values);
 
-        // Assigning tags to
-        for (Tag tag : tags) {
-            insertTag(tag);
-            //insertReceiptTag(receiptId, tag.getTagId());
+        if (tags != null) {
+            // Assigning tags to
+            for (Tag tag : tags) {
+                insertTag(tag);
+                //insertReceiptTag(receiptId, tag.getTagId());
+            }
         }
 
         return receiptId;
     }
+
 
     public long insertTag(Tag tag) {
         ContentValues values = new ContentValues();
@@ -153,6 +159,38 @@ public class SQLController {
 
     }
 
+    public int insertStoreByName(String name) {
+        Long storeId;
+        ContentValues cv = new ContentValues();
+
+        storeId = findStore(name);
+
+        if (storeId == 0) {
+            cv.put(STORE_NAME, name);
+            storeId = database.insert(TABLE_STORE, null, cv);
+        }
+
+        return storeId.intValue();
+    }
+
+    public long insertStore(Store store) {
+        ContentValues values = new ContentValues();
+        values.put(STORE_NAME, store.getName());
+
+        return database.insert(TABLE_STORE, null, values);
+    }
+
+    private long findStore(String name) {
+        String sqlQuery = "SELECT * FROM "+ TABLE_STORE + " WHERE "+STORE_NAME+"=\'"+name+"\'";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor.getCount() > 0) {
+            localCursor.moveToFirst();
+            return localCursor.getInt(localCursor.getColumnIndex(STORE_ID));
+        } else {
+            return 0;
+        }
+    }
 
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(

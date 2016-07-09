@@ -10,7 +10,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />
-
+    <TextView
+        android:id="@+id/empty_list_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/no_messages">
+    </TextView>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="50dp"

@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -17,12 +20,14 @@ import android.widget.Switch;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
+import com.conestogac.receipt_keeper.uploader.Receipt;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
+public class Home2Activity extends AppCompatActivity {
 
-public class HomeActivity extends AppCompatActivity {
     private static final String TAG = HomeActivity.class.getSimpleName();
     private ListView receiptListView;
+    private ReceiptCursorAdapter receiptAdapter;
     private SQLController dbContoller;
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
@@ -41,8 +46,21 @@ public class HomeActivity extends AppCompatActivity {
         loginPrefsEditor = loginPreferences.edit();
 
         receiptListView = (ListView) findViewById(R.id.receiptListView);
+        receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
         readAllDataFromDatabase();
 
+        receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+               @Override
+               public void onItemClick(AdapterView<?> listView, View view,
+                                       int position, long id) {
+                   //Todo Goto Detail View, Need to define Parcelable interface for sending Extra
+                   Log.d(TAG, "Goto Detail View!  position: "+position);
+
+                   // Get the cursor, positioned to the corresponding row in the result set
+                   Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+
+               }
+           });
 
         /*dbContoller.open();
         Log.d("here", "here");
@@ -74,48 +92,36 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // [ Retrieve data from database and set to ListView]
-
     private void readAllDataFromDatabase() {
         dbContoller = new SQLController(this);
         dbContoller.open();
-
-        // [ Cursor that include data]
-        //LinkedList<Receipt> receipts = dbContoller.readAllReceipts();
-        cursor = dbContoller.readAllReceipts();
-        dbContoller.close();
-        SimpleCursorAdapter adapter;
-
-        // [ Get context of user table]
-        String[] from = new String[]{DBHelper.RECEIPT_ID, DBHelper.RECEIPT_DATE, DBHelper.RECEIPT_TOTAL,
-                DBHelper.TAG_NAME};
-
-        // [ Bind context to it's view]
-        int[] to = new int[]{R.id.idTextView, R.id.dateTextView, R.id.totalTextView,R.id.tagsTextView};
-
-        /*adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_1,
-                receipts);
-
-        receiptListView.setAdapter(adapter);*/
-
-        // [ Loop and add all the data in Cursor to the ListView using Adapter]
-        adapter = new SimpleCursorAdapter(
-                HomeActivity.this, R.layout.receipt_item_layout, cursor, from, to, 0) {
-
+        // Database query can be a time consuming task ..
+        // so its safe to call database query in another thread
+        new Handler().post(new Runnable() {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public void run() {
+                //get cursor and load data into adapter
+                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, dbContoller.readAllReceipts());
 
-                cursor.moveToPosition(position);
-                final View row = super.getView(position, convertView, parent);
-                return row;
+                //set cursor adapter to listview
+                receiptListView.setAdapter(receiptAdapter);
             }
-        };
+        });
+    }
 
-        adapter.notifyDataSetChanged();
-        receiptListView.setAdapter(adapter);
-        receiptListView.invalidateViews();
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        readAllDataFromDatabase();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "Ondestory()");
+
         dbContoller.close();
+        super.onDestroy();
     }
 
     @Override
@@ -155,5 +161,4 @@ public class HomeActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 }

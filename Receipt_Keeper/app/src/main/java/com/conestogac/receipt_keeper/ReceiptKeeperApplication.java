@@ -3,14 +3,14 @@ package com.conestogac.receipt_keeper;
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.strongloop.android.loopback.RestAdapter;
 import android.app.Application;
-import com.conestogac.receipt_keeper.authenticate.UserProfileActivity.Customer;
+import com.conestogac.receipt_keeper.uploader.Customer;
 
 /*
   To be accessible from all activity
  */
 public class ReceiptKeeperApplication extends Application {
     RestAdapter adapter;
-    UserProfileActivity.Customer user;
+    Customer user;
 
     public RestAdapter getLoopBackAdapter() {
         if (adapter == null) {

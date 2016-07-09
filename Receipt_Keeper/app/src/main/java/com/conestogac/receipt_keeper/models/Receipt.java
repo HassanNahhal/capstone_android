@@ -1,24 +1,20 @@
 package com.conestogac.receipt_keeper.models;
 
-import com.strongloop.android.loopback.Model;
-
-/**
- * Created by hassannahhal on 2016-06-14.
- */
-public class Receipt extends Model {
+public class Receipt {
 
     private int id;
-    private int customerId;
+    private String customerId;
     private int storeId;
     private int categoryId;
     private String comment;
     private String date;
     private float total;
     private int tagId;
+    private String createDate;
+    private String imagePath; //todo add to table column at DB Helper
 
     //For Sync
     private String r_id;
-    private String r_customerId;
     private String r_categoryId;
     private String r_tagId;
     private boolean isSync;
@@ -28,7 +24,7 @@ public class Receipt extends Model {
     }
 
 
-    public Receipt(int id, int customerId, int storeId, int categoryId, String comment, String date, float total, int tagId) {
+    public Receipt(int id, String customerId, int storeId, int categoryId, String comment, String date, float total, int tagId) {
         this.id = id;
         this.customerId = customerId;
         this.storeId = storeId;
@@ -45,7 +41,7 @@ public class Receipt extends Model {
         return id;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
@@ -57,12 +53,20 @@ public class Receipt extends Model {
         return categoryId;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
     public String getComment() {
         return comment;
     }
 
     public String getDate() {
         return date;
+    }
+
+    public String getCreateDate() {
+        return createDate;
     }
 
     public float getTotal() {
@@ -78,12 +82,8 @@ public class Receipt extends Model {
         this.id = id;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
-    }
-
-    public void setCustomerRemoteId(String customerId) {
-        this.r_customerId = customerId;
     }
 
     public void setStoreId(int storeId) {
@@ -93,6 +93,9 @@ public class Receipt extends Model {
     public void setCategoryId(int categroyId) {
         this.categoryId = categroyId;
     }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
     public void setComment(String comment) {
         this.comment = comment;
@@ -100,6 +103,10 @@ public class Receipt extends Model {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public void setCreateDate(String date) {
+        this.createDate = date;
     }
 
     public void setTotal(float total) {

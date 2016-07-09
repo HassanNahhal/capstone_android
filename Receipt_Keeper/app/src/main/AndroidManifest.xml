@@ -82,7 +82,8 @@
             android:name=".LearnMoreActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_learn_more"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
+        <activity android:name=".Home2Activity"></activity>
     </application>
 
 </manifest>
