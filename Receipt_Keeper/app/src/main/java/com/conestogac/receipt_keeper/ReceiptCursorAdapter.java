@@ -2,17 +2,22 @@ package com.conestogac.receipt_keeper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
+import com.conestogac.receipt_keeper.helpers.GlideUtil;
 
 import org.w3c.dom.Text;
+
+import java.io.File;
 
 /**
  * Created by infomat on 16-07-09.
@@ -25,6 +30,7 @@ public class ReceiptCursorAdapter extends CursorAdapter {
      */
     private static final String TAG = ReceiptCursorAdapter.class.getSimpleName();
     private Context curConext;
+    private File file;
 
     // Default constructor
     public ReceiptCursorAdapter(Context context, Cursor cursor) {
@@ -44,23 +50,29 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     // such as setting the data on a TextView.
     @Override
     public void bindView(View view, Context context, final Cursor cursor) {
+        ImageView ivReceiptImage = (ImageView) view.findViewById(R.id.receiptImage);
         TextView tvStoreName = (TextView) view.findViewById(R.id.storeNameTextView);
         TextView tvTotal = (TextView) view.findViewById(R.id.totalTextView);
         TextView tvDateTime = (TextView) view.findViewById(R.id.dateTextView);
         TextView tvId = (TextView) view.findViewById(R.id.idTextView);
         TextView tvTags = (TextView) view.findViewById(R.id.tagsTextView);
         Button btIsSync = (Button) view.findViewById(R.id.isSync);
+        String imagePath;
 
         // Read value with cursor and set value to widget
         // Id is set to invisible text, to make easy to read data from database
         curConext = context;
-        //todo image setting for image view which can be icon or receipt image thumbnail
 
+        imagePath = cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_URL));
+        if (imagePath != null) {
+            file = new java.io.File(imagePath);
+            GlideUtil.loadImage(file, ivReceiptImage);
+        }
 
-        tvStoreName.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME))));
-        tvTotal.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
-        tvDateTime.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE))));
-        tvId.setText(String.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_ID))));
+        tvStoreName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)));
+        tvTotal.setText("$ "+String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
+        tvDateTime.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)));
+        tvId.setText(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_ID))));
         tvTags.setText("TAG NAME");
         //todo should get from DB
         btIsSync.setBackgroundColor(getColorFromValue(1));
@@ -68,8 +80,6 @@ public class ReceiptCursorAdapter extends CursorAdapter {
 
     public Integer getColorFromValue(Integer value) {
         Integer retColor;
-
-        Log.i(TAG,"getColorFromPriority() Priority Color:" + value);
 
         switch (value) {
             case 1:

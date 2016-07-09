@@ -18,52 +18,12 @@ import java.util.Locale;
 
 public class SQLController {
 
-
-    // Table receipts and columns
-    private static final String TABLE_RECEIPT = "receipt";
-    private static final String RECEIPT_ID = "_id";
-    private static final String RECEIPT_CUSTOMER_ID = "customer_id";
-    private static final String RECEIPT_FK_STORE_ID = "store_id";
-    private static final String RECEIPT_FK_CATEGORY_ID = "category_id";
-    private static final String RECEIPT_COMMENT = "comment";
-    private static final String RECEIPT_DATE = "date";
-    private static final String RECEIPT_CREATEDATE = "createDate";
-    public static final String RECEIPT_TOTAL = "total";
-
     private DBHelper dbhelper;
     private Context ourcontext;
     private SQLiteDatabase database;
 
-    // Table Tag and columns
-    private static final String TABLE_TAG = "tag";
-    private static final String TAG_ID = "_id";
-    private static final String TAG_NAME = "tag_name";
-
     // Logcat tag
     private static final String DATABASE_LOG = "DatabaseHelper";
-
-
-    // Table Store and columns
-    private static final String TABLE_STORE = "store";
-    private static final String STORE_ID = "id";
-    private static final String STORE_NAME = "store_name";
-
-
-    // Table Category and columns
-    private static final String TABLE_CATEGORY = "category";
-    private static final String CATEGORY_ID = "id";
-    private static final String CATEGORY_NAME = "category_name";
-
-
-    // Table StoreGategory and columns
-    private static final String TABLE_STORE_CATEGORY = "storeCategory";
-    private static final String STORECATEGORY_FK_CATEGORY_ID = "category_id";
-    private static final String STORE_CATEGORY_FK_STORE_ID = "store_id";
-
-    // Table ReceiptTag and columns
-    private static final String TABLE_RECEIPT_TAG = "receiptTag";
-    private static final String FK_RECEIPT_ID = "receipt_id";
-    private static final String FK_TAG_ID = "tag_id";
 
 
     public SQLController(Context C) {
@@ -78,15 +38,16 @@ public class SQLController {
 
     public void close() {
         dbhelper.close();
+        database.close();
     }
 
 
     public Cursor readAllReceipts() {
 
-        String sqlQuery = "SELECT * FROM "+ TABLE_RECEIPT + " re, "
-                                + TABLE_STORE + " st "
-                                + " WHERE re."+RECEIPT_FK_STORE_ID+"=st."+STORE_ID
-                                + " ORDER BY re."+RECEIPT_DATE;
+        String sqlQuery = "SELECT * FROM "+ DBHelper.TABLE_RECEIPT + " re, "
+                                + DBHelper.TABLE_STORE + " st "
+                                + " WHERE re."+DBHelper.RECEIPT_FK_STORE_ID+"=st."+DBHelper.STORE_ID
+                                + " ORDER BY re."+DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -113,16 +74,19 @@ public class SQLController {
 
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
         ContentValues values = new ContentValues();
-        values.put(RECEIPT_CUSTOMER_ID, receipt.getCustomerId());
-        values.put(RECEIPT_FK_STORE_ID, receipt.getStoreId());
-        values.put(RECEIPT_FK_CATEGORY_ID, receipt.getCategoryId());
-        values.put(RECEIPT_COMMENT, receipt.getComment());
-        values.put(RECEIPT_CREATEDATE, getDateTime());
-        values.put(RECEIPT_DATE, receipt.getDate());
-        values.put(RECEIPT_TOTAL, receipt.getTotal());
+        values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
+        values.put(DBHelper.RECEIPT_FK_STORE_ID, receipt.getStoreId());
+        values.put(DBHelper.RECEIPT_FK_CATEGORY_ID, receipt.getCategoryId());
+        values.put(DBHelper.RECEIPT_COMMENT, receipt.getComment());
+        values.put(DBHelper.RECEIPT_CREATEDATE, getDateTime());
+        values.put(DBHelper.RECEIPT_DATE, receipt.getDate());
+        values.put(DBHelper.RECEIPT_TOTAL, receipt.getTotal());
+        if (receipt.getUrl() != null) {
+            values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
+        }
 
         // Insert row
-        long receiptId = database.insert(TABLE_RECEIPT, null, values);
+        long receiptId = database.insert(DBHelper.TABLE_RECEIPT, null, values);
 
         if (tags != null) {
             // Assigning tags to
@@ -139,9 +103,9 @@ public class SQLController {
     public long insertTag(Tag tag) {
         ContentValues values = new ContentValues();
         //values.put(TAG_ID, tag.getTagId());
-        values.put(TAG_NAME, tag.getTagName());
+        values.put(DBHelper.TAG_NAME, tag.getTagName());
 
-        return database.insert(TABLE_TAG, null, values);
+        return database.insert(DBHelper.TABLE_TAG, null, values);
     }
 
     public Cursor readAllTags() {
@@ -166,8 +130,8 @@ public class SQLController {
         storeId = findStore(name);
 
         if (storeId == 0) {
-            cv.put(STORE_NAME, name);
-            storeId = database.insert(TABLE_STORE, null, cv);
+            cv.put(DBHelper.STORE_NAME, name);
+            storeId = database.insert(DBHelper.TABLE_STORE, null, cv);
         }
 
         return storeId.intValue();
@@ -175,18 +139,18 @@ public class SQLController {
 
     public long insertStore(Store store) {
         ContentValues values = new ContentValues();
-        values.put(STORE_NAME, store.getName());
+        values.put(DBHelper.STORE_NAME, store.getName());
 
-        return database.insert(TABLE_STORE, null, values);
+        return database.insert(DBHelper.TABLE_STORE, null, values);
     }
 
     private long findStore(String name) {
-        String sqlQuery = "SELECT * FROM "+ TABLE_STORE + " WHERE "+STORE_NAME+"=\'"+name+"\'";
+        String sqlQuery = "SELECT * FROM "+ DBHelper.TABLE_STORE + " WHERE "+DBHelper.STORE_NAME+"=\'"+name+"\'";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor.getCount() > 0) {
             localCursor.moveToFirst();
-            return localCursor.getInt(localCursor.getColumnIndex(STORE_ID));
+            return localCursor.getInt(localCursor.getColumnIndex(DBHelper.STORE_ID));
         } else {
             return 0;
         }

@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.conestogac.receipt_keeper.Home2Activity;
 import com.conestogac.receipt_keeper.helpers.BaseActivity;
 import com.conestogac.receipt_keeper.HomeActivity;
 import com.conestogac.receipt_keeper.R;
@@ -181,7 +182,7 @@ public class UserProfileActivity extends BaseActivity {
                 loginPrefsEditor.putBoolean(SHAREDPREF_KEY_AUTOLOGIN, mAutoLogin.isChecked());
                 loginPrefsEditor.commit();
                 dismissProgressDialog();
-                startActivity(new Intent(UserProfileActivity.this, HomeActivity.class));
+                startActivity(new Intent(UserProfileActivity.this, Home2Activity.class));
             }
 
             @Override
@@ -214,7 +215,7 @@ public class UserProfileActivity extends BaseActivity {
                 app.setCurrentUser(currentCustomer);
 
                 showResult("Welcome ! " + username);
-                Intent homeIntent = new Intent(UserProfileActivity.this, HomeActivity.class);
+                Intent homeIntent = new Intent(UserProfileActivity.this, Home2Activity.class);
                 homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(homeIntent);
             } else {
@@ -240,12 +241,12 @@ public class UserProfileActivity extends BaseActivity {
                         loginPrefsEditor.commit();
 
                         app.setCurrentUser(currentUser);
-                        showResult(getString(R.string.signin_success_message) +" "+ currentUser.getUsername());
+                        showResult(getString(R.string.signin_success_message));
 
                         /* Todo Goto Home*/
                         TaskStackBuilder.create(getApplicationContext())
                                 .addParentStack(WelcomeActivity.class)
-                                .addNextIntent(new Intent(getApplicationContext(), HomeActivity.class))
+                                .addNextIntent(new Intent(getApplicationContext(), Home2Activity.class))
                                 .startActivities();
 
                         finish();

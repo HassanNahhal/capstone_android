@@ -11,7 +11,7 @@ public class Receipt {
     private float total;
     private int tagId;
     private String createDate;
-    private String imagePath; //todo add to table column at DB Helper
+    private String url; //todo add to table column at DB Helper
 
     //For Sync
     private String r_id;
@@ -22,7 +22,6 @@ public class Receipt {
     public Receipt() {
 
     }
-
 
     public Receipt(int id, String customerId, int storeId, int categoryId, String comment, String date, float total, int tagId) {
         this.id = id;
@@ -53,8 +52,8 @@ public class Receipt {
         return categoryId;
     }
 
-    public String getImagePath() {
-        return imagePath;
+    public String getUrl() {
+        return url;
     }
 
     public String getComment() {
@@ -93,8 +92,9 @@ public class Receipt {
     public void setCategoryId(int categroyId) {
         this.categoryId = categroyId;
     }
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public void setComment(String comment) {
@@ -115,5 +115,34 @@ public class Receipt {
 
     public void setTagId(int tagId) {
         this.tagId = tagId;
+    }
+
+    // Attribute For Sync
+    public void setR_id(String r_id) {
+        this.r_id = r_id;
+    }
+    public String getR_id() {
+        return this.r_id;
+    }
+
+    public void setR_categoryId(String r_categoryId) {
+        this.r_categoryId = r_categoryId;
+    }
+    public String getR_categoryId() {
+        return this.r_categoryId;
+    }
+
+    public void setR_tagId(String r_tagId) {
+        this.r_tagId = r_tagId;
+    }
+    public String getR_tagId() {
+        return this.r_tagId;
+    }
+
+    public boolean get_isSync() {
+        return this.isSync;
+    }
+    public void set_isSync(boolean isSync) {
+        this.isSync = isSync;
     }
 }

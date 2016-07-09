@@ -28,7 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String RECEIPT_DATE = "date";
     public static final String RECEIPT_CREATEDATE = "createDate";
     public static final String RECEIPT_TOTAL = "total";
-
+    public static final String RECEIPT_URL = "url";
 
     // Table ReceiptTag and columns
     public static final String TABLE_RECEIPT_TAG = "receiptTag";
@@ -61,9 +61,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Receipt table create statement
     private static final String CREATE_TABLE_RECEIPT = " CREATE TABLE " + TABLE_RECEIPT + "( "
-            + RECEIPT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," + RECEIPT_FK_CUSTOMER_ID
-            + " INTEGER ," + RECEIPT_FK_STORE_ID + " INTEGER ," + RECEIPT_FK_CATEGORY_ID +
-            " INTEGER ," + RECEIPT_COMMENT + " TEXT ," + RECEIPT_DATE + " TEXT ," + RECEIPT_TOTAL + " REAL " + " TEXT ," + RECEIPT_CREATEDATE + ")";
+            + RECEIPT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + RECEIPT_FK_CUSTOMER_ID + " INTEGER ," + RECEIPT_FK_STORE_ID + " INTEGER ,"
+            + RECEIPT_FK_CATEGORY_ID + " INTEGER ," + RECEIPT_COMMENT + " TEXT ,"
+            + RECEIPT_DATE + " TEXT ," + RECEIPT_TOTAL + " REAL, "
+            + RECEIPT_URL + " TEXT," + RECEIPT_CREATEDATE + " TEXT"
+            + ")";
 
     // Receipt_Tag table create statement
     private static final String CREATE_TABLE_RECEIPT_TAG = " CREATE TABLE " + TABLE_RECEIPT_TAG + "( "

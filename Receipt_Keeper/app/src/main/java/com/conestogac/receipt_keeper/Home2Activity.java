@@ -93,7 +93,6 @@ public class Home2Activity extends AppCompatActivity {
 
     // [ Retrieve data from database and set to ListView]
     private void readAllDataFromDatabase() {
-        dbContoller = new SQLController(this);
         dbContoller.open();
         // Database query can be a time consuming task ..
         // so its safe to call database query in another thread

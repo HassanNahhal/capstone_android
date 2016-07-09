@@ -206,6 +206,7 @@ public class TestUploadActivity extends AppCompatActivity {
 
         dbController.open();
         com.conestogac.receipt_keeper.models.Receipt receipt = new com.conestogac.receipt_keeper.models.Receipt();
+        final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
 
         for (int i = 0; i < 100; i++) {
             if (app.getCurrentUser().getId() != null)
@@ -215,6 +216,7 @@ public class TestUploadActivity extends AppCompatActivity {
             receipt.setComment("Comment"+i);
             receipt.setDate("2016-07-08");
             receipt.setTotal((float)(10.0+i*10.0));
+            receipt.setUrl(image);
             _id = dbController.insertReceipt(receipt, null);
             Log.d(TAG, "ID: "+_id);
         }
