@@ -17,6 +17,7 @@ import android.widget.Switch;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
+import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
 
@@ -148,6 +149,10 @@ public class HomeActivity extends AppCompatActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(this, TestUploadActivity.class));
+                return true;
+            case R.id.action_test_ocr:
+                Intent ocrIntent = new Intent(this, CaptureActivity.class);
+                startActivity(ocrIntent);
                 return true;
             default:
                 break;
