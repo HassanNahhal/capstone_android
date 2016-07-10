@@ -23,7 +23,7 @@ public class SQLController {
     private SQLiteDatabase database;
 
     // Logcat tag
-    private static final String DATABASE_LOG = "DatabaseHelper";
+    private static final String LOG_NAME = "DatabaseHelper";
 
 
     public SQLController(Context C) {
