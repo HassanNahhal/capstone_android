@@ -6,14 +6,14 @@
     <item
         android:id="@+id/action_auto_login"
         android:title="Autologin"
-        app:showAsAction="never">
+        app:showAsAction="never"
+        android:checked="true">
     </item>
     </group>
     <item
         android:id="@+id/action_sync_setting"
         android:title="Sync Setting"
-        app:showAsAction="never"
-        app:actionLayout="@layout/switch_layout"/>
+        app:showAsAction="never"/>
     <item
         android:id="@+id/action_upload_test"
         android:orderInCategory="100"

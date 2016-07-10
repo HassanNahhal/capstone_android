@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,6 @@ public class Home2Activity extends AppCompatActivity {
     private SQLController dbContoller;
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
-    Switch swAutoLogin;
 
     private SimpleCursorAdapter adapter;
     private Cursor cursor;
@@ -129,17 +129,8 @@ public class Home2Activity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem myMenu = menu.findItem(R.id.action_auto_login);
-        View actionView = myMenu.getActionView();
-        // Get the action view used in your toggleservice item
-        swAutoLogin = (Switch) actionView.findViewById(R.id.sw_autoLogin);
-        swAutoLogin.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false));
-        swAutoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, isChecked);
-                loginPrefsEditor.commit();
-            }
-        });
+        myMenu.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false));
+
         return true;
     }
 
@@ -152,6 +143,19 @@ public class Home2Activity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
+            case R.id.action_auto_login:
+                if (item.isChecked()){
+                    item.setChecked(false);
+                }
+                else {
+                    item.setChecked(true);
+
+                }
+                return true;
+
+            case R.id.action_sync_setting:
+                break;
+
             case R.id.action_upload_test:
                 startActivity(new Intent(this, TestUploadActivity.class));
                 return true;

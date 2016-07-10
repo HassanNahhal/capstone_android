@@ -126,15 +126,6 @@ public class HomeActivity extends AppCompatActivity {
         MenuItem myMenu = menu.findItem(R.id.action_auto_login);
         View actionView = myMenu.getActionView();
         // Get the action view used in your toggleservice item
-        swAutoLogin = (Switch) actionView.findViewById(R.id.sw_autoLogin);
-        swAutoLogin.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false));
-        swAutoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, isChecked);
-                loginPrefsEditor.commit();
-            }
-        });
         return true;
     }
 
