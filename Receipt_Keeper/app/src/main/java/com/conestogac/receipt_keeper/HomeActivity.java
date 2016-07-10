@@ -147,7 +147,7 @@ public class HomeActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_settings:
+            case R.id.action_upload_test:
                 startActivity(new Intent(this, TestUploadActivity.class));
                 return true;
             case R.id.action_test_ocr:

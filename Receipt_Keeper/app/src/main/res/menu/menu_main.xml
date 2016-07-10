@@ -2,15 +2,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.conestogac.receipt_keeper.HomeActivity">
+    <group android:checkableBehavior="all">
     <item
         android:id="@+id/action_auto_login"
         android:title="Autologin"
-        app:showAsAction="always"
+        app:showAsAction="never">
+    </item>
+    </group>
+    <item
+        android:id="@+id/action_sync_setting"
+        android:title="Sync Setting"
+        app:showAsAction="never"
         app:actionLayout="@layout/switch_layout"/>
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_upload_test"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="Upload Test"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_test_ocr"

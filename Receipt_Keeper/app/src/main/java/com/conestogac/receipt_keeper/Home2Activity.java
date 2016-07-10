@@ -20,6 +20,7 @@ import android.widget.Switch;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
+import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.Receipt;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
@@ -151,8 +152,12 @@ public class Home2Activity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         switch (id) {
-            case R.id.action_settings:
+            case R.id.action_upload_test:
                 startActivity(new Intent(this, TestUploadActivity.class));
+                return true;
+            case R.id.action_test_ocr:
+                Intent ocrIntent = new Intent(this, CaptureActivity.class);
+                startActivity(ocrIntent);
                 return true;
             default:
                 break;
