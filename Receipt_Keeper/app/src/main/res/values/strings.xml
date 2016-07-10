@@ -22,7 +22,7 @@
     <!-- Strings related to Welcome -->
     <string name="go_to_ocr">Go to OCR</string>
     <string name="go_to_login_page">Go to Login Page</string>
-    <string name="store_name">Store name</string>
+    <string name="store_name">Store</string>
     <string name="date">Date</string>
     <string name="total">Total</string>
     <string name="save">Save</string>
