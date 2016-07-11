@@ -11,7 +11,7 @@ public class Receipt {
     private float total;
     private int tagId;
     private String createDate;
-    private String url; //todo add to table column at DB Helper
+    private String url;
     private String paymentMethod;
 
     //For Sync
