@@ -341,7 +341,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         int endPos = ocrResultView.getLayout().getLineEnd(selectedLineNumber);
                         theLine = ocrResultView.getText().toString().substring(startPos, endPos);
 
-                        com.conestogac.receipt_keeper.MultiSelectionDialog fieldChoice = new com.conestogac.receipt_keeper.MultiSelectionDialog();
+                        com.conestogac.receipt_keeper.ocr.MultiSelectionDialog fieldChoice = new com.conestogac.receipt_keeper.ocr.MultiSelectionDialog();
                         Bundle args = new Bundle();
 
                         args.putString("Store Name", gatheredData.getStoreName());

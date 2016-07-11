@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -21,6 +22,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+
+import com.conestogac.receipt_keeper.authenticate.WelcomeActivity;
 
 import java.util.List;
 
@@ -162,7 +165,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), Home2Activity.class));
+                Intent homeIntent = new Intent(getActivity(), Home2Activity.class);
+                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(homeIntent);
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -187,7 +192,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                TaskStackBuilder.create(getActivity())
+                        .addParentStack(Home2Activity.class)
+                        .addNextIntent(new Intent(getActivity(), Home2Activity.class))
+                        .addNextIntent(new Intent(getActivity(), SettingsActivity.class))
+                        .startActivities();
+//                Intent homeIntent = new Intent(getActivity(), SettingsActivity.class);
+//                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                startActivity(homeIntent);
                 return true;
             }
             return super.onOptionsItemSelected(item);

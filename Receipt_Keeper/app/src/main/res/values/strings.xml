@@ -22,15 +22,22 @@
     <!-- Strings related to Welcome -->
     <string name="go_to_ocr">Go to OCR</string>
     <string name="go_to_login_page">Go to Login Page</string>
-    <string name="store_name">Store name</string>
+    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
+    <string name="sign_in_button_text">SIGN IN</string>
+    <string name="sign_up_button_text">SIGN UP</string>
+
+    <!-- String related to Add receipt Activity -->
+    <string name="store_name">Store</string>
     <string name="date">Date</string>
     <string name="total">Total</string>
     <string name="save">Save</string>
     <string name="home_activity">HomeActivity</string>
     <string name="receipt_id">Receipt id</string>
-    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
-    <string name="sign_in_button_text">SIGN IN</string>
-    <string name="sign_up_button_text">SIGN UP</string>
+    <string name="tag">Tag</string>
+    <string name="category">Category</string>
+    <string name="comment">Comment</string>
+    <string name="payment">Payment</string>
+
 
     <!-- Strings related to login -->
     <string name="auto_login">Auto login</string>
@@ -80,11 +87,13 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_settings">Settings</string>
 
+    <!-- Strings related to Sync -->
+
+
+
     <!-- Strings related to Settings -->
-    <!-- Example settings for Data & Sync -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
     <string name="pref_header_ocr">OCR &amp; Camera</string>
-
     <string name="pref_title_sync_frequency">Sync frequency</string>
     <string name="prefs_sum_category_sync">Setting how often upload data to server</string>
     <string-array name="pref_sync_frequency_titles">
@@ -105,46 +114,6 @@
     </string-array>
     <string name="pref_title_ocr_settings">OCR Settings</string>
     <string name="prefs_sum_category_ocr">For detailed settings of OCR</string>
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-
-
-
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
 
 
 </resources>
