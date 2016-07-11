@@ -103,20 +103,26 @@ public class AddReceiptActivity extends Activity {
                 dbController.open();
                 Receipt receipt = new Receipt();
                 final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
-
-                Log.d(LOG_NAME, "on saving receipt");
-                if (app.getCurrentUser().getId() == null) {
-                    receipt.setCustomerId(null);
-                } else {
-                    receipt.setCustomerId(app.getCurrentUser().getId().toString());
+                String customerId = null;
+                try {
+                    customerId = app.getCurrentUser().getId().toString();
+                    //Log.d(LOG_NAME, "customer id in try :" + customerId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    customerId = null;
+                    //Log.d(LOG_NAME, "customer id in catch:" + customerId);
+                } finally {
+                    //Log.d(LOG_NAME, "customer id in final:" + customerId);
+                    receipt.setCustomerId(customerId);
+                    receipt.setStoreId(dbController.insertStoreByName(storeNamEditText.getText().toString()));
+                    receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
+                    receipt.setDate(dateEditText.getText().toString());
+                    receipt.setComment(commentEditText.getText().toString());
+                    receipt.setPaymentMethod(paymentEditText.getText().toString());
+                    receipt.setCategoryId(1);
+                    receipt.setUrl(image);
                 }
-                receipt.setStoreId(dbController.insertStoreByName(storeNamEditText.getText().toString()));
-                receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
-                receipt.setDate(dateEditText.getText().toString());
-                receipt.setComment(commentEditText.getText().toString());
-                receipt.setPaymentMethod(paymentEditText.getText().toString());
-                receipt.setCategoryId(1);
-                receipt.setUrl(image);
+
 
                 //tags = tagSearchSpinner.getAllTags();
 
