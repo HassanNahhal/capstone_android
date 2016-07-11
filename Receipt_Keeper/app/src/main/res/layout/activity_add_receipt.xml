@@ -14,11 +14,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="20dp"
         android:text="@string/store_name"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginTop="20dp" />
 
     <EditText
         android:id="@+id/storeNamEditText"
@@ -33,11 +32,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/storeNamEditText"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="43dp"
         android:text="@string/total"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/storeNameTextView"
+        android:layout_marginTop="15dp" />
 
     <EditText
         android:id="@+id/totalEditText"
@@ -55,7 +54,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/totalEditText"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="15dp"
         android:text="@string/date"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -72,44 +71,100 @@
         android:id="@+id/saveReceiptButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/dateEditText"
+        android:text="@string/save"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="53dp"
-        android:text="@string/save" />
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/receiptIdTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/saveReceiptButton"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="69dp"
         android:text="@string/receipt_id"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_above="@+id/receiptIdTextView2"
+        android:layout_alignParentStart="false" />
 
     <TextView
         android:id="@+id/receiptIdTextView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/receiptIdTextView"
-        android:layout_alignStart="@+id/dateEditText"
         android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_below="@+id/searchMultiSpinner"
+        android:layout_alignStart="@+id/searchMultiSpinner" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/dateTextView"
-        android:layout_centerVertical="true"
-        android:text="Tag"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:text="@string/tag"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/categoryTextView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp" />
 
     <com.conestogac.receipt_keeper.MultiSpinnerSearch
         android:id="@+id/searchMultiSpinner"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/receiptIdTextView2" />
+        android:layout_below="@+id/categorySearchMultiSpinner"
+        android:layout_alignStart="@+id/categorySearchMultiSpinner" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/category"
+        android:id="@+id/categoryTextView"
+        android:layout_below="@+id/paymentTextView"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp" />
+
+    <com.conestogac.receipt_keeper.MultiSpinnerSearch
+        android:id="@+id/categorySearchMultiSpinner"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/paymentEditText"
+        android:layout_alignStart="@+id/paymentEditText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/comment"
+        android:id="@+id/comentTextView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/dateTextView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/commentEditText"
+        android:layout_alignBottom="@+id/comentTextView"
+        android:layout_alignStart="@+id/dateEditText" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/payment"
+        android:id="@+id/paymentTextView"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/comentTextView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="15dp" />
+
+    <EditText
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:id="@+id/paymentEditText"
+        android:layout_alignBottom="@+id/paymentTextView"
+        android:layout_alignStart="@+id/commentEditText" />
 
 </RelativeLayout>

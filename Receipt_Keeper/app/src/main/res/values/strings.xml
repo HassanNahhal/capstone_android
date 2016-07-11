@@ -22,15 +22,22 @@
     <!-- Strings related to Welcome -->
     <string name="go_to_ocr">Go to OCR</string>
     <string name="go_to_login_page">Go to Login Page</string>
-    <string name="store_name">Store name</string>
+    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
+    <string name="sign_in_button_text">SIGN IN</string>
+    <string name="sign_up_button_text">SIGN UP</string>
+
+    <!-- String related to Add receipt Activity -->
+    <string name="store_name">Store</string>
     <string name="date">Date</string>
     <string name="total">Total</string>
     <string name="save">Save</string>
     <string name="home_activity">HomeActivity</string>
     <string name="receipt_id">Receipt id</string>
-    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
-    <string name="sign_in_button_text">SIGN IN</string>
-    <string name="sign_up_button_text">SIGN UP</string>
+    <string name="tag">Tag</string>
+    <string name="category">Category</string>
+    <string name="comment">Comment</string>
+    <string name="payment">Payment</string>
+
 
     <!-- Strings related to login -->
     <string name="auto_login">Auto login</string>

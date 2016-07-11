@@ -11,10 +11,12 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.conestogac.receipt_keeper.MultiSpinnerSearch.MultiSpinnerSearchListener;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
-import com.conestogac.receipt_keeper.MultiSpinnerSearch.MultiSpinnerSearchListener;
+import com.conestogac.receipt_keeper.uploader.CustomerRepository;
+import com.strongloop.android.loopback.RestAdapter;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -24,20 +26,40 @@ import java.util.TreeMap;
 
 public class AddReceiptActivity extends Activity {
 
+    // [Layout views]
     private EditText storeNamEditText;
     private EditText totalEditText;
     private EditText dateEditText;
+    private EditText commentEditText;
+    private EditText paymentEditText;
+    private MultiSpinnerSearch categorySearchMultiSpinner;
+    private MultiSpinnerSearch tagSearchSpinner;
     private Button saveReceiptButton;
+
+
     private SQLController dbController;
     private Calendar dateAndTime = Calendar.getInstance();
     private LinkedList<Tag> tags = new LinkedList<>();
-    private MultiSpinnerSearch searchSpinner;
+    private ReceiptKeeperApplication app;
+    private static final String LOG_NAME = "AddReceiptActivity";
+
+    // [ from TestUplaodActivity]
+    private CustomerRepository userRepo;
+    private RestAdapter adapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_receipt);
+
+        // from TestUplaodActivity
+
+        app = (ReceiptKeeperApplication) this.getApplication();
+        adapter = app.getLoopBackAdapter();
+        userRepo = adapter.createRepository(CustomerRepository.class);
+        dbController = new SQLController(this);
+
 
         final List<String> list = Arrays.asList(getResources().getStringArray(R.array.tags));
         TreeMap<String, Boolean> items = new TreeMap<>();
@@ -46,11 +68,16 @@ public class AddReceiptActivity extends Activity {
         }
 
 
-        dbController = new SQLController(this);
+        // [ Setting IDs to Views ]
         totalEditText = (EditText) findViewById(R.id.totalEditText);
         dateEditText = (EditText) findViewById(R.id.dateEditText);
-
+        storeNamEditText = (EditText) findViewById(R.id.storeNamEditText);
+        commentEditText = (EditText) findViewById(R.id.commentEditText);
+        paymentEditText = (EditText) findViewById(R.id.paymentEditText);
         saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
+        categorySearchMultiSpinner = (MultiSpinnerSearch) findViewById(R.id.categorySearchMultiSpinner);
+        tagSearchSpinner = (MultiSpinnerSearch) findViewById(R.id.searchMultiSpinner);
+
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,17 +93,41 @@ public class AddReceiptActivity extends Activity {
         saveReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Receipt receipt = new Receipt();
-                String dateString = dateEditText.getText().toString();
+                /*Receipt receipt = new Receipt();
                 //Date date = convertStringToDate(dateString);
-                receipt.setDate(dateString);
-                receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
-                tags = searchSpinner.getAllTags();
-                saveReceiptDataInDB(receipt, tags);
+                saveReceiptDataInDB(receipt, tags);*/
 
-                Intent goToHomePage = new Intent(AddReceiptActivity.this, HomeActivity.class);
+                //==========================
+                long _id;
+
+                dbController.open();
+                Receipt receipt = new Receipt();
+                final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
+
+                Log.d(LOG_NAME, "on saving receipt");
+                if (app.getCurrentUser().getId() == null) {
+                    receipt.setCustomerId(null);
+                } else {
+                    receipt.setCustomerId(app.getCurrentUser().getId().toString());
+                }
+                receipt.setStoreId(dbController.insertStoreByName(storeNamEditText.getText().toString()));
+                receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
+                receipt.setDate(dateEditText.getText().toString());
+                receipt.setComment(commentEditText.getText().toString());
+                receipt.setPaymentMethod(paymentEditText.getText().toString());
+                receipt.setCategoryId(1);
+                receipt.setUrl(image);
+
+                //tags = tagSearchSpinner.getAllTags();
+
+
+                dbController.insertReceipt(receipt, null);
+                dbController.close();
+
+                Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);
                 startActivity(goToHomePage);
             }
+
         });
 
 
@@ -85,7 +136,6 @@ public class AddReceiptActivity extends Activity {
          *
          *  Using MultiSpinnerSearch class
          */
-        searchSpinner = (MultiSpinnerSearch) findViewById(R.id.searchMultiSpinner);
         final LinkedList<KeyPairBoolData> listArray = new LinkedList<>();
 
         for (int i = 0; i < list.size(); i++) {
@@ -96,14 +146,14 @@ public class AddReceiptActivity extends Activity {
             listArray.add(h);
         }
 
-        /*LinkedList<Tag> tags = searchSpinner.saveAllTags();
+        /*LinkedList<Tag> tags = tagSearchSpinner.saveAllTags();
         for (Tag tag : tags)
             Log.d("tag.getTagName()", tag.getTagName());*/
         /***
          * -1 is no by default selection
          * 0 to length will select corresponding values
          */
-        searchSpinner.setItems(listArray, "Tag search", -1, new MultiSpinnerSearchListener() {
+        tagSearchSpinner.setItems(listArray, "Tag search", -1, new MultiSpinnerSearchListener() {
 
             @Override
             public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
@@ -118,22 +168,6 @@ public class AddReceiptActivity extends Activity {
             }
         });
     }
-
-
-    // [Convert string we got from the EditText to Date ]
-    /*private Date convertStringToDate(String dateString) {
-        Date date = new Date();
-        Log.d("dateString", dateString + "");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            date = format.parse(dateString);
-            Log.d("date", date + "");
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return date;
-    }*/
 
     // []
     private void saveReceiptDataInDB(Receipt receipt, LinkedList<Tag> tag) {
@@ -159,4 +193,19 @@ public class AddReceiptActivity extends Activity {
                 .formatDateTime(this,
                         dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
     }
+
+    // [Convert string we got from the EditText to Date ]
+    /*private Date convertStringToDate(String dateString) {
+        Date date = new Date();
+        Log.d("dateString", dateString + "");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = format.parse(dateString);
+            Log.d("date", date + "");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return date;
+    }*/
 }
