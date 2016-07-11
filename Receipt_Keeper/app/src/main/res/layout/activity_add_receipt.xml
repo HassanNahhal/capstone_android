@@ -97,7 +97,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tag"
+        android:text="@string/tag"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/categoryTextView"
@@ -111,20 +111,11 @@
         android:layout_below="@+id/categorySearchMultiSpinner"
         android:layout_alignStart="@+id/categorySearchMultiSpinner" />
 
-    <ImageButton
-        android:layout_width="300dp"
-        android:layout_height="150dp"
-        android:id="@+id/imageButton"
-        android:layout_below="@+id/receiptIdTextView"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="35dp"
-        android:layout_marginLeft="10dp" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Category"
+        android:text="@string/category"
         android:id="@+id/categoryTextView"
         android:layout_below="@+id/paymentTextView"
         android:layout_alignParentStart="true"
@@ -142,7 +133,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Comment"
+        android:text="@string/comment"
         android:id="@+id/comentTextView"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/dateTextView"
@@ -162,7 +153,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Payment"
+        android:text="@string/payment"
         android:id="@+id/paymentTextView"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/comentTextView"
