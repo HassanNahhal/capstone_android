@@ -67,7 +67,6 @@
             android:name=".HomeActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:parentActivityName=".HomeActivity"
             android:theme="@style/Theme.AppCompat.Light"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".AddReceiptActivity" />
@@ -82,7 +81,16 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_learn_more"
             android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
-        <activity android:name=".Home2Activity"></activity>
+        <activity android:name=".Home2Activity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Home2Activity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.conestogac.receipt_keeper.Home2Activity" />
+        </activity>
     </application>
 
 </manifest>

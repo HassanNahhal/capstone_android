@@ -11,9 +11,10 @@
     </item>
     </group>
     <item
-        android:id="@+id/action_sync_setting"
-        android:title="Sync Setting"
-        app:showAsAction="never"/>
+        android:id="@+id/action_setting"
+        android:title="Settings"
+        app:showAsAction="never">
+    </item>
     <item
         android:id="@+id/action_upload_test"
         android:orderInCategory="100"

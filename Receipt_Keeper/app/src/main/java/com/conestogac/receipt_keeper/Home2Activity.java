@@ -153,12 +153,14 @@ public class Home2Activity extends AppCompatActivity {
                 }
                 return true;
 
-            case R.id.action_sync_setting:
+            case R.id.action_setting:
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
             case R.id.action_upload_test:
                 startActivity(new Intent(this, TestUploadActivity.class));
                 return true;
+
             case R.id.action_test_ocr:
                 Intent ocrIntent = new Intent(this, CaptureActivity.class);
                 startActivity(ocrIntent);
