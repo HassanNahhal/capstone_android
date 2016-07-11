@@ -15,9 +15,7 @@ import com.conestogac.receipt_keeper.MultiSpinnerSearch.MultiSpinnerSearchListen
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
-import com.conestogac.receipt_keeper.uploader.Customer;
 import com.conestogac.receipt_keeper.uploader.CustomerRepository;
-import com.strongloop.android.loopback.AccessToken;
 import com.strongloop.android.loopback.RestAdapter;
 
 import java.util.Arrays;
@@ -97,7 +95,6 @@ public class AddReceiptActivity extends Activity {
             public void onClick(View v) {
                 /*Receipt receipt = new Receipt();
                 //Date date = convertStringToDate(dateString);
-                tags = tagSearchSpinner.getAllTags();
                 saveReceiptDataInDB(receipt, tags);*/
 
                 //==========================
@@ -107,27 +104,31 @@ public class AddReceiptActivity extends Activity {
                 Receipt receipt = new Receipt();
                 final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
 
-                if (checkLogin()) {
-                    if (app.getCurrentUser().getId() != null) {
-                        receipt.setCustomerId(app.getCurrentUser().getId().toString());
-                        receipt.setStoreId(dbController.insertStoreByName("Store1"));
-                        receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
-                        receipt.setDate(dateEditText.getText().toString());
-                        receipt.setComment(commentEditText.getText().toString());
-                        receipt.setPaymentMethod(paymentEditText.getText().toString());
-
-
-                        receipt.setCategoryId(1);
-
-                        receipt.setUrl(image);
-                        _id = dbController.insertReceipt(receipt, null);
-                        dbController.close();
-                        Log.d(LOG_NAME, "ID: " + _id);
-                    }
-                    Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);
-                    startActivity(goToHomePage);
+                Log.d(LOG_NAME, "on saving receipt");
+                if (app.getCurrentUser().getId() == null) {
+                    receipt.setCustomerId(null);
+                } else {
+                    receipt.setCustomerId(app.getCurrentUser().getId().toString());
                 }
+                receipt.setStoreId(dbController.insertStoreByName(storeNamEditText.getText().toString()));
+                receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
+                receipt.setDate(dateEditText.getText().toString());
+                receipt.setComment(commentEditText.getText().toString());
+                receipt.setPaymentMethod(paymentEditText.getText().toString());
+                receipt.setCategoryId(1);
+                receipt.setUrl(image);
+
+                //tags = tagSearchSpinner.getAllTags();
+
+
+                _id = dbController.insertReceipt(receipt, null);
+                dbController.close();
+                Log.d(LOG_NAME, "ID: " + _id);
+
+                Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);
+                startActivity(goToHomePage);
             }
+
         });
 
 
@@ -169,49 +170,6 @@ public class AddReceiptActivity extends Activity {
         });
     }
 
-    public boolean checkLogin() {
-        if (userRepo.getCurrentUserId() == null) {
-            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword());
-            return false;
-        }
-        return true;
-    }
-
-    private void silentLogin(String email, String password) {
-        //Login
-        userRepo.loginUser(email, password
-                , new CustomerRepository.LoginCallback() {
-                    @Override
-                    public void onSuccess(AccessToken token, Customer currentUser) {
-                        app.setCurrentUser(currentUser);
-                        Log.d(LOG_NAME, "current user's token:Id " + token.getUserId() + ":" + currentUser.getId());
-                        //saveReceipt();
-                    }
-
-                    @Override
-                    public void onError(Throwable t) {
-                        Log.e(LOG_NAME, "Login E", t);
-                        //showMessage(getString(R.string.save_fail_message));
-                    }
-                });
-    }
-
-
-    // [Convert string we got from the EditText to Date ]
-    /*private Date convertStringToDate(String dateString) {
-        Date date = new Date();
-        Log.d("dateString", dateString + "");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            date = format.parse(dateString);
-            Log.d("date", date + "");
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return date;
-    }*/
-
     // []
     private void saveReceiptDataInDB(Receipt receipt, LinkedList<Tag> tag) {
         dbController.open();
@@ -236,4 +194,19 @@ public class AddReceiptActivity extends Activity {
                 .formatDateTime(this,
                         dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
     }
+
+    // [Convert string we got from the EditText to Date ]
+    /*private Date convertStringToDate(String dateString) {
+        Date date = new Date();
+        Log.d("dateString", dateString + "");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = format.parse(dateString);
+            Log.d("date", date + "");
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return date;
+    }*/
 }
