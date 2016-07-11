@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
@@ -42,18 +43,18 @@ public class SQLController {
     }
 
 
-    public Cursor readAllReceipts() {
+    /*public Cursor readAllReceipts() {
 
-        String sqlQuery = "SELECT * FROM "+ DBHelper.TABLE_RECEIPT + " re, "
-                                + DBHelper.TABLE_STORE + " st "
-                                + " WHERE re."+DBHelper.RECEIPT_FK_STORE_ID+"=st."+DBHelper.STORE_ID
-                                + " ORDER BY re."+DBHelper.RECEIPT_DATE;
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
+                + DBHelper.TABLE_STORE + " st "
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;
 
-    }
+    }*/
 
     /*public Cursor readAllReceipts() {
 
@@ -72,6 +73,19 @@ public class SQLController {
     }*/
 
 
+    public Cursor readAllReceipts() {
+
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
+                + DBHelper.TABLE_STORE + " st " /*+ DBHelper.TABLE_STORE + " st " */
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
+    }
+
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
@@ -81,10 +95,14 @@ public class SQLController {
         values.put(DBHelper.RECEIPT_CREATEDATE, getDateTime());
         values.put(DBHelper.RECEIPT_DATE, receipt.getDate());
         values.put(DBHelper.RECEIPT_TOTAL, receipt.getTotal());
+        values.put(DBHelper.RECEIPT_PAYMENT_METHOD, receipt.getPaymentMethod());
+
+
         if (receipt.getUrl() != null) {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
         }
 
+        Log.d(LOG_NAME, "in insert receipt");
         // Insert row
         long receiptId = database.insert(DBHelper.TABLE_RECEIPT, null, values);
 
@@ -145,7 +163,7 @@ public class SQLController {
     }
 
     private long findStore(String name) {
-        String sqlQuery = "SELECT * FROM "+ DBHelper.TABLE_STORE + " WHERE "+DBHelper.STORE_NAME+"=\'"+name+"\'";
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_NAME + "=\'" + name + "\'";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor.getCount() > 0) {
