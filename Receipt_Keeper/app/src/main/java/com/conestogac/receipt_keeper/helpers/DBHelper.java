@@ -29,6 +29,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String RECEIPT_CREATEDATE = "createDate";
     public static final String RECEIPT_TOTAL = "total";
     public static final String RECEIPT_URL = "url";
+    public static final String RECEIPT_PAYMENT_METHOD = "payment_method";
+
 
     // Table ReceiptTag and columns
     public static final String TABLE_RECEIPT_TAG = "receiptTag";
@@ -65,7 +67,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + RECEIPT_FK_CUSTOMER_ID + " INTEGER ," + RECEIPT_FK_STORE_ID + " INTEGER ,"
             + RECEIPT_FK_CATEGORY_ID + " INTEGER ," + RECEIPT_COMMENT + " TEXT ,"
             + RECEIPT_DATE + " TEXT ," + RECEIPT_TOTAL + " REAL, "
-            + RECEIPT_URL + " TEXT," + RECEIPT_CREATEDATE + " TEXT"
+            + RECEIPT_URL + " TEXT," + RECEIPT_CREATEDATE + " TEXT ,"
+            + RECEIPT_PAYMENT_METHOD + " TEXT"
             + ")";
 
     // Receipt_Tag table create statement
