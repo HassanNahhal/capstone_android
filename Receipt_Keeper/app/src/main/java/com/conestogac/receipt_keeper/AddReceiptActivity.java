@@ -121,9 +121,8 @@ public class AddReceiptActivity extends Activity {
                 //tags = tagSearchSpinner.getAllTags();
 
 
-                _id = dbController.insertReceipt(receipt, null);
+                dbController.insertReceipt(receipt, null);
                 dbController.close();
-                Log.d(LOG_NAME, "ID: " + _id);
 
                 Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);
                 startActivity(goToHomePage);
