@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void goToHomeActivity() {
-        Intent goToHomeActivity = new Intent(this, HomeActivity.class);
+        Intent goToHomeActivity = new Intent(this, Home2Activity.class);
         startActivity(goToHomeActivity);
     }
 
