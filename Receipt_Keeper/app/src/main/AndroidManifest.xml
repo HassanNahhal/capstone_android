@@ -63,12 +63,6 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".HomeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Light"
-            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".AddReceiptActivity" />
         <activity
             android:name=".authenticate.UserProfileActivity"
@@ -91,6 +85,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.conestogac.receipt_keeper.Home2Activity" />
         </activity>
+        <receiver android:name=".widget.GoOCRWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data 	android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
+        </receiver>
     </application>
 
 </manifest>

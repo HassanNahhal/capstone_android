@@ -170,7 +170,6 @@ public class AddReceiptActivity extends Activity {
 
                     }
                 }
-
             }
         });
     }

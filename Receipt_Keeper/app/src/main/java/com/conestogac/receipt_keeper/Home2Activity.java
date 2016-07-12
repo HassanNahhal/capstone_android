@@ -27,7 +27,7 @@ import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
 public class Home2Activity extends AppCompatActivity {
 
-    private static final String TAG = HomeActivity.class.getSimpleName();
+    private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
     private ReceiptCursorAdapter receiptAdapter;
     private SQLController dbContoller;
