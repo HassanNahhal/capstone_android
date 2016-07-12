@@ -83,7 +83,17 @@ public class SQLController {
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;
+    }
 
+    public Cursor getAllUnSyncReceipts() {
+
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT
+                + " WHERE " + DBHelper.TABLE_RECEIPT + "." + DBHelper.RECEIPT_IS_SYNCED+"=0";
+
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
     }
 
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
@@ -171,6 +181,18 @@ public class SQLController {
             return localCursor.getInt(localCursor.getColumnIndex(DBHelper.STORE_ID));
         } else {
             return 0;
+        }
+    }
+
+    private Cursor getAllUnSyncStore() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor.getCount() > 0) {
+            localCursor.moveToFirst();
+            return localCursor;
+        } else {
+            return null;
         }
     }
 

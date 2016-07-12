@@ -16,8 +16,6 @@ public class Receipt {
 
     //For Sync
     private String r_id;
-    private String r_categoryId;
-    private String r_tagId;
     private boolean isSync;
 
     public Receipt() {
@@ -133,22 +131,6 @@ public class Receipt {
 
     public String getR_id() {
         return this.r_id;
-    }
-
-    public void setR_categoryId(String r_categoryId) {
-        this.r_categoryId = r_categoryId;
-    }
-
-    public String getR_categoryId() {
-        return this.r_categoryId;
-    }
-
-    public void setR_tagId(String r_tagId) {
-        this.r_tagId = r_tagId;
-    }
-
-    public String getR_tagId() {
-        return this.r_tagId;
     }
 
     public boolean get_isSync() {

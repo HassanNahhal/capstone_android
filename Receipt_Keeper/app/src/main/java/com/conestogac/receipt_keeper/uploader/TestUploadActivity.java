@@ -132,9 +132,11 @@ public class TestUploadActivity extends AppCompatActivity {
     /*
       Save Receipt
      */
-    private void saveReceipt() {
+    private void testSaveReceipt() {
         Date currentDate = new Date();
         ReceiptRepository repository = adapter.createRepository(ReceiptRepository.class);
+
+
         Receipt receipt = repository.createObject(ImmutableMap.of(
                     "total", 120,
                     "numberOfItem", 3,
@@ -222,6 +224,52 @@ public class TestUploadActivity extends AppCompatActivity {
         }
 
         dbController.close();
+    }
+
+    /*
+     upload receipt which is called by button click listener
+    */
+    public void uploadStoreItem(View view) {
+        if (checkLogin()) {
+            StoreRepository repository = adapter.createRepository(StoreRepository.class);
+
+
+        }
+    }
+
+    /*
+      Save Receipt
+     */
+    private void saveReceipt() {
+        Date currentDate = new Date();
+        ReceiptRepository repository = adapter.createRepository(ReceiptRepository.class);
+
+        Receipt receipt = repository.createObject(ImmutableMap.of(
+                "total", 120,
+                "numberOfItem", 3,
+                "imgaeFilePath", "http://localhost",
+                "date", dateFormat.format(currentDate),
+                "storeId", "577bc87cb1ac300300f6cfbe"
+                )
+        );
+
+        Log.d(TAG, "Current User Id: "+userRepo.getCurrentUserId());
+        receipt.setCustomerId((String) (userRepo.getCurrentUserId()));
+
+        receipt.save(new VoidCallback() {
+            @Override
+            public void onSuccess() {
+                // Success
+                showMessage("Success Save");
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // save failed, handle the error
+                Log.e(TAG, "Saving E", t);
+                showMessage(getString(R.string.save_fail_message));
+            }
+        });
     }
 
 }

@@ -9,17 +9,16 @@ public class Store {
 
     //For Sync
     private String r_id;
+    private boolean isSync;
 
     public Store() {
 
     }
 
-
     public Store(int id, String name) {
         this.id = id;
         this.name = name;
     }
-
 
     // Attribute Getters
     public int getId() {
@@ -31,6 +30,9 @@ public class Store {
     public String getR_id() {
         return r_id;
     }
+    public boolean getIsSync() {
+        return isSync;
+    }
 
     // Attribute Setters
     public void setId(int id) {
@@ -41,5 +43,8 @@ public class Store {
     }
     public void setR_id(String id) {
         this.r_id = r_id;
+    }
+    public void setIsSync(boolean isSync) {
+        this.isSync = isSync;
     }
 }
