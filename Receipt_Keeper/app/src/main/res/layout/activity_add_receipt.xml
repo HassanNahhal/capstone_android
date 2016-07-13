@@ -81,14 +81,16 @@
         android:layout_height="wrap_content"
         android:text="@string/receipt_id"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_above="@+id/receiptIdTextView2"
-        android:layout_alignParentStart="false" />
+        android:layout_above="@+id/receiptImageButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp" />
 
     <TextView
         android:id="@+id/receiptIdTextView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Medium Text"
+        android:text="@string/receipt_id"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_below="@+id/searchMultiSpinner"
         android:layout_alignStart="@+id/searchMultiSpinner" />
@@ -122,7 +124,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="15dp" />
 
-    <com.conestogac.receipt_keeper.MultiSpinnerSearch
+    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
         android:id="@+id/categorySearchMultiSpinner"
         android:layout_width="150dp"
         android:layout_height="50dp"
@@ -166,5 +168,12 @@
         android:id="@+id/paymentEditText"
         android:layout_alignBottom="@+id/paymentTextView"
         android:layout_alignStart="@+id/commentEditText" />
+
+    <ImageButton
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:id="@+id/receiptImageButton"
+        android:layout_below="@+id/receiptIdTextView2"
+        android:layout_alignStart="@+id/textView" />
 
 </RelativeLayout>

@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.Home2Activity;
 import com.conestogac.receipt_keeper.helpers.BaseActivity;
-import com.conestogac.receipt_keeper.HomeActivity;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;

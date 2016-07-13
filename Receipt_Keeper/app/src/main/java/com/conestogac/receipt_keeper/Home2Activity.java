@@ -3,6 +3,7 @@ package com.conestogac.receipt_keeper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -27,7 +28,7 @@ import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
 public class Home2Activity extends AppCompatActivity {
 
-    private static final String TAG = HomeActivity.class.getSimpleName();
+    private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
     private ReceiptCursorAdapter receiptAdapter;
     private SQLController dbContoller;
@@ -48,20 +49,24 @@ public class Home2Activity extends AppCompatActivity {
 
         receiptListView = (ListView) findViewById(R.id.receiptListView);
         receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
-        readAllDataFromDatabase();
+
+        dbContoller.open();
+        Cursor cursor = dbContoller.getStoreCategoryIds();
+        dbContoller.close();
+        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(cursor));
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-               @Override
-               public void onItemClick(AdapterView<?> listView, View view,
-                                       int position, long id) {
-                   //Todo Goto Detail View, Need to define Parcelable interface for sending Extra
-                   Log.d(TAG, "Goto Detail View!  position: "+position);
+            @Override
+            public void onItemClick(AdapterView<?> listView, View view,
+                                    int position, long id) {
+                //Todo Goto Detail View, Need to define Parcelable interface for sending Extra
+                Log.d(TAG, "Goto Detail View!  position: " + position);
 
-                   // Get the cursor, positioned to the corresponding row in the result set
-                   Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+                // Get the cursor, positioned to the corresponding row in the result set
+                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
-               }
-           });
+            }
+        });
 
         /*dbContoller.open();
         Log.d("here", "here");
@@ -84,7 +89,7 @@ public class Home2Activity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent addUserIntent = new Intent(fab.getContext(), AddReceiptActivity.class);
+                    Intent addUserIntent = new Intent(fab.getContext(), CaptureActivity.class);
                     startActivity(addUserIntent);
                 }
             });
@@ -129,7 +134,7 @@ public class Home2Activity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem myMenu = menu.findItem(R.id.action_auto_login);
-        myMenu.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false));
+        myMenu.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, false));
 
         return true;
     }
@@ -144,10 +149,9 @@ public class Home2Activity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_auto_login:
-                if (item.isChecked()){
+                if (item.isChecked()) {
                     item.setChecked(false);
-                }
-                else {
+                } else {
                     item.setChecked(true);
 
                 }
@@ -165,6 +169,12 @@ public class Home2Activity extends AppCompatActivity {
                 Intent ocrIntent = new Intent(this, CaptureActivity.class);
                 startActivity(ocrIntent);
                 return true;
+
+            case R.id.action_insert_receipt:
+                Intent goInsert = new Intent(this, AddReceiptActivity.class);
+                startActivity(goInsert);
+                return true;
+
             default:
                 break;
         }

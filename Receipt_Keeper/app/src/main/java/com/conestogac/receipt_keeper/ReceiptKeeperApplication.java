@@ -10,7 +10,7 @@ import com.conestogac.receipt_keeper.uploader.Customer;
  */
 public class ReceiptKeeperApplication extends Application {
     RestAdapter adapter;
-    Customer user;
+    static Customer user;
 
     public RestAdapter getLoopBackAdapter() {
         if (adapter == null) {

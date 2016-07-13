@@ -6,20 +6,27 @@ package com.conestogac.receipt_keeper.uploader;
 public class Store extends com.strongloop.android.loopback.Model {
     private String id;
     private String name;
+    private String customerId;
+    private String groupId;
 
     public Store() { }
-
-        public String getId() {
-            return this.id;
-        }
         public String getName() {
             return name;
         }
-
-        public void setId(String id) {
-            this.id = id;
+        public String getCustomerId() {
+            return this.customerId;
         }
+        public String getGroupId() {
+            return this.groupId;
+        }
+
         public void setName(String name) {
             this.name = name;
+        }
+        public void setCustomerId(String customerId) {
+            this.customerId = customerId;
+        }
+        public void setGroupId(String groupId) {
+            this.groupId = groupId;
         }
 }

@@ -54,7 +54,7 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         TextView tvStoreName = (TextView) view.findViewById(R.id.storeNameTextView);
         TextView tvTotal = (TextView) view.findViewById(R.id.totalTextView);
         TextView tvDateTime = (TextView) view.findViewById(R.id.dateTextView);
-        TextView tvId = (TextView) view.findViewById(R.id.idTextView);
+        TextView tvPayment = (TextView) view.findViewById(R.id.paymentTextView);
         TextView tvTags = (TextView) view.findViewById(R.id.tagsTextView);
         Button btIsSync = (Button) view.findViewById(R.id.isSync);
         String imagePath;
@@ -72,10 +72,13 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         tvStoreName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)));
         tvTotal.setText("$ "+String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
         tvDateTime.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)));
-        tvId.setText(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_ID))));
-        tvTags.setText("TAG NAME");
-        //todo should get from DB
-        btIsSync.setBackgroundColor(getColorFromValue(1));
+        tvPayment.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
+
+        //Todo depends on payment -> Show different icon
+        Log.d(TAG,"Payment: "+cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
+        // TODO: 16-07-12
+        tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
+        btIsSync.setBackgroundColor(getColorFromValue(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED))));
     }
 
     public Integer getColorFromValue(Integer value) {
@@ -87,7 +90,7 @@ public class ReceiptCursorAdapter extends CursorAdapter {
                 break;
 
             default:
-                retColor = android.R.color.holo_blue_light;
+                retColor = android.R.color.holo_orange_light;
                 break;
 
         }

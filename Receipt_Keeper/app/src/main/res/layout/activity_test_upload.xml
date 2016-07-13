@@ -41,4 +41,12 @@
         android:layout_gravity="center_horizontal"
         android:onClick="createTestDB" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload Store"
+        android:id="@+id/uploadStore"
+        android:layout_gravity="center_horizontal"
+        android:onClick="uploadSTore" />
+
 </LinearLayout>

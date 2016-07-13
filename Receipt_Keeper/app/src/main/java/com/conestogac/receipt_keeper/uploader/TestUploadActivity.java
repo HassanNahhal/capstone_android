@@ -1,5 +1,6 @@
 package com.conestogac.receipt_keeper.uploader;
 
+import android.database.Cursor;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,9 +11,7 @@ import android.widget.Toast;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
 import com.conestogac.receipt_keeper.SQLController;
-import com.conestogac.receipt_keeper.uploader.CustomerRepository;
-import com.conestogac.receipt_keeper.uploader.Receipt;
-import com.conestogac.receipt_keeper.uploader.ReceiptRepository;
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.AccessToken;
@@ -29,6 +28,8 @@ import java.util.Locale;
 
 public class TestUploadActivity extends AppCompatActivity {
     private static final String TAG = "TestUploadActivity";
+    private Store store;
+    private StoreRepository repository;
     private ReceiptKeeperApplication app;
     private RestAdapter adapter;
     private CustomerRepository userRepo;
@@ -36,6 +37,11 @@ public class TestUploadActivity extends AppCompatActivity {
     static private Container container;
     private SQLController dbController;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+
+    private static final int CALLBACK_LOGIN = 1;
+    private static final int CALLBACK_UPLOAD_STORE = 2;
+    private static final int CALLBACK_UPLOAD_TAG = 3;
+
 
 
     @Override
@@ -47,6 +53,8 @@ public class TestUploadActivity extends AppCompatActivity {
         adapter = app.getLoopBackAdapter();
         userRepo = adapter.createRepository(CustomerRepository.class);
         dbController = new SQLController(this);
+        dbController.open();
+        //todo close some where
     }
 
     public void uploadImage(View view){
@@ -124,7 +132,7 @@ public class TestUploadActivity extends AppCompatActivity {
         upload receipt which is called by button click listener
      */
     public void uploadReceiptItem(View view) {
-        if (checkLogin()) {
+        if (isLogin(CALLBACK_LOGIN)) {
             saveReceipt();
         }
     }
@@ -170,9 +178,9 @@ public class TestUploadActivity extends AppCompatActivity {
         If does not login, it will login background and will call save at the callback
         If it is return true to make caller can go proceed
      */
-    private boolean checkLogin() {
+    private boolean isLogin(int callbacKId) {
         if (userRepo.getCurrentUserId() == null){
-            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword());
+            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
             return false;
         }
         return true;
@@ -184,7 +192,7 @@ public class TestUploadActivity extends AppCompatActivity {
     }
 
 
-    private void silentLogin(String email, String password) {
+    private void silentLogin(String email, String password, final int callbackId) {
         //Login
         userRepo.loginUser(email , password
                 , new CustomerRepository.LoginCallback() {
@@ -192,7 +200,16 @@ public class TestUploadActivity extends AppCompatActivity {
                     public void onSuccess(AccessToken token, Customer currentUser) {
                         app.setCurrentUser(currentUser);
                         Log.d(TAG, "current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
-                        saveReceipt();
+                        switch (callbackId) {
+                            case CALLBACK_LOGIN:
+                                saveReceipt();
+                                break;
+                            case CALLBACK_UPLOAD_STORE:
+                                uploadStore();
+                                break;
+                            default:
+                                break;
+                        }
                     }
                     @Override
                     public void onError(Throwable t) {
@@ -219,6 +236,7 @@ public class TestUploadActivity extends AppCompatActivity {
             receipt.setDate("2016-07-08");
             receipt.setTotal((float)(10.0+i*10.0));
             receipt.setUrl(image);
+            receipt.setPaymentMethod("Master");
             _id = dbController.insertReceipt(receipt, null);
             Log.d(TAG, "ID: "+_id);
         }
@@ -226,14 +244,50 @@ public class TestUploadActivity extends AppCompatActivity {
         dbController.close();
     }
 
+    public void uploadSTore(View view) {
+        uploadStore();
+    }
+
     /*
      upload receipt which is called by button click listener
     */
-    public void uploadStoreItem(View view) {
-        if (checkLogin()) {
-            StoreRepository repository = adapter.createRepository(StoreRepository.class);
+    private void uploadStore() {
+        String customerID;
+        Cursor cursor;
+
+        if (!isLogin(CALLBACK_UPLOAD_STORE))
+            return;
+
+        customerID = (String) userRepo.getCurrentUserId();
+        cursor = dbController.getAllUnSyncStore();
+        if (cursor==null) return;
 
 
+        Log.d(TAG, "Number Store to upload: "+ cursor.getCount());
+        repository = adapter.createRepository(StoreRepository.class);
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            store = repository.createObject(ImmutableMap.of(
+                    "name",cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME))
+            ));
+            store.setCustomerId(customerID);
+            store.setGroupId("");
+            Log.d(TAG, "RestUrl: "+ repository.getNameForRestUrl());
+            store.save(new VoidCallback() {
+                @Override
+                public void onSuccess() {
+                    // Success
+                    //todo set as synced and set rsync
+                    //Todo How to set r_id and synced?
+                    Log.d(TAG, "Success Save:"+ store.getId());
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    // save failed, handle the error
+                    Log.e(TAG, "Saving E", t);
+                }
+            });
         }
     }
 

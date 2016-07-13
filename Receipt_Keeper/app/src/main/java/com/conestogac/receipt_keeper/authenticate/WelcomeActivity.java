@@ -16,7 +16,9 @@ package com.conestogac.receipt_keeper.authenticate;
  * limitations under the License.
  */
 
+import android.appwidget.AppWidgetManager;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -28,9 +30,6 @@ import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.Home2Activity;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
-import com.conestogac.receipt_keeper.HomeActivity;
-import com.conestogac.receipt_keeper.LearnMoreActivity;
-import com.conestogac.receipt_keeper.MainActivity;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.Customer;
@@ -51,6 +50,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     private SharedPreferences loginPreferences;
     private Customer currentCustomer;
     private ReceiptKeeperApplication app;
+    private int widgetId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +78,13 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         String userName = loginPreferences.getString(UserProfileActivity.SHAREDPREF_KEY_USERNAME,"");
         boolean autoLogin = loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false);
 
+
+        if (getIntent().hasExtra(AppWidgetManager.EXTRA_APPWIDGET_ID)) {
+            getIntent().getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+        } else {
+            widgetId = -1;
+        }
+
         //Todo user signed up and with save password check -> then goto list
         //Todo user signed up and without save passoword check -> then goto list
         //todo incase of user already login, goto OCR directly
@@ -90,12 +97,17 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 currentCustomer.setEmail(userEmail);
                 currentCustomer.setPassword(userPassword);
                 app.setCurrentUser(currentCustomer);
-
-                showResult("Welcome "+userName);
-                Intent homeIntent = new Intent(this, Home2Activity.class);
-                //to prevent user back to this activity
-                homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(homeIntent);
+                if (widgetId == -1) {
+                    showResult("Welcome " + userName);
+                    Intent homeIntent = new Intent(this, Home2Activity.class);
+                    //to prevent user back to this activity
+                    homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(homeIntent);
+                } else {
+                    Intent captureIntent = new Intent(this, CaptureActivity.class);
+                    captureIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(captureIntent);
+                }
             } else {
                 Log.d(TAG, "Auto login off");
                 Intent signInIntent = new Intent(this, UserProfileActivity.class);
@@ -123,7 +135,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(signInIntent);
                 break;
             case R.id.learnMore:
-                startActivity(new Intent(this, LearnMoreActivity.class));
+                String url = "https://receipt-keeper.herokuapp.com/";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
                 break;
         }
     }

@@ -20,17 +20,30 @@
 		<item>Single shot</item>
 	</string-array>
 
-	<string-array name="tags">
-		<item>Gift</item>
-		<item>Food</item>
-		<item>Cloth</item>
-		<item>Gas</item>
-		<item>Mobile</item>
-		<item>Hydro</item>
-		<item>Rent</item>
-		<item>Internet</item>
-		<item>Drugs</item>
-	</string-array>
+    <string-array name="categories">
+        <item>[Select Category]</item>
+        <item>Automotive</item>
+        <item>Pet Supplies</item>
+        <item>Clothing</item>
+        <item>Jewelry</item>
+        <item>Hobbies</item>
+        <item>Party</item>
+        <item>Baby Health</item>
+        <item>Diapering</item>
+        <item>Photography</item>
+    </string-array>
+
+    <string-array name="tags">
+        <item>Gift</item>
+        <item>Food</item>
+        <item>Cloth</item>
+        <item>Gas</item>
+        <item>Mobile</item>
+        <item>Hydro</item>
+        <item>Rent</item>
+        <item>Internet</item>
+        <item>Drugs</item>
+    </string-array>
 
 
 	<string-array name="pagesegmentationmodes">
