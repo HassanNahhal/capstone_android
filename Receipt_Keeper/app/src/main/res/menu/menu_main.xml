@@ -16,6 +16,11 @@
         app:showAsAction="never">
     </item>
     <item
+        android:id="@+id/action_insert_receipt"
+        android:title="InsertReceipt Test"
+        app:showAsAction="never">
+    </item>
+    <item
         android:id="@+id/action_sync_now"
         android:title="Sync Now"
         app:showAsAction="never">

@@ -70,11 +70,6 @@
             android:taskAffinity="" />
         <activity android:name=".uploader.TestUploadActivity" />
         <activity android:name=".helpers.BaseActivity" />
-        <activity
-            android:name=".LearnMoreActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_learn_more"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen" />
         <activity android:name=".Home2Activity" />
         <activity
             android:name=".SettingsActivity"
@@ -92,6 +87,9 @@
             <meta-data 	android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider" />
         </receiver>
+        <activity android:name=".Pop"
+            android:theme="@style/AppTheme.CustomTheme">
+        </activity>
     </application>
 
 </manifest>

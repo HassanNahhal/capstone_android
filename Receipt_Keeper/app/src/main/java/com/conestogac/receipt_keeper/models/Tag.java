@@ -10,6 +10,7 @@ public class Tag {
 
     //For Sync
     private String r_id;
+    private boolean isSync;
 
     public Tag() {
     }
@@ -23,18 +24,21 @@ public class Tag {
     public int getTagId() {
         return id;
     }
-
     public String getTagName() {
         return tagName;
     }
-
+    public boolean getIsSync() {
+        return isSync;
+    }
 
     // Attribute Setters
     public void setTagId(int id) {
         this.id = id;
     }
-
     public void setTagName(String tagName) {
         this.tagName = tagName;
+    }
+    public void setIsSync(boolean isSync) {
+        this.isSync = isSync;
     }
 }

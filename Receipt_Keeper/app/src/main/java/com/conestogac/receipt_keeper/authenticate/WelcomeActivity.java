@@ -18,6 +18,7 @@ package com.conestogac.receipt_keeper.authenticate;
 
 import android.appwidget.AppWidgetManager;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +30,6 @@ import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.Home2Activity;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
-import com.conestogac.receipt_keeper.LearnMoreActivity;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.Customer;
@@ -135,7 +135,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(signInIntent);
                 break;
             case R.id.learnMore:
-                startActivity(new Intent(this, LearnMoreActivity.class));
+                String url = "https://receipt-keeper.herokuapp.com/";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
                 break;
         }
     }

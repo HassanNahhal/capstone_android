@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -262,8 +263,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     String monthFound = "";
     String yearToDisplay = "";
     String dayToDisplay = "";
+    private String paymentMethod = "";
     int monthNumber = 0;
     public com.conestogac.receipt_keeper.GatheredData gatheredData = new com.conestogac.receipt_keeper.GatheredData();
+    String fullPathAndFilename = "";
+    String imageDirectory = "";
+    String imageFilename = "";
 
     Handler getHandler() {
         return handler;
@@ -347,6 +352,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         args.putString("Store Name", gatheredData.getStoreName());
                         args.putString("Amount", gatheredData.getAmount());
                         args.putString("selected", theLine);
+                       // args.putString("imagePath", gatheredData.getPathAndFileName());
                         fieldChoice.setArguments(args);
                         fieldChoice.show(getFragmentManager(), "multi_choice");
 
@@ -462,8 +468,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         isEngineReady = false;
 
-        Button goToOcrButton = (Button) findViewById(R.id.Proceed);
-        goToOcrButton.setOnClickListener(new View.OnClickListener() {
+        Button proceedButton = (Button) findViewById(R.id.Proceed);
+        proceedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goToAddReceipt();
@@ -523,6 +529,18 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         if (dayToDisplay != "") {
             addReceiptIntent.putExtra("Day", dayToDisplay);
         }
+
+        if (imageDirectory != "") {
+            addReceiptIntent.putExtra("imagePath", imageDirectory);
+        }
+        if (imageFilename != "") {
+            addReceiptIntent.putExtra("imageFileName", imageFilename);
+        }
+
+        if (paymentMethod != "") {
+            addReceiptIntent.putExtra("paymentMethod", paymentMethod);
+        }
+
         addReceiptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         addReceiptIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         //  cameraManager = null;
@@ -573,7 +591,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      */
     void resumeOCR() {
         Log.d(TAG, "resumeOCR()");
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         cameraManager.paused = false;
         isContinuousModeActive = true;
         // This method is called when Tesseract has already been successfully initialized, so set
@@ -1046,6 +1064,17 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             infoToDisplay += "Day:" + dayToDisplay;
             infoToDisplay += "Year:" + yearToDisplay;
 
+            String[] paymentMethods = {"VISA", "CASH"};
+
+            for (int k = 0; k < lines.length; k++) {
+                for (int j = 0; j < paymentMethods.length; j++) {
+                    for (int l = -1; (l = lines[k].toUpperCase().indexOf(paymentMethods[j], l + 1)) != -1; ) {
+                        paymentMethod = paymentMethods[j];
+
+                    }
+                }
+            }
+
       /*String currentSnippet;
       int indexOfReturn;
       String amounts = "";
@@ -1096,11 +1125,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 Dir.mkdir();
                 fullPathAndFilename += Dir.toString() + "/ReceiptKeeperFolder";
             }
+            imageDirectory = Dir.toString();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
             Date now = new Date();
             String fileName = formatter.format(now) + ".Receipt.bmp";
             File file = new File(Dir, fileName);
-            fullPathAndFilename += fileName;
+          //  fullPathAndFilename += fileName;
+            imageFilename = fileName;
             try {
                 FileOutputStream fileOutPutStream = new FileOutputStream(file);
                 Bitmap bmpToSave = lastBitmap;
@@ -1136,16 +1167,18 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             }
         }
 
-        DBHelper db = new DBHelper(this);
-        SQLController dbcontrol = new SQLController(this);
-        dbcontrol.open();
+        //DBHelper db = new DBHelper(this);
+        //SQLController dbcontrol = new SQLController(this);
+        //dbcontrol.open();
 
         // <====================I used tags of type linkedLinst rather than  tag_ids=========>
         long[] tag_ids = {0};
         LinkedList<Tag> tags = new LinkedList<>();
 
-        dbcontrol.insertReceipt(newReceipt, tags);
-        dbcontrol.close();
+
+        //It was decided to save the receipt from a subsequent intent so this can be commented out
+        //dbcontrol.insertReceipt(newReceipt, tags);
+        //dbcontrol.close();
 
         // Display the recognized text
         TextView sourceLanguageTextView = (TextView) findViewById(R.id.source_language_text_view);
@@ -1155,9 +1188,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         EditText etStoreName = (EditText) findViewById(R.id.etStoreName);
         EditText etAmount = (EditText) findViewById(R.id.etAmount);
         EditText etDate = (EditText) findViewById(R.id.etDate);
+        EditText etPaymentMethod = (EditText) findViewById(R.id.etPaymentMethod);
         etStoreName.setText(storeName);
         etAmount.setText(amount);
         etDate.setText(dayToDisplay + "-" + monthFound + "-" + yearToDisplay);
+        etPaymentMethod.setText(paymentMethod);
 
         TextView ocrResultDataGathered = (TextView) findViewById(R.id.ocr_result_data_gathered);
 

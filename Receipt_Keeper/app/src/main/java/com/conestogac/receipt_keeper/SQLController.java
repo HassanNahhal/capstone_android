@@ -56,16 +56,16 @@ public class SQLController {
 
     }*/
 
-    /*public Cursor readAllReceipts() {
 
-        Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT,
-                new String[]{
-                        DBHelper.RECEIPT_ID,
-                        DBHelper.RECEIPT_DATE,
-                        DBHelper.RECEIPT_TOTAL
-                }
-                , null,
-                null, null, null, null);
+
+
+   /* public Cursor readAllReceipts() {
+
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
+                + DBHelper.TABLE_STORE + " st " *//*+ DBHelper.TABLE_STORE + " st " *//*
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;
@@ -85,6 +85,7 @@ public class SQLController {
         return localCursor;
 
     }
+
 
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
         ContentValues values = new ContentValues();
@@ -117,11 +118,66 @@ public class SQLController {
         return receiptId;
     }
 
+    public Cursor getStoreCategoryIds() {
+        Cursor localCursor = this.database.query(DBHelper.TABLE_STORE_CATEGORY,
+                new String[]{
+                        DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,
+                        DBHelper.STORE_CATEGORY_FK_STORE_ID,
+                }
+                , null,
+                null, null, null, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+    }
+
+    public long insertStoreCategory(long storeId, long categoryId) {
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, categoryId);
+        values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, storeId);
+
+        return database.insert(DBHelper.TABLE_STORE_CATEGORY, null, values);
+    }
+
+    public long insertReceiptTag(long receiptId, long tagId) {
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.FK_RECEIPT_ID, receiptId);
+        values.put(DBHelper.FK_TAG_ID, tagId);
+
+        return database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
+    }
+
+    private int getTagIdByName(String tagName) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_NAME + "=\'" + tagName + "\'";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getInt(localCursor.getColumnIndex(DBHelper.TAG_ID));
+        } else {
+            return -1;
+        }
+    }
+
+
+    public int getCategoryIdByName(String categoryName) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_NAME + "=\'" + categoryName + "\'";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getInt(localCursor.getColumnIndex(DBHelper.CATEGORY_ID));
+        } else {
+            return -1;
+        }
+    }
+
 
     public long insertTag(Tag tag) {
         ContentValues values = new ContentValues();
         //values.put(TAG_ID, tag.getTagId());
         values.put(DBHelper.TAG_NAME, tag.getTagName());
+
 
         return database.insert(DBHelper.TABLE_TAG, null, values);
     }
@@ -139,6 +195,33 @@ public class SQLController {
             localCursor.moveToFirst();
         return localCursor;
 
+    }
+
+
+    public Cursor readAllReceiptTag() {
+
+        Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT_TAG,
+                new String[]{
+                        DBHelper.FK_RECEIPT_ID,
+                        DBHelper.FK_TAG_ID,
+                }
+                , null,
+                null, null, null, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
+    }
+    public Cursor getAllUnSyncTag() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor.getCount() > 0) {
+            localCursor.moveToFirst();
+            return localCursor;
+        } else {
+            return null;
+        }
     }
 
     public int insertStoreByName(String name) {
@@ -174,6 +257,18 @@ public class SQLController {
         }
     }
 
+    public Cursor getAllUnSyncStore() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor.getCount() > 0) {
+            localCursor.moveToFirst();
+            return localCursor;
+        } else {
+            return null;
+        }
+    }
+
     private String getDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -193,13 +288,7 @@ public class SQLController {
         return datetime;
     }*/
 
-    /*  public long insertReceiptTag(long receiptId, long tagId) {
-        ContentValues values = new ContentValues();
-        values.put(FK_RECEIPT_ID, receiptId);
-        //values.put(FK_TAG_ID, tagId);
 
-        return database.insert(TABLE_RECEIPT_TAG, null, values);
-    }*/
 
 
     /*public LinkedList<Receipt> readAllReceipts() {
@@ -311,4 +400,50 @@ public class SQLController {
                 new String[]{String.valueOf(database_ids.get(orderInList))});
     }*/
 
+       /*public Cursor readAllReceipts() {
+
+        Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT,
+                new String[]{
+                        DBHelper.RECEIPT_ID,
+                        DBHelper.RECEIPT_DATE,
+                        DBHelper.RECEIPT_TOTAL
+                }
+                , null,
+                null, null, null, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
+    }*/
+
+    /*public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, receipt.getCustomerId());
+        values.put(DBHelper.RECEIPT_FK_STORE_ID, receipt.getStoreId());
+        values.put(DBHelper.RECEIPT_FK_CATEGORY_ID, receipt.getCategoryId());
+        values.put(DBHelper.RECEIPT_COMMENT, receipt.getComment());
+        values.put(DBHelper.RECEIPT_CREATEDATE, getDateTime());
+        values.put(DBHelper.RECEIPT_DATE, receipt.getDate());
+        values.put(DBHelper.RECEIPT_TOTAL, receipt.getTotal());
+        values.put(DBHelper.RECEIPT_PAYMENT_METHOD, receipt.getPaymentMethod());
+
+
+        if (receipt.getUrl() != null) {
+            values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
+        }
+
+        Log.d(LOG_NAME, "in insert receipt");
+        // Insert row
+        long receiptId = database.insert(DBHelper.TABLE_RECEIPT, null, values);
+
+        if (tags != null) {
+            // Assigning tags to
+            for (Tag tag : tags) {
+                insertTag(tag);
+                //insertReceiptTag(receiptId, tag.getTagId());
+            }
+        }
+
+        return receiptId;
+    }*/
 }

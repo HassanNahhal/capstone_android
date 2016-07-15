@@ -1,11 +1,9 @@
 package com.conestogac.receipt_keeper.uploader;
 
-import com.strongloop.android.loopback.Model;
-
 import java.util.Date;
 
 
-public class Receipt extends Model {
+public class Receipt extends  com.strongloop.android.loopback.Model  {
 
     private String id;
     private String customerId;
