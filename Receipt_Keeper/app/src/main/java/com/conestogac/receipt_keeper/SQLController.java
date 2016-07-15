@@ -75,22 +75,10 @@ public class SQLController {
 
     public Cursor readAllReceipts() {
 
-        String sqlQuery = "SELECT re.*, tg.* " + " FROM "
-                + DBHelper.TABLE_RECEIPT + " re "
-                //+ DBHelper.TABLE_STORE + " st "
-                //+ DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
-                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
-                // + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
-                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
+                + DBHelper.TABLE_STORE + " st " /*+ DBHelper.TABLE_STORE + " st " */
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
-
-        Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -115,23 +103,20 @@ public class SQLController {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
         }
 
-        // [Insert row]
+        Log.d(LOG_NAME, "in insert receipt");
+        // Insert row
         long receiptId = database.insert(DBHelper.TABLE_RECEIPT, null, values);
 
         if (tags != null) {
-            // [Assigning tags to]
+            // Assigning tags to
             for (Tag tag : tags) {
-                long tagId = getTagIdByName(tag.getTagName());
-                insertReceiptTag(receiptId, tagId);
+                insertTag(tag);
+                //insertReceiptTag(receiptId, tag.getTagId());
             }
         }
 
-        insertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
-
-
         return receiptId;
     }
-
 
     public Cursor getStoreCategoryIds() {
         Cursor localCursor = this.database.query(DBHelper.TABLE_STORE_CATEGORY,
@@ -192,6 +177,7 @@ public class SQLController {
         ContentValues values = new ContentValues();
         //values.put(TAG_ID, tag.getTagId());
         values.put(DBHelper.TAG_NAME, tag.getTagName());
+
 
         return database.insert(DBHelper.TABLE_TAG, null, values);
     }

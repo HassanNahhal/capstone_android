@@ -237,6 +237,7 @@ public class TestUploadActivity extends AppCompatActivity {
             receipt.setTotal((float)(10.0+i*10.0));
             receipt.setUrl(image);
             receipt.setPaymentMethod("Master");
+            receipt.setTagId(i%4);
             _id = dbController.insertReceipt(receipt, null);
             Log.d(TAG, "ID: "+_id);
         }

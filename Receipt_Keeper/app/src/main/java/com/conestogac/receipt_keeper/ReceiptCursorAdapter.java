@@ -77,7 +77,7 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         //Todo depends on payment -> Show different icon
         Log.d(TAG,"Payment: "+cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
         // TODO: 16-07-12
-        tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
+        // Todo tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
         btIsSync.setBackgroundColor(getColorFromValue(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED))));
     }
 
