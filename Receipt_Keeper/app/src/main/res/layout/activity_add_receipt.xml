@@ -90,7 +90,7 @@
         android:id="@+id/receiptIdTextView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/receiptid"
+        android:text="@string/receipt_id"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_below="@+id/searchMultiSpinner"
         android:layout_alignStart="@+id/searchMultiSpinner" />
