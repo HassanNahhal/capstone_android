@@ -3,6 +3,8 @@ package com.conestogac.receipt_keeper;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ScrollView;
 
 import com.conestogac.receipt_keeper.MultiSpinnerSearch.MultiSpinnerSearchListener;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
@@ -18,6 +22,12 @@ import com.conestogac.receipt_keeper.models.Tag;
 import com.conestogac.receipt_keeper.uploader.CustomerRepository;
 import com.strongloop.android.loopback.RestAdapter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -35,6 +45,7 @@ public class AddReceiptActivity extends Activity {
     private MultiSpinnerSearch categorySearchMultiSpinner;
     private MultiSpinnerSearch tagSearchSpinner;
     private Button saveReceiptButton;
+    private ImageButton viewImageButton;
 
 
     private SQLController dbController;
@@ -46,6 +57,9 @@ public class AddReceiptActivity extends Activity {
     // [ from TestUplaodActivity]
     private CustomerRepository userRepo;
     private RestAdapter adapter;
+    private String imagePath;
+    private String imageFileName;
+    private String paymentMethod;
 
 
     @Override
@@ -75,8 +89,73 @@ public class AddReceiptActivity extends Activity {
         commentEditText = (EditText) findViewById(R.id.commentEditText);
         paymentEditText = (EditText) findViewById(R.id.paymentEditText);
         saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
+        viewImageButton = (ImageButton) findViewById(R.id.viewImage);
         categorySearchMultiSpinner = (MultiSpinnerSearch) findViewById(R.id.categorySearchMultiSpinner);
         tagSearchSpinner = (MultiSpinnerSearch) findViewById(R.id.searchMultiSpinner);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String storeName = extras.getString("StoreName");
+            if (storeName != null) {
+                storeNamEditText.setText(storeName);
+            }
+            String amount = extras.getString("Amount");
+            if (amount != null) {
+                totalEditText.setText(amount);
+            }
+            int yearToSet = 0;
+            String year = extras.getString("Year");
+            if (year != null) {
+                yearToSet = Integer.parseInt(year);
+            }
+            int monthToSet = 0;
+            int month = extras.getInt("Month");
+            if (month != 0) {
+                monthToSet = month;
+            }
+            int dayToSet = 0;
+            String day = extras.getString("Day");
+            if (day != null) {
+                dayToSet = Integer.parseInt(day);
+            }
+            dateAndTime.set(yearToSet, monthToSet, dayToSet);
+            dateEditText.setText(dateAndTime.toString());
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            if (dateAndTime != null) {
+                dateEditText.setText(sdf.format(dateAndTime.getTime()));
+            }
+
+            imagePath = extras.getString("imagePath");
+            imageFileName = extras.getString("imageFileName");
+
+            File Dir = new File(imagePath);
+            File file = new File(Dir, imageFileName);
+
+            try {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+                // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                File f=new File(imagePath, imageFileName);
+                Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+                viewImageButton.setImageBitmap(b);
+                // ImageView img=(ImageView)findViewById(R.id.receiptImage);
+                // img.setImageBitmap(b);
+
+
+            }
+            catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            paymentMethod = extras.getString("paymentMethod");
+
+            if (paymentMethod != "") {
+                paymentEditText.setText(paymentMethod);
+            }
+        }
 
 
         dateEditText.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +215,24 @@ public class AddReceiptActivity extends Activity {
 
         });
 
+        viewImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*Receipt receipt = new Receipt();
+                //Date date = convertStringToDate(dateString);
+                saveReceiptDataInDB(receipt, tags);*/
+
+                Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
+                if (imagePath != "") {
+                    popIntent.putExtra("imagePath", imagePath);
+                }
+                if (imageFileName != "") {
+                    popIntent.putExtra("imageFileName", imageFileName);
+                }
+                startActivity(popIntent);
+            }
+        });
+
 
         /**
          * Search MultiSelection Spinner (With Search/Filter Functionality)
@@ -172,6 +269,10 @@ public class AddReceiptActivity extends Activity {
                 }
             }
         });
+
+        ScrollView scrollView = (ScrollView) findViewById(R.id.addReceiptScrollView);
+        scrollView.isSmoothScrollingEnabled();
+
     }
 
     // []

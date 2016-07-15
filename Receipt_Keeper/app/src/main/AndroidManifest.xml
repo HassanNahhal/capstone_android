@@ -92,6 +92,9 @@
             <meta-data 	android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider" />
         </receiver>
+        <activity android:name=".Pop"
+            android:theme="@style/AppTheme.CustomTheme">
+        </activity>
     </application>
 
 </manifest>
