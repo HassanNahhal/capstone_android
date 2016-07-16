@@ -1002,7 +1002,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             infoToDisplay += "Amount:";
             if (currentSnippet != "") {
                 infoToDisplay += currentSnippet.substring(0, indexOfReturn + 3);
-                amount = currentSnippet.substring(0, indexOfReturn + 3);
+                amount = currentSnippet.substring(1, indexOfReturn + 3);
             }
             infoToDisplay += " ";
 

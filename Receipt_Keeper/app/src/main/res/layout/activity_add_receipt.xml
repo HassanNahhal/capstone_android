@@ -13,7 +13,7 @@
     <ScrollView
         android:id="@+id/addReceiptScrollView"
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="wrap_content"
         android:focusable="false"
         android:fillViewport="true">
         <RelativeLayout
@@ -35,7 +35,7 @@
                 android:layout_height="50dp"
                 android:layout_alignBottom="@+id/storeNameTextView"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="40dp" />
+                />
 
             <TextView
                 android:id="@+id/totalTextView"
@@ -55,7 +55,8 @@
                 android:layout_alignBottom="@+id/totalTextView"
                 android:layout_alignStart="@+id/storeNamEditText"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                />
 
             <TextView
                 android:id="@+id/dateTextView"
@@ -76,8 +77,6 @@
                 android:layout_alignStart="@+id/totalEditText"
                 android:ems="10"
                 android:inputType="date" />
-
-
 
             <TextView
                 android:id="@+id/receiptIdTextView"
@@ -187,6 +186,8 @@
                 android:text="@string/save"
                 android:layout_below="@+id/viewImage"
                 android:layout_alignParentEnd="true" />
+
+
 
         </RelativeLayout>
     </ScrollView>

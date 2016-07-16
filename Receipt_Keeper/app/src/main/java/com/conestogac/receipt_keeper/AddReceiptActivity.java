@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeMap;
 
-public class AddReceiptActivity extends Activity {
+public class AddReceiptActivity extends AppCompatActivity {
 
     // [Layout views]
     private EditText storeNamEditText;
