@@ -7,23 +7,20 @@ import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Switch;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
-import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
-import com.conestogac.receipt_keeper.uploader.Receipt;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
 public class Home2Activity extends AppCompatActivity {
@@ -51,9 +48,9 @@ public class Home2Activity extends AppCompatActivity {
         receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
 
         dbContoller.open();
-        Cursor cursor = dbContoller.getStoreCategoryIds();
+        Cursor cursor = dbContoller.readAllReceipts();
         dbContoller.close();
-        Log.v("Cursor Object", DatabaseUtils.dumpCursorToString(cursor));
+        Log.v("readAllReceipts Cursor", DatabaseUtils.dumpCursorToString(cursor));
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -84,7 +81,9 @@ public class Home2Activity extends AppCompatActivity {
 
         // [ Go to AddReceiptActivity when clicked]
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_add);
+        fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_add_circle_black_24dp));
+
+        //fab.setImageResource(R.drawable.ic_add);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -136,6 +135,46 @@ public class Home2Activity extends AppCompatActivity {
         MenuItem myMenu = menu.findItem(R.id.action_auto_login);
         myMenu.setChecked(loginPreferences.getBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, false));
 
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String queryFor) {
+                // perform query here
+                dbContoller.open();
+                final Cursor cursor = dbContoller.getAllReceiptsWithValue(queryFor);
+                dbContoller.close();
+                if (cursor != null) {
+                    new Handler().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //get cursor and load data into adapter
+                            receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
+
+                            //set cursor adapter to listview
+                            receiptListView.setAdapter(receiptAdapter);
+                        }
+                    });
+                } else {
+                    receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
+                }
+
+
+                // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
+                // see https://code.google.com/p/android/issues/detail?id=24599
+                searchView.clearFocus();
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                readAllDataFromDatabase();
+                return false;
+
+            }
+        });
+
         return true;
     }
 
@@ -175,10 +214,12 @@ public class Home2Activity extends AppCompatActivity {
                 startActivity(goInsert);
                 return true;
 
+
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 }
