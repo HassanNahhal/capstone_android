@@ -90,7 +90,6 @@
     <!-- Strings related to Sync -->
 
 
-
     <!-- Strings related to Settings -->
     <string name="pref_header_data_sync">Data &amp; sync</string>
     <string name="pref_header_ocr">OCR &amp; Camera</string>
@@ -115,6 +114,7 @@
     <string name="pref_title_ocr_settings">OCR Settings</string>
     <string name="prefs_sum_category_ocr">For detailed settings of OCR</string>
     <string name="image_of_the_receipt">Image of the receipt</string>
+    <string name="edit">Edit</string>
 
 
 </resources>
