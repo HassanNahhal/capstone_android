@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.conestogac.receipt_keeper.ViewReceiptActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/viewReceiptImageButton"
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:contentDescription="@string/image_of_the_receipt" />
+
+
+            <ImageView
+                android:id="@+id/viewStoreNameImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignStart="@+id/viewDateImageView"
+                android:layout_below="@+id/viewReceiptImageButton"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_domain_black_24dp"
+                android:text="@string/store_name"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/viewStoreNamTextView"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:hint="Store name"
+                android:singleLine="true"
+                android:textSize="20dp"
+                android:layout_marginLeft="100dp"
+                android:layout_above="@+id/viewTotalTextView"
+                android:layout_alignParentEnd="true" />
+
+            <ImageView
+                android:id="@+id/viewTotalImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/viewStoreNameImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_attach_money_black_24dp"
+                android:text="@string/total"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/viewTotalTextView"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:ems="10"
+                android:hint="Total"
+                android:inputType="numberDecimal"
+                android:singleLine="true"
+                android:layout_alignTop="@+id/viewTotalImageView"
+                android:layout_alignStart="@+id/viewStoreNamTextView"
+                android:textSize="20dp" />
+
+            <ImageView
+                android:id="@+id/viewDateImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/viewTotalTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_date_range_black_24dp"
+                android:text="@string/date"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/viewDateTextView"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:ems="10"
+                android:hint="Date"
+                android:inputType="date"
+                android:singleLine="true"
+                android:textSize="20dp"
+                android:layout_centerVertical="true"
+                android:layout_alignStart="@+id/viewTotalTextView" />
+
+
+            <ImageView
+                android:id="@+id/viewTagImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/viewCategoryImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_label_outline_black_24dp"
+                android:text="@string/tag"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/viewTagTextView"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_alignStart="@+id/viewCategoryTextView"
+                android:layout_alignTop="@+id/viewTagImageView"
+                android:hint="Tag"
+                android:textSize="20dp" />
+
+            <ImageView
+                android:id="@+id/viewCategoryImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/viewPaymentImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_folder_open_black_24dp"
+                android:text="@string/category"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+            <TextView
+                android:id="@+id/viewCategoryTextView"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:hint="Category"
+                android:textSize="20dp"
+                android:layout_above="@+id/viewTagTextView"
+                android:layout_alignStart="@+id/viewPaymentTextView" />
+
+            <ImageView
+                android:id="@+id/viewCommentImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/viewDateImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_comment_black_24dp"
+                android:text="@string/comment"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/viewCommentTextView"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:ems="10"
+                android:hint="Comment"
+                android:singleLine="true"
+                android:textSize="20dp"
+                android:layout_above="@+id/viewPaymentTextView"
+                android:layout_alignStart="@+id/viewPaymentTextView" />
+
+            <ImageView
+                android:id="@+id/viewPaymentImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/viewCommentImageView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_payment_black_24dp"
+                android:text="@string/payment"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/viewPaymentTextView"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:hint="Payment method"
+                android:singleLine="true"
+                android:textSize="20dp"
+                android:layout_alignTop="@+id/viewPaymentImageView"
+                android:layout_alignParentEnd="true" />
+
+            <Button
+                android:id="@+id/viewEditReceiptButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/viewPaymentTextView"
+                android:layout_below="@+id/viewTagTextView"
+                android:layout_marginTop="5dp"
+                android:text="@string/edit" />
+        </RelativeLayout>
+
+    </ScrollView>
+</RelativeLayout>
