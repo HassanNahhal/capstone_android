@@ -235,6 +235,19 @@ public class SQLController {
     }
 
 
+    protected String getTagNameById(int tagId) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_ID + "=\'" + tagId + "\'";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getString(localCursor.getColumnIndex(DBHelper.TAG_NAME));
+        } else {
+            return null;
+        }
+    }
+
+
     public int getCategoryIdByName(String categoryName) {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_NAME + "=\'" + categoryName + "\'";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
@@ -244,6 +257,19 @@ public class SQLController {
             return localCursor.getInt(localCursor.getColumnIndex(DBHelper.CATEGORY_ID));
         } else {
             return -1;
+        }
+    }
+
+
+    public String getCategoryNameById(int categoryId) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_ID + "=\'" + categoryId + "\'";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getString(localCursor.getColumnIndex(DBHelper.CATEGORY_NAME));
+        } else {
+            return null;
         }
     }
 
