@@ -2,9 +2,6 @@ package com.conestogac.receipt_keeper;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.Environment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +9,9 @@ import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 
@@ -26,7 +22,6 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     /**
      * Cursor Adapter to show cursor value on list item by reading from Database
      * This will be bind to listview which layout is defined at task_item.xml
-     *
      */
     private static final String TAG = ReceiptCursorAdapter.class.getSimpleName();
     private Context curConext;
@@ -70,12 +65,13 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         }
 
         tvStoreName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)));
-        tvTotal.setText("$ "+String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
+        tvTotal.setText("$ " + String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
         tvDateTime.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)));
         tvPayment.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
+        tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
+
 
         //Todo depends on payment -> Show different icon
-        Log.d(TAG,"Payment: "+cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
         // TODO: 16-07-12
         // Todo tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
         btIsSync.setBackgroundColor(getColorFromValue(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED))));

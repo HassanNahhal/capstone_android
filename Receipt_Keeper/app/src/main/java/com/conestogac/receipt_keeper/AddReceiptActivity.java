@@ -15,14 +15,14 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import com.conestogac.receipt_keeper.MultiSpinnerSearch.MultiSpinnerSearchListener;
+
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
 import com.conestogac.receipt_keeper.uploader.CustomerRepository;
 import com.strongloop.android.loopback.RestAdapter;
-
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,7 +44,7 @@ public class AddReceiptActivity extends Activity {
     private EditText dateEditText;
     private EditText commentEditText;
     private EditText paymentEditText;
-	private SearchableSpinner categorySearchMultiSpinner;
+    private SearchableSpinner categorySearchMultiSpinner;
     private MultiSpinnerSearch tagSearchSpinner;
     private Button saveReceiptButton;
     private ImageButton receiptImageButton;
@@ -158,18 +158,16 @@ public class AddReceiptActivity extends Activity {
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
                 // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-                File f=new File(imagePath, imageFileName);
+                File f = new File(imagePath, imageFileName);
                 Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
                 receiptImageButton.setImageBitmap(b);
                 // ImageView img=(ImageView)findViewById(R.id.receiptImage);
                 // img.setImageBitmap(b);
 
 
-            }
-            catch (FileNotFoundException e) {
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
@@ -225,9 +223,6 @@ public class AddReceiptActivity extends Activity {
 
                     tags = tagSearchSpinner.getAllTags();
                 }
-
-
-                //tags = tagSearchSpinner.getAllTags();
 
 
                 dbController.insertReceipt(receipt, tags);
