@@ -3,28 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.conestogac.receipt_keeper.Home2Activity">
     <group android:checkableBehavior="all">
-    <item
-        android:id="@+id/action_auto_login"
-        android:title="Autologin"
-        app:showAsAction="never"
-        android:checked="true">
-    </item>
+        <item
+            android:id="@+id/action_auto_login"
+            android:checked="true"
+            android:title="Autologin"
+            app:showAsAction="never"></item>
     </group>
     <item
         android:id="@+id/action_setting"
         android:title="Settings"
-        app:showAsAction="never">
-    </item>
+        app:showAsAction="never"></item>
     <item
         android:id="@+id/action_insert_receipt"
         android:title="InsertReceipt Test"
-        app:showAsAction="never">
-    </item>
+        app:showAsAction="never"></item>
     <item
         android:id="@+id/action_sync_now"
         android:title="Sync Now"
-        app:showAsAction="never">
-    </item>
+        app:showAsAction="never"></item>
     <item
         android:id="@+id/action_upload_test"
         android:orderInCategory="100"
@@ -35,4 +31,12 @@
         android:orderInCategory="100"
         android:title="@string/ocr_test"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:orderInCategory="5"
+        android:title="Search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
 </menu>
