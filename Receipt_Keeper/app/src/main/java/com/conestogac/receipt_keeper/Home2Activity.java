@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
@@ -47,10 +48,12 @@ public class Home2Activity extends AppCompatActivity {
         receiptListView = (ListView) findViewById(R.id.receiptListView);
         receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
 
+
         dbContoller.open();
-        Cursor cursor = dbContoller.readAllReceipts();
+        final Cursor cursor = dbContoller.readAllReceipts();
         dbContoller.close();
         Log.v("readAllReceipts Cursor", DatabaseUtils.dumpCursorToString(cursor));
+
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -59,8 +62,44 @@ public class Home2Activity extends AppCompatActivity {
                 //Todo Goto Detail View, Need to define Parcelable interface for sending Extra
                 Log.d(TAG, "Goto Detail View!  position: " + position);
 
+                // [Get cursor items based on possition in the ListView]
+                Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
+                Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
+                String storeName = cursorItem.getString(cursorItem.getColumnIndex(DBHelper.STORE_NAME));
+                int total = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
+                String date = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE));
+                String comment = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_COMMENT));
+                String paymentMethod = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD));
+                int categoryId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_CATEGORY_ID));
+                int tagId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.TAG_ID));
+                String imagePath = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_URL));
+
+                Intent goToSingleView = new Intent(receiptListView.getContext(), ViewReceiptActivity.class);
+                goToSingleView.putExtra("storeName", storeName);
+                goToSingleView.putExtra("total", total);
+                goToSingleView.putExtra("date", date);
+                goToSingleView.putExtra("comment", comment);
+                goToSingleView.putExtra("paymentMethod", paymentMethod);
+                goToSingleView.putExtra("categoryId", categoryId);
+                goToSingleView.putExtra("tagId", tagId);
+                goToSingleView.putExtra("imagePath", imagePath);
+
+
+                startActivity(goToSingleView);
+
+/*
+                Log.d(TAG, storeName);
+                Log.d(TAG, total + "");
+                Log.d(TAG, date);
+                Log.d(TAG, comment);
+                Log.d(TAG, paymentMethod);
+                Log.d(TAG, categoryId + "");
+                Log.d(TAG, tagId + "");
+*/
+
+
                 // Get the cursor, positioned to the corresponding row in the result set
-                Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+                //Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
             }
         });
@@ -88,8 +127,8 @@ public class Home2Activity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent addUserIntent = new Intent(fab.getContext(), CaptureActivity.class);
-                    startActivity(addUserIntent);
+                    Intent goToOcrIntent = new Intent(fab.getContext(), CaptureActivity.class);
+                    startActivity(goToOcrIntent);
                 }
             });
 
