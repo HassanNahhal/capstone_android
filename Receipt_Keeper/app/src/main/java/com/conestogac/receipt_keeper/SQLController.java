@@ -72,12 +72,21 @@ public class SQLController {
 
     }*/
 
+    /*
+    SELECT *
+    FROM receipt re INNER JOIN tag tg
+    ON re.tag_id=tag._id
+    WHERE tg.name=""
+    ORDER BY re.receiptdate
+     */
 
-    public Cursor readAllReceipts() {
+    public Cursor getAllReceiptsWithTagName(String tagName) {
 
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
-                + DBHelper.TABLE_STORE + " st " /*+ DBHelper.TABLE_STORE + " st " */
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+        String sqlQuery = "SELECT * FROM "
+                + DBHelper.TABLE_RECEIPT + " re INNER JOIN " + DBHelper.TABLE_TAG + " tg"
+                + " ON re." + DBHelper.RECEIPT_ID
+                + " =tg." + DBHelper.TAG_ID
+                + " WHERE tg." + DBHelper.TAG_NAME + "= '" + tagName + "'"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
@@ -86,6 +95,69 @@ public class SQLController {
 
     }
 
+
+/*    public Cursor readAllReceipts() {
+
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
+                + DBHelper.TABLE_STORE + " st " *//*+ DBHelper.TABLE_STORE + " st " *//*
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
+    }*/
+
+    public Cursor readAllReceipts() {
+
+        String sqlQuery = "SELECT re.*, tg.* , st.*" + " FROM "
+                + DBHelper.TABLE_STORE + " st, "
+                + DBHelper.TABLE_RECEIPT + " re "
+                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
+                + " ON rt." + DBHelper.FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
+                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
+                + " ON rt." + DBHelper.FK_TAG_ID + "=tg." + DBHelper.TAG_ID
+                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
+                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
+                + " GROUP BY re." + DBHelper.RECEIPT_ID
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
+
+        Log.d(LOG_NAME, sqlQuery);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
+    }
+
+
+    public Cursor getAllReceiptsWithValue(String tagName) {
+
+        String sqlQuery = "SELECT re.*, tg.* , st.*" + " FROM "
+                + DBHelper.TABLE_STORE + " st, "
+                + DBHelper.TABLE_RECEIPT + " re "
+                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
+                + " ON rt." + DBHelper.FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
+                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
+                + " ON rt." + DBHelper.FK_TAG_ID + "=tg." + DBHelper.TAG_ID
+                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
+                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
+                + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
+                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
+                + " GROUP BY re." + DBHelper.RECEIPT_ID
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
+
+        Log.d(LOG_NAME, sqlQuery);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+
+    }
 
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
         ContentValues values = new ContentValues();
@@ -110,10 +182,13 @@ public class SQLController {
         if (tags != null) {
             // Assigning tags to
             for (Tag tag : tags) {
-                insertTag(tag);
-                //insertReceiptTag(receiptId, tag.getTagId());
+                long tagId = getTagIdByName(tag.getTagName());
+                insertReceiptTag(receiptId, tagId);
             }
         }
+
+        insertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
+
 
         return receiptId;
     }
@@ -212,8 +287,9 @@ public class SQLController {
         return localCursor;
 
     }
+
     public Cursor getAllUnSyncTag() {
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_IS_SYNCED +"=0";
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_IS_SYNCED + "=0";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor.getCount() > 0) {
@@ -258,7 +334,7 @@ public class SQLController {
     }
 
     public Cursor getAllUnSyncStore() {
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_IS_SYNCED +"=0";
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_IS_SYNCED + "=0";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor.getCount() > 0) {
