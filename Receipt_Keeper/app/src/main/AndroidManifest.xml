@@ -73,23 +73,28 @@
         <activity android:name=".Home2Activity" />
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/Theme.AppCompat.Light"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".Home2Activity">
+            android:parentActivityName=".Home2Activity"
+            android:theme="@style/Theme.AppCompat.Light">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.conestogac.receipt_keeper.Home2Activity" />
         </activity>
-        <receiver android:name=".widget.GoOCRWidget" >
+
+        <receiver android:name=".widget.GoOCRWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data 	android:name="android.appwidget.provider"
+
+            <meta-data
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider" />
         </receiver>
-        <activity android:name=".Pop"
-            android:theme="@style/AppTheme.CustomTheme">
-        </activity>
+
+        <activity
+            android:name=".Pop"
+            android:theme="@style/AppTheme.CustomTheme"></activity>
+        <activity android:name=".ViewReceiptActivity"></activity>
     </application>
 
 </manifest>
