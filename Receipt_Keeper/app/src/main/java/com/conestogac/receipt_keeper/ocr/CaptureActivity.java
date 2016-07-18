@@ -81,8 +81,12 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -974,6 +978,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         String infoToDisplay = "";
         lastResult = ocrResult;
 
+        String dateFormatted2 = "";
         // Test whether the result is null
         if (ocrResult.getText() == null || ocrResult.getText().equals("")) {
             Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
@@ -984,29 +989,55 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
             String currentSnippet = "";
             int indexOfReturn;
-            String amounts = "";
-            for (int i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
-
-                currentSnippet = ocrResult.getText().substring(i);
-            }
 
             monthFound = "";
             String multiLines = ocrResult.getText().toString();
             String[] lines;
             String delimiter = "\n";
             lines = multiLines.split(delimiter);
-            indexOfReturn = currentSnippet.indexOf(".");
             infoToDisplay += "Store Name:";
             infoToDisplay += lines[0];
             storeName = lines[0];
             infoToDisplay += "\n";
             infoToDisplay += "Amount:";
-            if (currentSnippet != "") {
-                infoToDisplay += currentSnippet.substring(0, indexOfReturn + 3);
-                amount = currentSnippet.substring(1, indexOfReturn + 3);
-            }
-            infoToDisplay += " ";
 
+            List<String> amountLines = new ArrayList<String>();
+            String lineWithAmount = "";
+
+            for (int k = 0; k < lines.length; k++) {
+                if (lines[k].indexOf("$") != -1) {
+                    amountLines.add(lines[k]);
+                }
+            }
+            if (amountLines.size() == 1) {
+                lineWithAmount = amountLines.get(0);
+            }
+            else
+            {
+                if (amountLines.size() > 1) {
+                    for (int o = 0; o < amountLines.size(); o++) {
+                        if (amountLines.get(o).toUpperCase().contains("TOTAL") &&
+                                !amountLines.get(o).toUpperCase().contains("SUB"))
+                            lineWithAmount = amountLines.get(o);
+                    }
+                }
+            }
+            if (lineWithAmount != "") {
+                currentSnippet = lineWithAmount.substring(lineWithAmount.indexOf("$"));
+
+                indexOfReturn = currentSnippet.indexOf(".");
+
+                if (indexOfReturn > -1) {
+
+                    if (indexOfReturn + 3 > currentSnippet.length()) {
+                        amount = currentSnippet.substring(1, currentSnippet.length());
+                    } else {
+                        amount = currentSnippet.substring(1, indexOfReturn + 3);
+                    }
+                }
+            }
+
+            infoToDisplay += " ";
             String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
             int dateLine = -1;
             int indexOfMonthInLne = -1;
@@ -1038,11 +1069,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
             if (monthFound != "") {
                 String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
-                //for (int p = 0; p < daySnippet.length(); p++) {
                 int p = 0;
                 while (dayToDisplay == "") {
                     if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
-
                         dayToDisplay = daySnippet.substring(p, p + 2);
                     }
                     p++;
@@ -1060,9 +1089,39 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 }
             }
 
-            infoToDisplay += "Month:" + monthFound;
-            infoToDisplay += "Day:" + dayToDisplay;
-            infoToDisplay += "Year:" + yearToDisplay;
+
+            if (monthFound == "") {
+                int count=0;
+                String[] allMatches = new String[2];
+                Matcher m = Pattern.compile("(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d").matcher(multiLines);
+                while (m.find()) {
+                    allMatches[count] = m.group();
+                    infoToDisplay += "Date:";
+                    infoToDisplay += allMatches[count];
+                    dateFormatted2 = allMatches[count];
+
+                    List<Integer> delimiterIndices = new ArrayList<Integer>();
+
+                    int index = dateFormatted2.indexOf("/");
+                    while (index >= 0) {
+                        //System.out.println(index);
+                        delimiterIndices.add(index);
+                        index = dateFormatted2.indexOf("/", index + 1);
+                    }
+
+                    if (delimiterIndices.size() == 2) {
+                        monthFound = dateFormatted2.substring(0, 2);
+                        monthNumber = Integer.parseInt(monthFound) -1;
+                        dayToDisplay = dateFormatted2.substring(delimiterIndices.get(0) + 1, delimiterIndices.get(0) + 3);
+                        yearToDisplay = dateFormatted2.substring(delimiterIndices.get(1) + 1, delimiterIndices.get(1) + 5);
+                    }
+                }
+            }
+            else {
+                infoToDisplay += "Month:" + monthFound;
+                infoToDisplay += "Day:" + dayToDisplay;
+                infoToDisplay += "Year:" + yearToDisplay;
+            }
 
             String[] paymentMethods = {"VISA", "CASH"};
 
@@ -1070,31 +1129,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 for (int j = 0; j < paymentMethods.length; j++) {
                     for (int l = -1; (l = lines[k].toUpperCase().indexOf(paymentMethods[j], l + 1)) != -1; ) {
                         paymentMethod = paymentMethods[j];
-
                     }
                 }
             }
-
-      /*String currentSnippet;
-      int indexOfReturn;
-      String amounts = "";
-      for (int i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
-        currentSnippet = ocrResult.getText().substring(i);
-        indexOfReturn = currentSnippet.indexOf(".");
-        amounts += currentSnippet.substring(0, indexOfReturn + 3);
-        amounts += " ";
-      }
-      new AlertDialog.Builder(this)
-              .setTitle("Amounts")
-              .setMessage(amounts)
-              .setOnCancelListener(new FinishListener(this))
-              .setPositiveButton( "Done", new FinishListener(this))
-              .show();
-     // Toast toast = Toast.makeText(this, "Amounts:" + amounts, Toast.LENGTH_LONG);
-     // toast.setGravity(Gravity.TOP, 0, 0);
-     // toast.show();*/
         }
-
         // Turn off capture-related UI elements
         shutterButton.setVisibility(View.GONE);
         statusViewBottom.setVisibility(View.GONE);
@@ -1105,7 +1143,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         ImageView bitmapImageView = (ImageView) findViewById(R.id.image_view);
         lastBitmap = ocrResult.getBitmap();
-
 
         if (lastBitmap == null) {
                 bitmapImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
@@ -1130,7 +1167,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             Date now = new Date();
             String fileName = formatter.format(now) + ".Receipt.bmp";
             File file = new File(Dir, fileName);
-          //  fullPathAndFilename += fileName;
             imageFilename = fileName;
             try {
                 FileOutputStream fileOutPutStream = new FileOutputStream(file);
@@ -1151,47 +1187,33 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         newReceipt.setComment(fullPathAndFilename);
         if (yearToDisplay != "" && monthNumber != 0 && dayToDisplay != "") {
             int yearFound = Integer.parseInt(yearToDisplay);
-            int dayFound = Integer.parseInt(dayToDisplay);
-            Date dateToSave = new Date();
 
             // <====================I used startDateString rather than  startDate=========>
             String startDateString = String.valueOf(monthNumber) + "/" + dayToDisplay + "/" + yearFound;
-            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-            Date startDate;
-            try {
-                startDate = df.parse(startDateString);
-                newReceipt.setDate(startDateString);
-                //System.out.println(newDateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            newReceipt.setDate(startDateString);
         }
-
-        //DBHelper db = new DBHelper(this);
-        //SQLController dbcontrol = new SQLController(this);
-        //dbcontrol.open();
 
         // <====================I used tags of type linkedLinst rather than  tag_ids=========>
         long[] tag_ids = {0};
         LinkedList<Tag> tags = new LinkedList<>();
 
-
-        //It was decided to save the receipt from a subsequent intent so this can be commented out
-        //dbcontrol.insertReceipt(newReceipt, tags);
-        //dbcontrol.close();
-
         // Display the recognized text
         TextView sourceLanguageTextView = (TextView) findViewById(R.id.source_language_text_view);
         sourceLanguageTextView.setText(sourceLanguageReadable);
         TextView ocrResultTextView = (TextView) findViewById(R.id.ocr_result_text_view);
-        //ocrResultTextView.setText(ocrResult.getText());
         EditText etStoreName = (EditText) findViewById(R.id.etStoreName);
         EditText etAmount = (EditText) findViewById(R.id.etAmount);
         EditText etDate = (EditText) findViewById(R.id.etDate);
         EditText etPaymentMethod = (EditText) findViewById(R.id.etPaymentMethod);
         etStoreName.setText(storeName);
         etAmount.setText(amount);
-        etDate.setText(dayToDisplay + "-" + monthFound + "-" + yearToDisplay);
+
+        if (monthFound != "") {
+            etDate.setText(dayToDisplay + "-" + monthFound + "-" + yearToDisplay);
+        }
+        else {
+            etDate.setText(dateFormatted2);
+        }
         etPaymentMethod.setText(paymentMethod);
 
         TextView ocrResultDataGathered = (TextView) findViewById(R.id.ocr_result_data_gathered);
@@ -1237,9 +1259,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      * @param ocrResult Object representing successful OCR results
      */
     void handleOcrContinuousDecode(OcrResult ocrResult) {
-
         lastResult = ocrResult;
-
         // Send an OcrResultText object to the ViewfinderView for text rendering
         viewfinderView.addResultText(new OcrResultText(ocrResult.getText(),
                 ocrResult.getWordConfidences(),
@@ -1281,36 +1301,55 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             }
             String currentSnippet = "";
             int indexOfReturn;
-            int i = -1;
             String infoToDisplay2 = "";
-            String textRetrieved = ocrResult.getText();
-            for (i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
-                currentSnippet = ocrResult.getText().substring(i);
+            String multiLines = ocrResult.getText().toString();
+            String[] lines;
+            String delimiter = "\n";
+            lines = multiLines.split(delimiter);
+
+            List<String> amountLines = new ArrayList<String>();
+            String lineWithAmount = "";
+
+            for (int k = 0; k < lines.length; k++) {
+               if (lines[k].indexOf("$") != -1) {
+                   amountLines.add(lines[k]);
+               }
             }
+            if (amountLines.size() == 1) {
+                lineWithAmount = amountLines.get(0);
+            }
+            else
+            {
+                if (amountLines.size() > 1) {
+                    for (int o = 0; o < amountLines.size(); o++) {
+                        if (amountLines.get(o).toUpperCase().contains("TOTAL") &&
+                                !amountLines.get(o).toUpperCase().contains("SUB"))
+                            lineWithAmount = amountLines.get(o);
+                    }
+                }
+            }
+            if (lineWithAmount != "") {
+                currentSnippet = lineWithAmount.substring(lineWithAmount.indexOf("$"));
 
+                indexOfReturn = currentSnippet.indexOf(".");
 
-            indexOfReturn = currentSnippet.indexOf(".");
-            if (indexOfReturn > -1) {
-                infoToDisplay2 += "Amount:";
-                if (indexOfReturn + 3 > currentSnippet.length()) {
-                    infoToDisplay2 += currentSnippet.substring(0, currentSnippet.length());
-                } else {
-                    infoToDisplay2 += currentSnippet.substring(0, indexOfReturn + 3);
+                if (indexOfReturn > -1) {
+                    infoToDisplay2 += "Amount:";
+                    if (indexOfReturn + 3 > currentSnippet.length()) {
+                        infoToDisplay2 += currentSnippet.substring(0, currentSnippet.length());
+                    } else {
+                        infoToDisplay2 += currentSnippet.substring(0, indexOfReturn + 3);
+                    }
                 }
             }
 
             String yearToDisplay = "";
             String dayToDisplay = "";
-            int monthNumber = 0;
-            String multiLines = ocrResult.getText().toString();
-            String[] lines;
-            String delimiter = "\n";
-            lines = multiLines.split(delimiter);
+
             String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
             int dateLine = -1;
             int indexOfMonthInLne = -1;
             String monthFound = "";
-
 
             try {
                 for (int k = 0; k < lines.length; k++) {
@@ -1327,7 +1366,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 if (monthFound == "") {
                     String[] months2 = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-
                     for (int k = 0; k < lines.length; k++) {
                         for (int j = 0; j < months2.length; j++) {
                             for (int l = -1; (l = lines[k].indexOf(months2[j], l + 1)) != -1; ) {
@@ -1341,7 +1379,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 }
                 if (monthFound != "") {
                     String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
-                    //for (int p = 0; p < daySnippet.length(); p++) {
                     int p = 0;
                     while (dayToDisplay == "") {
                         if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
@@ -1351,7 +1388,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         p++;
                     }
                 }
-
 
                 if (monthFound != "") {
                     String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
@@ -1364,21 +1400,34 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                     }
                 }
 
-                infoToDisplay2 += "Month:" + monthFound;
-                infoToDisplay2 += "Day:" + dayToDisplay;
-                infoToDisplay2 += "Year:" + yearToDisplay;
+                //Use a regular expression to search for a date that is formatted with '/' or '-' if we did not find a month
+                //name in the logic above.
+                if (monthFound == "") {
+                    int count=0;
+                    String[] allMatches = new String[2];
+                    Matcher m = Pattern.compile("(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d").matcher(multiLines);
+                    while (m.find()) {
+                        allMatches[count] = m.group();
+                        infoToDisplay2 += "Date:";
+                        infoToDisplay2 += allMatches[count];
+                    }
+                }
+                else {
+                    infoToDisplay2 += "Month:" + monthFound;
+                    infoToDisplay2 += "Day:" + dayToDisplay;
+                    infoToDisplay2 += "Year:" + yearToDisplay;
+                }
+
             }
 
             catch (Exception e) {
             }
             infoToDisplay2 += "\n";
 
-
             infoToDisplay2 += "Store Name:";
             infoToDisplay2 += lines[0];
             simpleConfidenceView.setText(infoToDisplay2);
             }
-
     }
 
     /**
