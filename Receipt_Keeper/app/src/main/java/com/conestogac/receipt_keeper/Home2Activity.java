@@ -68,33 +68,38 @@ public class Home2Activity extends AppCompatActivity {
                 //Todo Goto Detail View, Need to define Parcelable interface for sending Extra
                 Log.d(TAG, "Goto Detail View!  position: " + position);
 
-                // [Get cursor items based on possition in the ListView]
+                // [Get cursor items based on position in the ListView]
                 Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
-                Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
-                int receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
-                String storeName = cursorItem.getString(cursorItem.getColumnIndex(DBHelper.STORE_NAME));
-                int total = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
-                String date = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE));
-                String comment = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_COMMENT));
-                String paymentMethod = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD));
-                int categoryId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_CATEGORY_ID));
-                int tagId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.TAG_ID));
-                String imagePath = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_URL));
+                if (cursorItem != null) {
+                    cursorItem.moveToFirst();
 
-                Intent goToSingleView = new Intent(receiptListView.getContext(), ViewReceiptActivity.class);
-                goToSingleView.putExtra("receiptId", receiptId);
-                goToSingleView.putExtra("storeName", storeName);
-                goToSingleView.putExtra("total", total);
-                goToSingleView.putExtra("date", date);
-                goToSingleView.putExtra("comment", comment);
-                goToSingleView.putExtra("paymentMethod", paymentMethod);
-                goToSingleView.putExtra("categoryId", categoryId);
-                goToSingleView.putExtra("tagId", tagId);
-                goToSingleView.putExtra("imagePath", imagePath);
+                    Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
+                    int receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
+                    Log.d(TAG, "receiptId :" + receiptId);
+                    String storeName = cursorItem.getString(cursorItem.getColumnIndex(DBHelper.STORE_NAME));
+                    int total = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
+                    String date = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE));
+                    String comment = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_COMMENT));
+                    String paymentMethod = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD));
+                    int categoryId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_CATEGORY_ID));
+                    int tagId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.TAG_ID));
+                    Log.d(TAG, "tag id :" + tagId);
+                    String imagePath = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_URL));
+
+                    Intent goToSingleView = new Intent(receiptListView.getContext(), ViewReceiptActivity.class);
+                    goToSingleView.putExtra("receiptId", receiptId);
+                    goToSingleView.putExtra("storeName", storeName);
+                    goToSingleView.putExtra("total", total);
+                    goToSingleView.putExtra("date", date);
+                    goToSingleView.putExtra("comment", comment);
+                    goToSingleView.putExtra("paymentMethod", paymentMethod);
+                    goToSingleView.putExtra("categoryId", categoryId);
+                    goToSingleView.putExtra("tagId", tagId);
+                    goToSingleView.putExtra("imagePath", imagePath);
 
 
-                startActivity(goToSingleView);
-
+                    startActivity(goToSingleView);
+                }
 /*
                 Log.d(TAG, storeName);
                 Log.d(TAG, total + "");
