@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/updateReceiptImageButton"
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:contentDescription="@string/image_of_the_receipt" />
+
+
+            <ImageView
+                android:id="@+id/storeNameTextView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignStart="@+id/dateTextView"
+                android:layout_below="@+id/updateReceiptImageButton"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_domain_black_24dp"
+                android:text="@string/store_name"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/updateStoreNamEditText"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/storeNameTextView"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="50dp"
+                android:hint="@string/store_name"
+                android:singleLine="true" />
+
+            <ImageView
+                android:id="@+id/totalTextView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/storeNameTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_attach_money_black_24dp"
+                android:text="@string/total"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/updateTotalEditText"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/totalTextView"
+                android:layout_alignStart="@+id/updateStoreNamEditText"
+                android:ems="10"
+                android:hint="@string/total"
+                android:inputType="numberDecimal"
+                android:singleLine="true" />
+
+            <ImageView
+                android:id="@+id/dateTextView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/updateTotalEditText"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_date_range_black_24dp"
+                android:text="@string/date"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/updateDateEditText"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/dateTextView"
+                android:layout_alignStart="@+id/updateTotalEditText"
+                android:ems="10"
+                android:hint="@string/date"
+                android:inputType="date"
+                android:singleLine="true" />
+
+
+            <ImageView
+                android:id="@+id/textView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/categoryTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_label_outline_black_24dp"
+                android:text="@string/tag"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <com.conestogac.receipt_keeper.MultiSpinnerSearch
+                android:id="@+id/updateTagSearchMultiSpinner"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_alignStart="@+id/updateCategorySearchMultiSpinner"
+                android:layout_alignTop="@+id/textView" />
+
+            <ImageView
+                android:id="@+id/categoryTextView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/paymentTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_folder_open_black_24dp"
+                android:text="@string/category"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+                android:id="@+id/updateCategorySearchMultiSpinner"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:layout_alignStart="@+id/updatePaymentEditText"
+                android:layout_alignTop="@+id/categoryTextView" />
+
+            <ImageView
+                android:id="@+id/comentTextView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/dateTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_comment_black_24dp"
+                android:text="@string/comment"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/updateCommentEditText"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/comentTextView"
+                android:layout_alignStart="@+id/updateDateEditText"
+                android:ems="10"
+                android:hint="@string/comment"
+                android:singleLine="true" />
+
+            <ImageView
+                android:id="@+id/paymentTextView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/comentTextView"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_payment_black_24dp"
+                android:text="@string/payment"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/updatePaymentEditText"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@+id/paymentTextView"
+                android:layout_alignStart="@+id/updateCommentEditText"
+                android:hint="@string/payment"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/updateEditReceiptButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/updatePaymentEditText"
+                android:layout_below="@+id/updateTagSearchMultiSpinner"
+                android:layout_marginTop="5dp"
+                android:text="@string/update" />
+        </RelativeLayout>
+
+    </ScrollView>
+</LinearLayout>

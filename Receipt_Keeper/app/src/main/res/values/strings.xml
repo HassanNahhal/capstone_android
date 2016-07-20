@@ -115,6 +115,7 @@
     <string name="prefs_sum_category_ocr">For detailed settings of OCR</string>
     <string name="image_of_the_receipt">Image of the receipt</string>
     <string name="edit">Edit</string>
+    <string name="update">Update</string>
 
 
 </resources>

@@ -29,7 +29,7 @@ public class Home2Activity extends AppCompatActivity {
     private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
     private ReceiptCursorAdapter receiptAdapter;
-    private SQLController dbContoller;
+    private SQLController dbController;
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
 
@@ -40,7 +40,7 @@ public class Home2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        dbContoller = new SQLController(this);
+        dbController = new SQLController(this);
 
         loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
@@ -49,10 +49,16 @@ public class Home2Activity extends AppCompatActivity {
         receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
 
 
-        dbContoller.open();
-        final Cursor cursor = dbContoller.readAllReceipts();
-        dbContoller.close();
+        dbController.open();
+        final Cursor cursor = dbController.readAllReceipts();
+        dbController.close();
         Log.v("readAllReceipts Cursor", DatabaseUtils.dumpCursorToString(cursor));
+
+
+        dbController.open();
+        final Cursor cursor1 = dbController.readAllReceiptTag();
+        dbController.close();
+        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -65,6 +71,7 @@ public class Home2Activity extends AppCompatActivity {
                 // [Get cursor items based on possition in the ListView]
                 Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
                 Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
+                int receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
                 String storeName = cursorItem.getString(cursorItem.getColumnIndex(DBHelper.STORE_NAME));
                 int total = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
                 String date = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE));
@@ -75,6 +82,7 @@ public class Home2Activity extends AppCompatActivity {
                 String imagePath = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_URL));
 
                 Intent goToSingleView = new Intent(receiptListView.getContext(), ViewReceiptActivity.class);
+                goToSingleView.putExtra("receiptId", receiptId);
                 goToSingleView.putExtra("storeName", storeName);
                 goToSingleView.putExtra("total", total);
                 goToSingleView.putExtra("date", date);
@@ -104,19 +112,6 @@ public class Home2Activity extends AppCompatActivity {
             }
         });
 
-        /*dbContoller.open();
-        Log.d("here", "here");
-        Cursor cursor = dbContoller.readAllTags();
-        Log.d("here", "here");
-
-        if (cursor != null) {
-            while (cursor.moveToFirst()) {
-                Log.d("here", "here");
-
-                Log.d("id cursor", cursor.getColumnName(0));
-            }
-        }
-        dbContoller.close();*/
 
         // [ Go to AddReceiptActivity when clicked]
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -137,14 +132,14 @@ public class Home2Activity extends AppCompatActivity {
 
     // [ Retrieve data from database and set to ListView]
     private void readAllDataFromDatabase() {
-        dbContoller.open();
+        dbController.open();
         // Database query can be a time consuming task ..
         // so its safe to call database query in another thread
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 //get cursor and load data into adapter
-                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, dbContoller.readAllReceipts());
+                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, dbController.readAllReceipts());
 
                 //set cursor adapter to listview
                 receiptListView.setAdapter(receiptAdapter);
@@ -163,7 +158,7 @@ public class Home2Activity extends AppCompatActivity {
     protected void onDestroy() {
         Log.d(TAG, "Ondestory()");
 
-        dbContoller.close();
+        dbController.close();
         super.onDestroy();
     }
 
@@ -180,9 +175,9 @@ public class Home2Activity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String queryFor) {
                 // perform query here
-                dbContoller.open();
-                final Cursor cursor = dbContoller.getAllReceiptsWithValue(queryFor);
-                dbContoller.close();
+                dbController.open();
+                final Cursor cursor = dbController.getAllReceiptsWithValue(queryFor);
+                dbController.close();
                 if (cursor != null) {
                     new Handler().post(new Runnable() {
                         @Override
