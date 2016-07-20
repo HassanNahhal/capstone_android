@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.TreeMap;
 
@@ -142,11 +143,20 @@ public class AddReceiptActivity extends Activity {
             if (day != null) {
                 dayToSet = Integer.parseInt(day);
             }
-            dateAndTime.set(yearToSet, monthToSet, dayToSet);
+
+
+            Calendar cal = Calendar.getInstance();
+
+            cal.set(Calendar.YEAR, yearToSet);
+            cal.set(Calendar.DAY_OF_MONTH, dayToSet);
+            cal.set(Calendar.MONTH, monthToSet);
+            String format = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH).format(cal.getTime());
+
             dateEditText.setText(dateAndTime.toString());
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
             if (dateAndTime != null) {
-                dateEditText.setText(sdf.format(dateAndTime.getTime()));
+
+                dateEditText.setText(format);
+
             }
 
             imagePath = extras.getString("imagePath");
