@@ -305,12 +305,12 @@ public class AddReceiptActivity extends Activity {
         });
     }
 
-    // []
+   /* // []
     private void saveReceiptDataInDB(Receipt receipt, LinkedList<Tag> tag) {
         dbController.open();
         dbController.insertReceipt(receipt, tag);
         dbController.close();
-    }
+    }*/
 
     // [DatePickerDialog population]
     DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
