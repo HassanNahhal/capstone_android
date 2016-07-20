@@ -56,7 +56,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Table Tag and columns
     public static final String TABLE_TAG = "tag";
-    public static final String TAG_ID = "_id";
+    public static final String TAG_ID = "tag_id";
     public static final String TAG_NAME = "tag_name";
     public static final String TAG_REMOTE_ID = "remote_id";
     public static final String TAG_IS_SYNCED = "isSynced";
@@ -98,48 +98,48 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Receipt_Tag table create statement
     private static final String CREATE_TABLE_RECEIPT_TAG = " CREATE TABLE " + TABLE_RECEIPT_TAG
-                    + "( "
-                    + FK_RECEIPT_ID + " INTEGER ,"
-                    + FK_TAG_ID + " INTEGER "
-                    + ")";
+            + "( "
+            + FK_RECEIPT_ID + " INTEGER ,"
+            + FK_TAG_ID + " INTEGER "
+            + ")";
 
     // Tag table create statement
     private static final String CREATE_TABLE_TAG = " CREATE TABLE " + TABLE_TAG
-                    + "( "
-                    + TAG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-                    + TAG_NAME + " TEXT ,"
-                    + TAG_REMOTE_ID + " TEXT,"
-                    + TAG_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + TAG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + TAG_NAME + " TEXT ,"
+            + TAG_REMOTE_ID + " TEXT,"
+            + TAG_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
 
     // Store table create statement
     private static final String CREATE_TABLE_STORE = " CREATE TABLE " + TABLE_STORE
-                    + "( "
-                    + STORE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-                    + STORE_NAME + " TEXT ,"
-                    + STORE_REMOTE_ID + " TEXT,"
-                    + STORE_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + STORE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + STORE_NAME + " TEXT ,"
+            + STORE_REMOTE_ID + " TEXT,"
+            + STORE_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
 
     // Category table create statement
     private static final String CREATE_TABLE_CATEGORY = " CREATE TABLE " + TABLE_CATEGORY
-                    + "( "
-                    + CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + CATEGORY_NAME + " TEXT, "
-                    + CATEGORY_REMOTE_ID + " TEXT, "
-                    + CATEGORY_IS_SYNCED + " INTEGER"
-                    + ")";
+            + "( "
+            + CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + CATEGORY_NAME + " TEXT, "
+            + CATEGORY_REMOTE_ID + " TEXT, "
+            + CATEGORY_IS_SYNCED + " INTEGER"
+            + ")";
 
     // Category table create statement
     private static final String CREATE_TABLE_STORE_CATEGORY = " CREATE TABLE " + TABLE_STORE_CATEGORY
-                    + "( "
-                    + STORE_CATEGORY_FK_CATEGORY_ID + " INTEGER ,"
-                    + STORE_CATEGORY_FK_STORE_ID + " INTEGER ,"
-                    + STORE_CATEGORY_REMOTE_ID + " TEXT,"
-                    + STORE_CATEGORY_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + STORE_CATEGORY_FK_CATEGORY_ID + " INTEGER ,"
+            + STORE_CATEGORY_FK_STORE_ID + " INTEGER ,"
+            + STORE_CATEGORY_REMOTE_ID + " TEXT,"
+            + STORE_CATEGORY_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -196,7 +196,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         long id = db.insert(TABLE_TAG, null, values);
                         Log.d(LOG_NAME, "tag id" + id + "\n" + tagName);
                     }
-                    
+
                 }
 
             }

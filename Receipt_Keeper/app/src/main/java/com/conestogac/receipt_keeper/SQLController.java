@@ -175,19 +175,16 @@ public class SQLController {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
         }
 
-        Log.d(LOG_NAME, "first id : " + receipt.getLocalId());
-
-
+        Log.d(LOG_NAME, "receipt.getLocalId()" + receipt.getLocalId());
         long receiptId = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
-                + " = " + receipt.getLocalId(), null);
+                + " = '" + receipt.getLocalId() + "'", null);
 
-        Log.d(LOG_NAME, "second id : " + receiptId);
         if (tags != null) {
             // Assigning tags to
             for (Tag tag : tags) {
+                Log.d(LOG_NAME, "tag name :" + tag.getTagName());
                 long tagId = getTagIdByName(tag.getTagName());
                 if (tagId != -1) {
-                    Log.d(LOG_NAME, "third id : " + receipt.getLocalId());
                     updateReceiptTag(receipt.getLocalId(), tagId);
                 } else {
                     long newTagId = insertTag(tag);

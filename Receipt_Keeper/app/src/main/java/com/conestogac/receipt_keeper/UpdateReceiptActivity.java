@@ -107,6 +107,8 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             receiptId = extras.getInt("receiptId");
+            Log.d(LOG_NAME, "receipt id :" + receiptId);
+
             storeName = extras.getString("storeName");
             if (storeName != null) {
                 updateStoreNamEditText.setText(storeName);
@@ -141,8 +143,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
                 updateCategorySearchMultiSpinner.setAdapter(spinnerAdapter);
                 updateCategorySearchMultiSpinner.setSelection(categoryId);
-                /*updateCategorySearchMultiSpinner.setSelection(((ArrayAdapter) updateCategorySearchMultiSpinner.getAdapter())
-                        .getPosition(categoryName));*/
 
 
             }
@@ -151,10 +151,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         //String tagName = extras.getString("tagName");
         int tagId = extras.getInt("tagId");
         if (tagId != 0) {
-
-            Log.d(LOG_NAME, "JERE");
-
-
             updateTagSearchMultiSpinner.setItems(tagsListArray, "Tag search", tagId - 1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
                 @Override
@@ -207,6 +203,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             customerId = null;
         } finally {
             receipt.setCustomerId(customerId);
+            Log.d(LOG_NAME, "receipt id :" + receiptId);
             receipt.setId(receiptId);
             receipt.setStoreId(dbController.insertStoreByName(updateStoreNamEditText.getText().toString()));
             String total = updateTotalEditText.getText().toString();
