@@ -115,6 +115,8 @@ public class AddReceiptActivity extends Activity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySearchMultiSpinner.setAdapter(spinnerAdapter);
         spinnerAdapter.notifyDataSetChanged();
+
+        //TODO check with Nick how to refactor this method
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String storeName = extras.getString("StoreName");
