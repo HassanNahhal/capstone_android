@@ -72,6 +72,7 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             receiptId = extras.getInt("receiptId");
+
             storeName = extras.getString("storeName");
             if (storeName != null) {
                 viewStoreNamTextView.setText(storeName);
