@@ -93,8 +93,9 @@
 
         <activity
             android:name=".Pop"
-            android:theme="@style/AppTheme.CustomTheme"></activity>
-        <activity android:name=".ViewReceiptActivity"></activity>
+            android:theme="@style/AppTheme.CustomTheme" />
+        <activity android:name=".ViewReceiptActivity" />
+        <activity android:name=".UpdateReceiptActivity"></activity>
     </application>
 
 </manifest>
