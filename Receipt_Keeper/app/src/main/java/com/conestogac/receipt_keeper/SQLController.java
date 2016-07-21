@@ -121,7 +121,7 @@ public class SQLController {
                 //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + "<> -1"
+//                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + "<> -1"
                 // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
