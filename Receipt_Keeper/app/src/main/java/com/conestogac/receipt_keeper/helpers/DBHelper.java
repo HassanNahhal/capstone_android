@@ -76,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CATEGORY_REMOTE_ID = "remote_id";
     public static final String CATEGORY_IS_SYNCED = "isSynced";
 
-    // Table StoreGategory and columns
+    // Table StoreCategory and columns
     public static final String TABLE_STORE_CATEGORY = "storeCategory";
     public static final String STORE_CATEGORY_FK_CATEGORY_ID = "category_id";
     public static final String STORE_CATEGORY_FK_STORE_ID = "store_id";
