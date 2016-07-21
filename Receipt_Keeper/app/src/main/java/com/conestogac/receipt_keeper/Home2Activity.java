@@ -1,5 +1,7 @@
 package com.conestogac.receipt_keeper;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
@@ -35,6 +38,7 @@ public class Home2Activity extends AppCompatActivity {
 
     private SimpleCursorAdapter adapter;
     private Cursor cursor;
+    int receiptId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +54,12 @@ public class Home2Activity extends AppCompatActivity {
 
 
         dbController.open();
-        final Cursor cursor = dbController.readAllReceipts();
+        final Cursor cursor = dbController.getAllReceipts();
         dbController.close();
-        Log.v("readAllReceipts Cursor", DatabaseUtils.dumpCursorToString(cursor));
-
+        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
 
         dbController.open();
-        final Cursor cursor1 = dbController.readAllReceiptTag();
+        final Cursor cursor1 = dbController.getAllReceiptTag();
         dbController.close();
         Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
 
@@ -117,6 +120,52 @@ public class Home2Activity extends AppCompatActivity {
             }
         });
 
+        receiptListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
+                if (cursorItem != null) {
+                    cursorItem.moveToFirst();
+                    receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
+
+                } else {
+                }
+                // [Alert the user of the action of deletion of an item]
+                AlertDialog.Builder adb = new AlertDialog.Builder(Home2Activity.this);
+                adb.setTitle("Delete Receipt");
+                adb.setMessage("Are you sure you want to Delete?");
+                adb.setIcon(android.R.drawable.ic_dialog_alert);
+                adb.setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                dbController.open();
+                                dbController.deleteReceipt(receiptId);
+                                dbController.close();
+
+                                Toast.makeText(getApplicationContext(),
+                                        "Deleted", Toast.LENGTH_SHORT).show();
+                                readAllDataFromDatabase();
+                            }
+                        });
+
+                adb.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Canceled", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                adb.show();
+
+                return true;
+            }
+        });
+
 
         // [ Go to AddReceiptActivity when clicked]
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -144,10 +193,12 @@ public class Home2Activity extends AppCompatActivity {
             @Override
             public void run() {
                 //get cursor and load data into adapter
-                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, dbController.readAllReceipts());
+                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, dbController.getAllReceipts());
+                dbController.close();
 
                 //set cursor adapter to listview
                 receiptListView.setAdapter(receiptAdapter);
+
             }
         });
     }
@@ -157,6 +208,7 @@ public class Home2Activity extends AppCompatActivity {
 
         super.onResume();
         readAllDataFromDatabase();
+
     }
 
     @Override
