@@ -27,9 +27,7 @@ public class Tag {
     public String getTagName() {
         return tagName;
     }
-    public boolean getIsSync() {
-        return isSync;
-    }
+
 
     // Attribute Setters
     public void setTagId(int id) {
@@ -38,7 +36,19 @@ public class Tag {
     public void setTagName(String tagName) {
         this.tagName = tagName;
     }
-    public void setIsSync(boolean isSync) {
+
+    // Attribute For Sync
+    public void setR_id(String r_id) {
+        this.r_id = r_id;
+    }
+    public String getR_id() {
+        return this.r_id;
+    }
+
+    public boolean get_isSync() {
+        return this.isSync;
+    }
+    public void set_isSync(boolean isSync) {
         this.isSync = isSync;
     }
 }

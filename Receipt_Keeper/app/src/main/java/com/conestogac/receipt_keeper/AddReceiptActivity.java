@@ -206,10 +206,10 @@ public class AddReceiptActivity extends Activity {
             @Override
             public void onClick(View v) {
                 long _id;
+                File f = new File(imagePath, imageFileName);
 
                 dbController.open();
                 Receipt receipt = new Receipt();
-                final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
                 String customerId = null;
                 try {
                     customerId = app.getCurrentUser().getId().toString();
@@ -223,7 +223,7 @@ public class AddReceiptActivity extends Activity {
                     receipt.setDate(dateEditText.getText().toString());
                     receipt.setComment(commentEditText.getText().toString());
                     receipt.setPaymentMethod(paymentEditText.getText().toString());
-                    receipt.setUrl(image);
+                    receipt.setUrl(f.getAbsolutePath());
                     String receiptCategory = categorySearchMultiSpinner.getSelectedItem().toString();
                     if (!Objects.equals(receiptCategory, "Select Category")) {
                         receipt.setCategoryId(dbController.getCategoryIdByName(receiptCategory));

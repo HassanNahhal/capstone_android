@@ -13,7 +13,7 @@ public class Receipt extends  com.strongloop.android.loopback.Model  {
     private Date date;
     private float total;
     private String tagId;
-
+    private String imageFilePath;
 
     public Receipt() {
 
@@ -33,10 +33,6 @@ public class Receipt extends  com.strongloop.android.loopback.Model  {
 
 
     // Attribute Getters
-    public String getLocalId() {
-        return id;
-    }
-
     public String getCustomerId() {
         return customerId;
     }
@@ -65,11 +61,12 @@ public class Receipt extends  com.strongloop.android.loopback.Model  {
         return tagId;
     }
 
-    // Attribute Setters
-    public void setId(String id) {
-        this.id = id;
+    public String getImageFilePath() {
+        return imageFilePath;
     }
 
+
+    // Attribute Setters
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
@@ -97,4 +94,9 @@ public class Receipt extends  com.strongloop.android.loopback.Model  {
     public void setTagId(String tagId) {
         this.tagId = tagId;
     }
+
+    public void setImageFilePath(String imageFilePath) {
+        this.imageFilePath = imageFilePath;
+    }
+
 }

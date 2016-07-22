@@ -14,9 +14,15 @@ public class Receipt {
     private String url;
     private String paymentMethod;
 
+
     //For Sync
     private String r_id;
     private boolean isSync;
+    //This is for saving remote image file path
+    //This will be mainly used for sync. After uploading images, receipt will be uploaded
+    //So, this will keep remote path until it is synced
+    //For another usecases, user can delete local file, so he can download if needed by using this link.
+    private String remoteUrl;
 
     public Receipt() {
 
@@ -125,19 +131,24 @@ public class Receipt {
     }
 
     // Attribute For Sync
-    public void setR_id(String r_id) {
-        this.r_id = r_id;
-    }
-
     public String getR_id() {
         return this.r_id;
+    }
+    public void setR_id(String r_id) {
+        this.r_id = r_id;
     }
 
     public boolean get_isSync() {
         return this.isSync;
     }
-
     public void set_isSync(boolean isSync) {
         this.isSync = isSync;
+    }
+
+    public String getRemoteUrl() {
+        return this.remoteUrl;
+    }
+    public void setRemoteUrl(String remoteUrl) {
+        this.remoteUrl = remoteUrl;
     }
 }

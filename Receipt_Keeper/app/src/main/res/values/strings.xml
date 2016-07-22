@@ -16,7 +16,7 @@
  -->
 <resources>
     <!-- Strings related to Common -->
-    <string name="app_name">Receipt Keeper</string>
+    <string name="app_name">receipt keeper</string>
     <string name="submit_button_text">Submit</string>
 
     <!-- Strings related to Welcome -->
@@ -94,7 +94,7 @@
     <string name="pref_header_data_sync">Data &amp; sync</string>
     <string name="pref_header_ocr">OCR &amp; Camera</string>
     <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string name="prefs_sum_category_sync">Setting how often upload data to server</string>
+    <string name="prefs_sum_frequency_sync">Setting how often upload data to server</string>
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
         <item>30 minutes</item>
@@ -103,13 +103,25 @@
         <item>6 hours</item>
         <item>Never</item>
     </string-array>
+    <string name="pref_title_sync_criteria">Sync Restriction</string>
+    <string name="prefs_sum_category_sync">Setting restriction of sync</string>
     <string-array name="pref_sync_frequency_values">
         <item>15</item>
         <item>30</item>
         <item>60</item>
         <item>180</item>
         <item>360</item>
-        <item>-1</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="pref_sync_criteria_titles">
+        <item>Wi-Fi + Data</item>
+        <item>Wi-Fi Only</item>
+        <item>Data Only</item>
+    </string-array>
+    <string-array name="pref_sync_criteria_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
     <string name="pref_title_ocr_settings">OCR Settings</string>
     <string name="prefs_sum_category_ocr">For detailed settings of OCR</string>

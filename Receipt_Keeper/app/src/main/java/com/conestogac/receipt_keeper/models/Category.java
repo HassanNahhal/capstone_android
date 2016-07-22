@@ -7,6 +7,9 @@ public class Category {
 
     private int id;
     private String name;
+    //For Sync
+    private String r_id;
+    private boolean isSync;
 
     public Category() {
     }
@@ -27,5 +30,20 @@ public class Category {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    // Attribute For Sync
+    public String getR_id() {
+        return this.r_id;
+    }
+    public void setR_id(String r_id) {
+        this.r_id = r_id;
+    }
+
+    public boolean get_isSync() {
+        return this.isSync;
+    }
+    public void set_isSync(boolean isSync) {
+        this.isSync = isSync;
     }
 }

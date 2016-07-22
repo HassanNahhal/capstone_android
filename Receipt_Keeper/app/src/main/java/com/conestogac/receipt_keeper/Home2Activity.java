@@ -303,6 +303,9 @@ public class Home2Activity extends AppCompatActivity {
                 startActivity(goInsert);
                 return true;
 
+            case R.id.action_sync_now:
+
+                return true;
 
             default:
                 break;

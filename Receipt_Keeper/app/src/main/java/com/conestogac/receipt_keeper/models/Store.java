@@ -27,12 +27,6 @@ public class Store {
     public String getName() {
         return name;
     }
-    public String getR_id() {
-        return r_id;
-    }
-    public boolean getIsSync() {
-        return isSync;
-    }
 
     // Attribute Setters
     public void setId(int id) {
@@ -41,6 +35,15 @@ public class Store {
     public void setName(String name) {
         this.name = name;
     }
+
+    // Attribute For Sync
+    public String getR_id() {
+        return r_id;
+    }
+    public boolean getIsSync() {
+        return isSync;
+    }
+
     public void setR_id(String id) {
         this.r_id = r_id;
     }

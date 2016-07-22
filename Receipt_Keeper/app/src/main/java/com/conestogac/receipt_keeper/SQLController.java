@@ -196,7 +196,6 @@ public class SQLController {
         insertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
         return receiptId;
     }
-
     public long updateReceiptTag(long receiptId, long tagId) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.FK_RECEIPT_ID, receiptId);
@@ -204,6 +203,51 @@ public class SQLController {
 
         return database.update(DBHelper.TABLE_RECEIPT_TAG, values, DBHelper.FK_RECEIPT_ID
                 + " = " + receiptId, null);
+    }
+
+    public Cursor getAllUnSyncReceipt() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " WHERE " + DBHelper.RECEIPT_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+        }
+        return localCursor;
+    }
+
+    public Cursor getAllReceiptDontHaveRemoteImage() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " WHERE " + DBHelper.RECEIPT_REMOTE_URL+" IS NULL";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+        }
+        return localCursor;
+    }
+
+    public int setAsSyncedReceipt(long localId, String remoteId) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.RECEIPT_IS_SYNCED, 1);
+        values.put(DBHelper.RECEIPT_REMOTE_ID, remoteId);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID + " = ?",
+                new String[] { String.valueOf(localId) });
+
+        return ret_value;
+    }
+
+    public int setRemoteUrlReceipt(long localId, String remoteUrl) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.RECEIPT_REMOTE_URL, remoteUrl);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID + " = ?",
+                new String[] { String.valueOf(localId) });
+
+        return ret_value;
     }
 
     public long insertReceipt(Receipt receipt, LinkedList<Tag> tags) {
@@ -228,7 +272,7 @@ public class SQLController {
         if (tags != null) {
             // Assigning tags to
             for (Tag tag : tags) {
-                long tagId = getTagIdByName(tag.getTagName());
+                long tagId = getTagIdByName(tag.getTagName());//tag is normally lower case
                 if (tagId != -1)
                     insertReceiptTag(receiptId, tagId);
                 else {
@@ -313,7 +357,7 @@ public class SQLController {
 
 
     public String getCategoryNameById(int categoryId) {
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_ID + "=\'" + categoryId + "\'";
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_ID + "=" + String.valueOf(categoryId);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor != null) {
@@ -324,6 +368,63 @@ public class SQLController {
         }
     }
 
+    public String getCategoryRemoteId(int categoryId) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_ID + "=" + String.valueOf(categoryId);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getString(localCursor.getColumnIndex(DBHelper.CATEGORY_REMOTE_ID));
+        } else {
+            return null;
+        }
+    }
+
+    public Cursor getAllUnSyncedStoreCategory() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE_CATEGORY + " WHERE " + DBHelper.STORE_CATEGORY_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+        }
+        return localCursor;
+    }
+
+    public int setSyncedStoreCategory(int storeId, int categoryId, String remoteId) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.STORE_CATEGORY_IS_SYNCED, 1);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_STORE_CATEGORY, values,
+                "("+DBHelper.STORE_CATEGORY_FK_STORE_ID + " = ? and "
+                   +DBHelper.STORE_CATEGORY_FK_CATEGORY_ID + " = ?)",
+                new String[] { String.valueOf(storeId),String.valueOf(categoryId) });
+        return ret_value;
+    }
+
+
+    public Cursor getAllUnSyncedCategory() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+        }
+        return localCursor;
+    }
+
+    public int setSyncedCategory(long localId, String remoteId) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.CATEGORY_IS_SYNCED, 1);
+        values.put(DBHelper.CATEGORY_REMOTE_ID, remoteId);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_CATEGORY, values, DBHelper.CATEGORY_ID + " = ?",
+                new String[] { String.valueOf(localId) });
+        return ret_value;
+    }
 
     public long insertTag(Tag tag) {
         ContentValues values = new ContentValues();
@@ -364,17 +465,26 @@ public class SQLController {
         return localCursor;
 
     }
-
     public Cursor getAllUnSyncTag() {
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_IS_SYNCED + "=0";
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_IS_SYNCED +"=0";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
-        if (localCursor.getCount() > 0) {
+        if (localCursor != null) {
             localCursor.moveToFirst();
-            return localCursor;
-        } else {
-            return null;
         }
+        return localCursor;
+    }
+
+    public int setSyncedTag(long localId, String remoteId) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.TAG_IS_SYNCED, 1);
+        values.put(DBHelper.TAG_REMOTE_ID, remoteId);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_TAG, values, DBHelper.TAG_ID + " = ?",
+                new String[] { String.valueOf(localId) });
+        return ret_value;
     }
 
     public int insertStoreByName(String name) {
@@ -411,14 +521,36 @@ public class SQLController {
     }
 
     public Cursor getAllUnSyncStore() {
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_IS_SYNCED + "=0";
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_IS_SYNCED +"=0";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
-        if (localCursor.getCount() > 0) {
+        if (localCursor != null) {
             localCursor.moveToFirst();
-            return localCursor;
+        }
+        return localCursor;
+    }
+
+    public int setSyncedStore(long localId, String remoteId) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.STORE_IS_SYNCED, 1);
+        values.put(DBHelper.STORE_REMOTE_ID, remoteId);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_STORE, values, DBHelper.STORE_ID + " = ?",
+                new String[] { String.valueOf(localId) });
+
+        return ret_value;
+    }
+
+    public String getStoreRemoteId(int localId) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_STORE + " WHERE " + DBHelper.STORE_ID +"="+String.valueOf(localId);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getString(localCursor.getColumnIndex(DBHelper.RECEIPT_REMOTE_ID));
         } else {
-            return null;
+            return "";
         }
     }
 
@@ -428,6 +560,7 @@ public class SQLController {
         Date date = new Date();
         return dateFormat.format(date);
     }
+
 
     private boolean isSync(long receiptId) {
         boolean flag = false;

@@ -33,6 +33,6 @@ public class Tag extends com.strongloop.android.loopback.Model {
     }
 
     public void setTagName(String tagName) {
-        this.tagName = tagName;
+        this.tagName = tagName.toLowerCase();
     }
 }

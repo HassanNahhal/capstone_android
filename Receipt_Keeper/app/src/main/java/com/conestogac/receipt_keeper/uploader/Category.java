@@ -34,4 +34,6 @@ public class Category  extends com.strongloop.android.loopback.User {
     public void setCategoryName(String name) {
         this.name = name;
     }
+
+
 }
