@@ -150,7 +150,7 @@ public class AddReceiptActivity extends Activity {
             cal.set(Calendar.YEAR, yearToSet);
             cal.set(Calendar.DAY_OF_MONTH, dayToSet);
             cal.set(Calendar.MONTH, monthToSet);
-            String format = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH).format(cal.getTime());
+            String format = ReceiptCursorAdapter.sdf_user.format(cal.getTime());
 
             dateEditText.setText(dateAndTime.toString());
             if (dateAndTime != null) {

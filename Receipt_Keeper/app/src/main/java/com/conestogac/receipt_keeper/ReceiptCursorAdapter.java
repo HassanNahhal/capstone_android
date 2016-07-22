@@ -2,6 +2,7 @@ package com.conestogac.receipt_keeper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,9 @@ import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by infomat on 16-07-09.
@@ -22,10 +26,12 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     /**
      * Cursor Adapter to show cursor value on list item by reading from Database
      * This will be bind to listview which layout is defined at task_item.xml
+     *
      */
     private static final String TAG = ReceiptCursorAdapter.class.getSimpleName();
     private Context curConext;
     private File file;
+    public static final SimpleDateFormat sdf_user = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
 
     // Default constructor
     public ReceiptCursorAdapter(Context context, Cursor cursor) {
@@ -53,6 +59,7 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         TextView tvTags = (TextView) view.findViewById(R.id.tagsTextView);
         Button btIsSync = (Button) view.findViewById(R.id.isSync);
         String imagePath;
+        String date;
 
         // Read value with cursor and set value to widget
         // Id is set to invisible text, to make easy to read data from database
@@ -64,9 +71,16 @@ public class ReceiptCursorAdapter extends CursorAdapter {
             GlideUtil.loadImage(file, ivReceiptImage);
         }
 
+        try {
+            date = DateUtils.getRelativeDateTimeString(context, (sdf_user.parse(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)))).getTime(), DateUtils.DAY_IN_MILLIS ,DateUtils.WEEK_IN_MILLIS,0).toString();
+        } catch (Exception e) {
+            date = DateUtils.getRelativeDateTimeString(context, new Date().getTime(), DateUtils.DAY_IN_MILLIS , DateUtils.FORMAT_NO_NOON,0).toString();
+        }
+
+
         tvStoreName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)));
-        tvTotal.setText("$ " + String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
-        tvDateTime.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)));
+        tvTotal.setText("$ "+String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
+        tvDateTime.setText(date.substring(0,date.lastIndexOf(",")));
         tvPayment.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
         tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
 

@@ -1,12 +1,15 @@
 package com.conestogac.receipt_keeper;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -20,6 +23,7 @@ import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 import java.io.File;
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +40,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
     private EditText updatePaymentEditText;
     private Button updateEditReceiptButton;
     private ImageButton updateReceiptImageButton;
-
+    private Calendar dateAndTime = Calendar.getInstance();
 
     // [ Intent values to send to UpdateReceiptActivity and receive from Home2Activity]
     String storeName;
@@ -100,6 +104,16 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
 
         setAllDataFromIntent();
+
+        updateDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(updateDateEditText.getContext(), d, dateAndTime.get(Calendar.YEAR),
+                        dateAndTime.get(Calendar.MONTH),
+                        dateAndTime.get(Calendar.DAY_OF_MONTH)).show();
+
+            }
+        });
 
     }
 
@@ -232,5 +246,22 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
         Intent goToHomePage = new Intent(this, Home2Activity.class);
         startActivity(goToHomePage);
+    }
+
+    DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
+        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                              int dayOfMonth) {
+            dateAndTime.set(Calendar.YEAR, year);
+            dateAndTime.set(Calendar.MONTH, monthOfYear);
+            dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            updateDate();
+        }
+    };
+
+    // [Show date on TextView]
+    private void updateDate() {
+        updateDateEditText.setText(DateUtils
+                .formatDateTime(this,
+                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
     }
 }

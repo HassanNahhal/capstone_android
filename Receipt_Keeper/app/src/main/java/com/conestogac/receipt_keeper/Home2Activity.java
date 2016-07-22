@@ -74,8 +74,6 @@ public class Home2Activity extends AppCompatActivity {
                 // [Get cursor items based on position in the ListView]
                 Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
                 if (cursorItem != null) {
-                    cursorItem.moveToFirst();
-
                     Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
                     int receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
                     Log.d(TAG, "receiptId :" + receiptId);
