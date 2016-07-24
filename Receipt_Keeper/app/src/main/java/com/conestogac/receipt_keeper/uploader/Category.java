@@ -3,7 +3,7 @@ package com.conestogac.receipt_keeper.uploader;
 /**
  * Created by infomat on 16-07-11.
  */
-public class Category  extends com.strongloop.android.loopback.User {
+public class Category  extends com.strongloop.android.loopback.Model {
 
     private String id;
     private String name;

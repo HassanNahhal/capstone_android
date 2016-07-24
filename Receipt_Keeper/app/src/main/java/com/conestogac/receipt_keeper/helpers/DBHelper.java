@@ -51,8 +51,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Table ReceiptTag and columns
     public static final String TABLE_RECEIPT_TAG = "receiptTag";
-    public static final String FK_RECEIPT_ID = "receipt_id";
-    public static final String FK_TAG_ID = "tag_id";
+    public static final String RECEIPT_TAG_FK_RECEIPT_ID = "receipt_id";
+    public static final String RECEIPT_TAG_FK_TAG_ID = "tag_id";
     public static final String RECEIPT_TAG_REMOTE_ID = "remote_id";
     public static final String RECEIPT_TAG_IS_SYNCED = "isSynced";
 
@@ -103,8 +103,8 @@ public class DBHelper extends SQLiteOpenHelper {
     // Receipt_Tag table create statement
     private static final String CREATE_TABLE_RECEIPT_TAG = " CREATE TABLE " + TABLE_RECEIPT_TAG
                     + "( "
-                    + FK_RECEIPT_ID + " INTEGER ,"
-                    + FK_TAG_ID + " INTEGER ,"
+                    + RECEIPT_TAG_FK_RECEIPT_ID + " INTEGER ,"
+                    + RECEIPT_TAG_FK_TAG_ID + " INTEGER ,"
                     + RECEIPT_TAG_REMOTE_ID + " TEXT, "
                     + RECEIPT_TAG_IS_SYNCED + " INTEGER DEFAULT 0"
                     + ")";

@@ -32,11 +32,14 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     private Context curConext;
     private File file;
     public static final SimpleDateFormat sdf_user = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
+    private static SQLController dbController = null;
 
     // Default constructor
     public ReceiptCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
         curConext = context;
+        dbController = new SQLController(context);
+        dbController.open();
     }
 
 
@@ -76,13 +79,14 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         } catch (Exception e) {
             date = DateUtils.getRelativeDateTimeString(context, new Date().getTime(), DateUtils.DAY_IN_MILLIS , DateUtils.FORMAT_NO_NOON,0).toString();
         }
-
+        btIsSync.setTag(cursor.getInt(0));    //set id as tag which will be read during processing onclick()
 
         tvStoreName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)));
         tvTotal.setText("$ "+String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
         tvDateTime.setText(date.substring(0,date.lastIndexOf(",")));
         tvPayment.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
-        tvTags.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)));
+        tvTags.setText(getTagListAsString(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_ID))));
+
 
 
         //Todo depends on payment -> Show different icon
@@ -105,6 +109,18 @@ public class ReceiptCursorAdapter extends CursorAdapter {
 
         }
         return (curConext.getResources().getColor(retColor));
+    }
+
+    private String getTagListAsString(int receiptId) {
+        Cursor cursor;
+        StringBuilder builder = new StringBuilder();
+        cursor = dbController.getReceiptTagIds(receiptId);
+
+        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+            builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME))+",");
+        }
+        builder.deleteCharAt(builder.length()-1);
+        return builder.toString();
     }
 
 }

@@ -1,19 +1,22 @@
 package com.conestogac.receipt_keeper.uploader;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Environment;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.conestogac.receipt_keeper.helpers.BaseActivity;
+import com.conestogac.receipt_keeper.Home2Activity;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ReceiptCursorAdapter;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
 import com.conestogac.receipt_keeper.SQLController;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
-
 import com.google.common.collect.ImmutableMap;
 import com.strongloop.android.loopback.AccessToken;
 import com.strongloop.android.loopback.Container;
@@ -28,9 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class TestUploadActivity extends BaseActivity {
-    private static final String TAG = "TestUploadActivity";
-
+public class ItemUploadTaskFragment extends Fragment {
+    private static final String TAG = "ItemUploadTaskFragment";
     private Store store;
     private Receipt receipt;
     private Category category;
@@ -66,31 +68,125 @@ public class TestUploadActivity extends BaseActivity {
     private static final int CALLBACK_UPLOAD_RECEIPT_TAG = 7;
     private static final int CALLBACK_UPLOAD_IMAGE = 9;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test_upload);
-        app = (ReceiptKeeperApplication)this.getApplication();
-        adapter = app.getLoopBackAdapter();
-        userRepo = adapter.createRepository(CustomerRepository.class);
-        dbController = new SQLController(this);
-        dbController.open();
+    //define callback interface, callback implemented at caller;NewPostActivity class
+    public interface TaskCallbacks {
+        //To check: void onBitmapResized(Bitmap resizedBitmap, int mMaxDimension);
+        void onItemUploaded(String error);
+    }
 
-        //todo close some where
+    private Context mApplicationContext;
+    private TaskCallbacks mCallbacks;
+
+    //default contructor
+    public ItemUploadTaskFragment() {
+        // Required empty public constructor
+    }
+
+    //create static to survive after exit
+    public static ItemUploadTaskFragment newInstance() {
+        return new ItemUploadTaskFragment();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
+
+    //when fragement is called, set context
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof TaskCallbacks) {
+            mCallbacks = (TaskCallbacks) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement TaskCallbacks");
+        }
+        mApplicationContext = context.getApplicationContext();
+        app = (ReceiptKeeperApplication)getActivity().getApplication();
+        adapter = app.getLoopBackAdapter();
+        userRepo = adapter.createRepository(CustomerRepository.class);
+        dbController = new SQLController(context);
+        dbController.open();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks = null;
         dbController.close();
     }
 
+    /*
+           Called from ListPostActivity for uploading
+           It will call async task, UploadPostTask for uploading picture and set database
+    */
+    public void uploadItem() {
+        //todo upload should be occur in background if possivle implemnted as service by pended intent uisng broadcast receiver
+        uploadAll();
+    }
 
 
-    public void uploadImage(View view) {
-        if (!isLogin(CALLBACK_UPLOAD_IMAGE))
-            return;
+    //Todo Implement Guava NonSynchronous Blocking
+    public void uploadAll() {
         uploadImages();
+    }
+
+    /*
+            Check Login
+            If does not login, it will login background and will call save at the callback
+            If it is return true to make caller can go proceed
+         */
+    private boolean isLogin(int callbacKId) {
+        if (userRepo.getCurrentUserId() == null){
+            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
+            return false;
+        }
+        customerId = userRepo.getCurrentUserId().toString();
+        return true;
+    }
+
+    private void silentLogin(String email, String password, final int callbackId) {
+        //Login
+        userRepo.loginUser(email , password
+                , new CustomerRepository.LoginCallback() {
+                    @Override
+                    public void onSuccess(AccessToken token, Customer currentUser) {
+                        customerId = currentUser.getId().toString();
+                        app.setCurrentUser(currentUser);
+                        Log.d(TAG, "current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
+                        switch (callbackId) {
+                            case CALLBACK_UPLOAD_STORE:
+                                uploadStore();
+                                break;
+                            case CALLBACK_UPLOAD_RECEIPT:
+                                uploadReceipt();
+                                break;
+                            case CALLBACK_UPLOAD_CATEGORY:
+                                uploadCategory();
+                                break;
+                            case CALLBACK_UPLOAD_STORE_CATEGORY:
+                                uploadStoreCategory();
+                                break;
+                            case CALLBACK_UPLOAD_TAG:
+                                uploadTag();
+                                break;
+                            case CALLBACK_UPLOAD_RECEIPT_TAG:
+                                uploadReceiptTag();
+                                break;
+                            case CALLBACK_UPLOAD_IMAGE:
+                                uploadImages();
+                            default:
+                                break;
+                        }
+                    }
+                    @Override
+                    public void onError(Throwable t) {
+                        Log.e(TAG, "Login E", t);
+                        gotoHome(getString(R.string.save_fail_login_message));
+                    }
+                });
     }
 
 
@@ -102,8 +198,13 @@ public class TestUploadActivity extends BaseActivity {
     */
     public void uploadImages()
     {
+        if (!isLogin(CALLBACK_UPLOAD_IMAGE))
+            return;
+
+
         final Cursor cursor = dbController.getAllReceiptDontHaveRemoteImage();
         if ((cursor == null) || (cursor.getCount()==0)) {
+            uploadTag();
             return; //already all uploaded
         }
 
@@ -137,6 +238,7 @@ public class TestUploadActivity extends BaseActivity {
                     public void onError(Throwable error) {
                         // create container request failed
                         Log.d(TAG, "Container Creation Failed");
+                        gotoHome(getString(R.string.save_fail_image_message));
                     }
                 });
             }
@@ -154,13 +256,16 @@ public class TestUploadActivity extends BaseActivity {
         byte[] bFile = null;
         String fullPathAndFilename = "";
 
-        if (cursor.isAfterLast()) return;  //last condition
+        if (cursor.isAfterLast()) {
+            uploadTag();
+            return;  //last condition
+        }
 
         state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             fullPathAndFilename = cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_URL));
             file = new java.io.File(fullPathAndFilename);
-            
+
             //create byte array stream
             //change into byte array to upload
             bFile = new byte[(int) file.length()];
@@ -182,7 +287,7 @@ public class TestUploadActivity extends BaseActivity {
                     // call `remoteFile.getUrl()` to get its URL
                     remoteName = remoteFile.getName();
                     remoteUrl = PREFIX_REMOTE_IMAGE_PATH + customerId
-                                    + POSTFIX_REMOTE_IMAGE_PATH + remoteName;
+                            + POSTFIX_REMOTE_IMAGE_PATH + remoteName;
                     dbController.setRemoteUrlReceipt(
                             cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_ID)),
                             remoteUrl);
@@ -194,6 +299,7 @@ public class TestUploadActivity extends BaseActivity {
                     }
                     else {
                         Log.d(TAG, "Success Uploading All Files Finished:");
+                        uploadTag();
                     }
                 }
 
@@ -201,145 +307,17 @@ public class TestUploadActivity extends BaseActivity {
                 public void onError(Throwable error) {
                     // upload failed
                     Log.d(TAG, "Uploading Failed");
+                    gotoHome(getString(R.string.save_fail_image_message));
                 }
             });
         } else {
             Log.d(TAG, "ERROR at Mounting");
+            gotoHome(getString(R.string.save_fail_image_message));
         }
     }
 
 
-    /*
-      Save Receipt
-     */
-    private void testSaveReceipt() {
-        Date currentDate = new Date();
-        ReceiptRepository repository = adapter.createRepository(ReceiptRepository.class);
 
-
-        Receipt receipt = repository.createObject(ImmutableMap.of(
-                    "total", 120,
-                    "numberOfItem", 3,
-                    "imgaeFilePath", "http://localhost",
-                    "date", dateFormat.format(currentDate),
-                    "storeId", "577bc87cb1ac300300f6cfbe"
-            )
-        );
-
-        Log.d(TAG, "Current User Id: "+userRepo.getCurrentUserId());
-        receipt.setCustomerId((String) (userRepo.getCurrentUserId()));
-
-        receipt.save(new VoidCallback() {
-            @Override
-            public void onSuccess() {
-                // Success
-                showMessage("Success Save");
-            }
-
-            @Override
-            public void onError(Throwable t) {
-                // save failed, handle the error
-                Log.e(TAG, "Saving E", t);
-                showMessage(getString(R.string.save_fail_save_message));
-            }
-        });
-    }
-
-    /*
-        Check Login
-        If does not login, it will login background and will call save at the callback
-        If it is return true to make caller can go proceed
-     */
-    private boolean isLogin(int callbacKId) {
-        if (userRepo.getCurrentUserId() == null){
-            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
-            return false;
-        }
-        customerId = userRepo.getCurrentUserId().toString();
-        return true;
-    }
-
-    private void showMessage(String message) {
-        Toast.makeText(TestUploadActivity.this, message,
-                Toast.LENGTH_SHORT).show();
-    }
-
-
-    private void silentLogin(String email, String password, final int callbackId) {
-        //Login
-        userRepo.loginUser(email , password
-                , new CustomerRepository.LoginCallback() {
-                    @Override
-                    public void onSuccess(AccessToken token, Customer currentUser) {
-                        customerId = currentUser.getId().toString();
-                        app.setCurrentUser(currentUser);
-                        Log.d(TAG, "current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
-                        switch (callbackId) {
-                            case CALLBACK_LOGIN:
-                                createTestDB(null);
-                                break;
-                            case CALLBACK_UPLOAD_STORE:
-                                uploadStore();
-                                break;
-                            case CALLBACK_UPLOAD_RECEIPT:
-                                uploadReceipt();
-                                break;
-                            case CALLBACK_UPLOAD_CATEGORY:
-                                uploadCategory();
-                                break;
-                            case CALLBACK_UPLOAD_STORE_CATEGORY:
-                                uploadStoreCategory();
-                                break;
-                            case CALLBACK_UPLOAD_TAG:
-                                uploadTag();
-                                break;
-                            case CALLBACK_UPLOAD_RECEIPT_TAG:
-                                uploadReceiptTag();
-                                break;
-                            case CALLBACK_UPLOAD_IMAGE:
-                                uploadImage(null);
-                            default:
-                                break;
-                        }
-                    }
-                    @Override
-                    public void onError(Throwable t) {
-                        Log.e(TAG, "Login E", t);
-                        showMessage(getString(R.string.save_fail_save_message));
-                    }
-                });
-    }
-
-
-    public void createTestDB(View view) {
-        long _id;
-
-        com.conestogac.receipt_keeper.models.Receipt receipt = new com.conestogac.receipt_keeper.models.Receipt();
-       // final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
-        final String image = "/storage/sdcard/DCIM/Camera/IMG_20160721_085153.jpg";
-        Date currentDate = new Date();
-
-        for (int i = 0; i < 3; i++) {
-            if (app.getCurrentUser().getId().toString() != null)
-                receipt.setCustomerId(app.getCurrentUser().getId().toString());
-            receipt.setStoreId(dbController.insertStoreByName("Store"+ (i%4)));
-            receipt.setCategoryId(i%5+1);
-            receipt.setComment("Comment"+i);
-            receipt.setDate(dateFormat.format(currentDate));
-            receipt.setTotal((float)(10.0+i*10.0));
-            receipt.setUrl(image);
-            receipt.setPaymentMethod("Master");
-            receipt.setTagId(i%4);
-            _id = dbController.insertReceipt(receipt, null);
-            Log.d(TAG, "ID: "+_id);
-        }
-    }
-
-    //Todo Implement Guava NonSynchronous Blocking
-    public void uploadAll(View view) {
-        showProgressDialog(getString(R.string.upload_progress_message));
-        uploadTag();
-    }
 
     /*
           Tag
@@ -398,7 +376,7 @@ public class TestUploadActivity extends BaseActivity {
             public void onError(Throwable t) {
                 // save failed, handle the error
                 Log.e(TAG, "Saving E", t);
-                dismissProgressDialog();
+                gotoHome(getString(R.string.save_fail_save_message));
             }
         });
     }
@@ -461,7 +439,7 @@ public class TestUploadActivity extends BaseActivity {
             public void onError(Throwable t) {
                 // save failed, handle the error
                 Log.e(TAG, "Saving E", t);
-                dismissProgressDialog();
+                gotoHome(getString(R.string.save_fail_save_message));
             }
         });
     }
@@ -523,7 +501,7 @@ public class TestUploadActivity extends BaseActivity {
             public void onError(Throwable t) {
                 // save failed, handle the error
                 Log.e(TAG, "Saving E", t);
-                dismissProgressDialog();
+                gotoHome(getString(R.string.save_fail_save_message));
             }
         });
     }
@@ -588,7 +566,7 @@ public class TestUploadActivity extends BaseActivity {
             public void onError(Throwable t) {
                 // save failed, handle the error
                 Log.e(TAG, "Saving E", t);
-                dismissProgressDialog();
+                gotoHome(getString(R.string.save_fail_save_message));
             }
         });
     }
@@ -637,7 +615,7 @@ public class TestUploadActivity extends BaseActivity {
             receipt.setDate(new Date());
         }
 
-      // storeId, categoryId,comment, date, tagId;
+        // storeId, categoryId,comment, date, tagId;
 
         receipt.save(new VoidCallback() {
             @Override
@@ -662,7 +640,7 @@ public class TestUploadActivity extends BaseActivity {
             public void onError(Throwable t) {
                 // save failed, handle the error
                 Log.e(TAG, "Saving E", t);
-                dismissProgressDialog();
+                gotoHome(getString(R.string.save_fail_save_message));
             }
         });
     }
@@ -683,7 +661,9 @@ public class TestUploadActivity extends BaseActivity {
 
         if ((cursor == null) || (cursor.getCount()==0)){
             //Todo After uploading all, finish progress bar
-            dismissProgressDialog();
+            Log.d(TAG, "Finish uploading & Dismiss Progress Dialog "+cursor.getCount());
+
+            gotoHome(getString(R.string.save_success_message));
             return;  //already all synced
         }
 
@@ -695,7 +675,8 @@ public class TestUploadActivity extends BaseActivity {
     public void saveReceiptTag(final Cursor cursor, final String customerID) {
         if (cursor.isAfterLast()) {
             //Todo After uploading all, finish progress bar
-            dismissProgressDialog();
+
+            gotoHome(getString(R.string.save_success_message));
             return;
         }
 
@@ -721,7 +702,7 @@ public class TestUploadActivity extends BaseActivity {
                 }
                 else {
                     Log.d(TAG, "Success ReceiptTag Finished:");
-                    dismissProgressDialog();
+                    gotoHome(getString(R.string.save_success_message));
                 }
             }
 
@@ -729,10 +710,14 @@ public class TestUploadActivity extends BaseActivity {
             public void onError(Throwable t) {
                 // save failed, handle the error
                 Log.e(TAG, "Saving E", t);
-                dismissProgressDialog();
+                gotoHome(getString(R.string.save_fail_save_message));
             }
         });
     }
 
+    void gotoHome(String ret_msg) {
+        mCallbacks.onItemUploaded(ret_msg);
+    }
 
 }
+

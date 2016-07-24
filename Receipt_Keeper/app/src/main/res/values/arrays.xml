@@ -22,6 +22,20 @@
 
     <string-array name="categories">
         <item>[Select Category]</item>
+		<item>Grocery</item>
+		<item>Fastfood</item>
+		<item>Electronics</item>
+		<item>Books</item>
+		<item>Gas Station</item>
+		<item>Education</item>
+		<item>Gynasium</item>
+		<item>LCBO</item>
+		<item>Government</item>
+		<item>Furniture</item>
+		<item>Stationary</item>
+		<item>Restaurant</item>
+		<item>Medical</item>
+		<item>Financial</item>
         <item>Automotive</item>
         <item>Pet Supplies</item>
         <item>Clothing</item>
@@ -29,20 +43,20 @@
         <item>Hobbies</item>
         <item>Party</item>
         <item>Baby Health</item>
-        <item>Diapering</item>
+		<item>Travel Agency</item>
         <item>Photography</item>
     </string-array>
 
     <string-array name="tags">
-        <item>Gift</item>
-        <item>Food</item>
-        <item>Cloth</item>
-        <item>Gas</item>
-        <item>Mobile</item>
-        <item>Hydro</item>
-        <item>Rent</item>
-        <item>Internet</item>
-        <item>Drugs</item>
+        <item>gift</item>
+        <item>food</item>
+        <item>cloth</item>
+        <item>gas</item>
+        <item>mobile</item>
+        <item>hydro</item>
+        <item>rent</item>
+        <item>internet</item>
+        <item>drugs</item>
     </string-array>
 
 

@@ -80,6 +80,21 @@ public class SQLController {
     ORDER BY re.receiptdate
      */
 
+    public int numberOfItemsToSync() {
+        int ret_count = 0;
+        this.open();
+        ret_count=
+                getAllUnSyncReceipt().getCount()+
+                getAllUnSyncReceiptTag().getCount()+
+                getAllUnSyncedStoreCategory().getCount()+
+                getAllUnSyncedCategory().getCount()+
+                getAllUnSyncTag().getCount()+
+                getAllUnSyncStore().getCount();
+        this.close();
+        return ret_count;
+    }
+
+
     public Cursor getAllReceiptsWithTagName(String tagName) {
 
         String sqlQuery = "SELECT * FROM "
@@ -115,16 +130,17 @@ public class SQLController {
                 + DBHelper.TABLE_STORE + " st, "
                 + DBHelper.TABLE_RECEIPT + " re "
                 + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
+                + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
                 + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.FK_TAG_ID + "=tg." + DBHelper.TAG_ID
+                + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
+                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
 //                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + "<> -1"
                 // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
-                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
+                + " ORDER BY re." + DBHelper.RECEIPT_DATE+ " DESC"
+                + " , re." + DBHelper.RECEIPT_ID+" DESC";
 
         Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
@@ -141,12 +157,12 @@ public class SQLController {
                 + DBHelper.TABLE_STORE + " st, "
                 + DBHelper.TABLE_RECEIPT + " re "
                 + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
+                + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
                 + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.FK_TAG_ID + "=tg." + DBHelper.TAG_ID
+                + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
+                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
                 + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
                 // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
@@ -179,30 +195,34 @@ public class SQLController {
         long receiptId = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
                 + " = '" + receipt.getLocalId() + "'", null);
 
+        //First delete all receipt_tag and insert
+        database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receipt.getLocalId())});
         if (tags != null) {
             // Assigning tags to
             for (Tag tag : tags) {
-                long tagId = getTagIdByName(tag.getTagName());
-                if (tagId != -1) {
-                    updateReceiptTag(receipt.getLocalId(), tagId);
-                } else {
+                long tagId = getTagIdByName(tag.getTagName());//tag is normally lower case
+                if (tagId != -1)
+                    insertReceiptTag(receiptId, tagId);
+                else {
                     long newTagId = insertTag(tag);
-                    updateReceiptTag(receipt.getLocalId(), newTagId);
+                    insertReceiptTag(receiptId, newTagId);
 
                 }
             }
         }
 
-        insertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
+        updateORinsertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
         return receiptId;
     }
     public long updateReceiptTag(long receiptId, long tagId) {
         ContentValues values = new ContentValues();
-        values.put(DBHelper.FK_RECEIPT_ID, receiptId);
-        values.put(DBHelper.FK_TAG_ID, tagId);
+        values.put(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID, receiptId);
+        values.put(DBHelper.RECEIPT_TAG_FK_TAG_ID, tagId);
 
-        return database.update(DBHelper.TABLE_RECEIPT_TAG, values, DBHelper.FK_RECEIPT_ID
-                + " = " + receiptId, null);
+        return database.update(DBHelper.TABLE_RECEIPT_TAG, values,
+                "(" +DBHelper.RECEIPT_TAG_FK_RECEIPT_ID+" = ? and "
+                        + DBHelper.RECEIPT_TAG_FK_TAG_ID + " = ?)",
+                new String[] { String.valueOf(receiptId),String.valueOf(tagId) });
     }
 
     public Cursor getAllUnSyncReceipt() {
@@ -236,6 +256,23 @@ public class SQLController {
                 new String[] { String.valueOf(localId) });
 
         return ret_value;
+    }
+
+    public String getUrlReceipt(int id) {
+        String ret_string = null;
+        this.open();
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT
+                            + " WHERE " + DBHelper.RECEIPT_ID+"="+String.valueOf(id);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            ret_string =  localCursor.getString(localCursor.getColumnIndex(DBHelper.RECEIPT_URL));
+        }
+
+        this.close();
+        return ret_string;
+
     }
 
     public int setRemoteUrlReceipt(long localId, String remoteUrl) {
@@ -282,10 +319,46 @@ public class SQLController {
                 }
             }
         }
-        insertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
+        updateORinsertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
 
 
         return receiptId;
+    }
+
+
+    public int setSyncedReceiptTag(int receiptId, int tagId, String remoteId) {
+        int ret_value;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.RECEIPT_TAG_IS_SYNCED, 1);
+
+        // updating row
+        ret_value = database.update(DBHelper.TABLE_RECEIPT_TAG, values,
+                "("+DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + " = ? and "
+                        +DBHelper.RECEIPT_TAG_FK_TAG_ID + " = ?)",
+                new String[] { String.valueOf(receiptId),String.valueOf(tagId) });
+        return ret_value;
+    }
+
+    public String getReceiptRemoteId(int localId) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " WHERE " + DBHelper.RECEIPT_ID +"="+String.valueOf(localId);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getString(localCursor.getColumnIndex(DBHelper.RECEIPT_REMOTE_ID));
+        } else {
+            return "";
+        }
+    }
+
+    public String getTagRemoteId(int localId) {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_ID +"="+String.valueOf(localId);
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+            return localCursor.getString(localCursor.getColumnIndex(DBHelper.TAG_REMOTE_ID));
+        } else {
+            return "";
+        }
     }
 
     public Cursor getStoreCategoryIds() {
@@ -301,6 +374,21 @@ public class SQLController {
         return localCursor;
     }
 
+    public long updateORinsertStoreCategory(long storeId, long categoryId) {
+        long numOfUpdated;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, categoryId);
+        values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, storeId);
+
+        numOfUpdated= database.update(DBHelper.TABLE_STORE_CATEGORY, values,
+                "(" +DBHelper.STORE_CATEGORY_FK_CATEGORY_ID+" = ? and "
+                        + DBHelper.STORE_CATEGORY_FK_STORE_ID + " = ?)",
+                new String[] { String.valueOf(storeId),String.valueOf(categoryId) });
+        if (numOfUpdated == 0) {
+            numOfUpdated = database.insert(DBHelper.TABLE_STORE_CATEGORY, null, values);
+        }
+        return numOfUpdated;
+    }
     public long insertStoreCategory(long storeId, long categoryId) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, categoryId);
@@ -311,8 +399,8 @@ public class SQLController {
 
     public long insertReceiptTag(long receiptId, long tagId) {
         ContentValues values = new ContentValues();
-        values.put(DBHelper.FK_RECEIPT_ID, receiptId);
-        values.put(DBHelper.FK_TAG_ID, tagId);
+        values.put(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID, receiptId);
+        values.put(DBHelper.RECEIPT_TAG_FK_TAG_ID, tagId);
 
         return database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
     }
@@ -321,14 +409,22 @@ public class SQLController {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_NAME + "=\'" + tagName + "\'";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
-        if (localCursor != null) {
+        if ((localCursor != null) && (localCursor.getCount() > 0)){
             localCursor.moveToFirst();
             return localCursor.getInt(localCursor.getColumnIndex(DBHelper.TAG_ID));
         } else {
             return -1;
         }
     }
+    public Cursor getAllUnSyncReceiptTag() {
+        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT_TAG + " WHERE " + DBHelper.RECEIPT_TAG_IS_SYNCED +"=0";
+        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
+        if (localCursor != null) {
+            localCursor.moveToFirst();
+        }
+        return localCursor;
+    }
 
     protected String getTagNameById(int tagId) {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_ID + "=\'" + tagId + "\'";
@@ -347,7 +443,7 @@ public class SQLController {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_NAME + "=\'" + categoryName + "\'";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
-        if (localCursor != null) {
+        if ((localCursor != null) && (localCursor.getCount() > 0)) {
             localCursor.moveToFirst();
             return localCursor.getInt(localCursor.getColumnIndex(DBHelper.CATEGORY_ID));
         } else {
@@ -372,7 +468,7 @@ public class SQLController {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_ID + "=" + String.valueOf(categoryId);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
-        if (localCursor != null) {
+        if ((localCursor != null) && (localCursor.getCount() > 0)) {
             localCursor.moveToFirst();
             return localCursor.getString(localCursor.getColumnIndex(DBHelper.CATEGORY_REMOTE_ID));
         } else {
@@ -451,20 +547,38 @@ public class SQLController {
     }
 
 
-    public Cursor getAllReceiptTag() {
+    public Cursor getReceiptTagIds(int receiptId) {
+        Cursor localCursor;
+        String sqlQuery;
 
-        Cursor localCursor = this.database.query(DBHelper.TABLE_RECEIPT_TAG,
-                new String[]{
-                        DBHelper.FK_RECEIPT_ID,
-                        DBHelper.FK_TAG_ID,
-                }
-                , null,
-                null, null, null, null);
-        if (localCursor != null)
+        if (receiptId == -1) {
+            sqlQuery = "SELECT re.*, tg.*" + " FROM "
+                    + DBHelper.TABLE_RECEIPT_TAG + " rt"
+                    + " INNER JOIN " + DBHelper.TABLE_RECEIPT + " re "
+                    + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
+                    + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
+                    + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID;
+
+        } else {
+            sqlQuery = "SELECT re.*, tg.*" + " FROM "
+                    + DBHelper.TABLE_RECEIPT_TAG + " rt"
+                    + " INNER JOIN " + DBHelper.TABLE_RECEIPT + " re "
+                    + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
+                    + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
+                    + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
+                    + " WHERE re." + DBHelper.RECEIPT_ID + "=" + String.valueOf(receiptId);
+        }
+
+        Log.d(LOG_NAME, sqlQuery);
+        localCursor = this.database.rawQuery(sqlQuery, null);
+
+        if(localCursor != null) {
             localCursor.moveToFirst();
+        }
         return localCursor;
-
     }
+
+
     public Cursor getAllUnSyncTag() {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_IS_SYNCED +"=0";
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
@@ -585,32 +699,22 @@ public class SQLController {
 
     // [ Delete record using id in the database]
     // [if isSync with remote set customerId to -1 , else delete it ]
-    public void deleteReceipt(long receiptID) {
+    public void deleteReceipt(int receiptID) {
         long id;
         if (!isSync(receiptID)) {
             id = database.delete(DBHelper.TABLE_RECEIPT,
                     DBHelper.RECEIPT_ID + "=?",
                     new String[]{String.valueOf(receiptID)});
 
-            Cursor cursor = this.getAllReceiptTag();
+            database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receiptID)});
 
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    if (cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.FK_RECEIPT_ID)) == receiptID) {
-                        database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receiptID)});
-                    }
-                }
-            }
         } else {
-
             ContentValues values = new ContentValues();
             values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, -1);
 
             id = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
                     + " = '" + receiptID + "'", null);
         }
-
-
     }
 
 

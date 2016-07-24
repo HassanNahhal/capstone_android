@@ -22,7 +22,7 @@
     <!-- Strings related to Welcome -->
     <string name="go_to_ocr">Go to OCR</string>
     <string name="go_to_login_page">Go to Login Page</string>
-    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
+    <string name="welcome_screen_text">Welcome to receipt keeper</string>
     <string name="sign_in_button_text">SIGN IN</string>
     <string name="sign_up_button_text">SIGN UP</string>
 
@@ -56,9 +56,13 @@
     <string name="upload_progress_message">Uploading...</string>
     <string name="signup_success_message">Success to sign up!!!</string>
     <string name="signin_success_message">Welcome!!! </string>
-    <string name="save_fail_message">Error during saving! Please try again later</string>
+    <string name="save_fail_login_message">Error during signin for saving! Please try again later</string>
+    <string name="nothing_to_save_message">Nothing to Upload!</string>
+    <string name="save_fail_save_message">Error during saving! Please try again later</string>
+    <string name="save_fail_image_message">Error during image saving! Please try again later</string>
     <string name="sigin_fail_message">Error during sign in! Please try again later</string>
     <string name="signup_fail_message">Error during sign up! Please try again later</string>
+    <string name="save_success_message">Success uploading data</string>
     <string name="action_logout">Logout</string>
     <string name="action_settings">upload test</string>
 
@@ -77,9 +81,13 @@
 
 
     <!-- Strings related to Menu -->
+    <string name="title_to_confirm_exit">Exit Application</string>
+    <string name="message_to_confirm_exit">Are you sure you want to exit?</string>
+
 
     <!-- Strings related to tag spinner Search-->
     <string name="type_to_search">Type to search</string>
+    <string name="search_hint">Search by Tag...</string>
     <string name="tags">Tags</string>
 
     <string name="title_activity_learn_more">LearnMore</string>

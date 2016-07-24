@@ -1,15 +1,21 @@
 package com.conestogac.receipt_keeper;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
+import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
 
 
 public class ViewReceiptActivity extends AppCompatActivity implements View.OnClickListener {
@@ -63,9 +69,26 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         viewPaymentTextView = (TextView) findViewById(R.id.viewPaymentTextView);
         findViewById(R.id.viewEditReceiptButton).setOnClickListener(this);
         viewReceiptImageButton = (ImageButton) findViewById(R.id.viewReceiptImageButton);
-
         setAllDataFromIntent();
 
+
+        viewReceiptImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            /*Receipt receipt = new Receipt();
+            //Date date = convertStringToDate(dateString);
+            saveReceiptDataInDB(receipt, tags);*/
+
+            Intent popIntent = new Intent(ViewReceiptActivity.this, Pop.class);
+
+            if (imagePath != null) {
+                popIntent.putExtra("imagePath", imagePath);
+                popIntent.putExtra("POP_INFO", "Receit ID: "+String.valueOf(receiptId));
+            }
+
+            startActivity(popIntent);
+            }
+        });
     }
 
     private void setAllDataFromIntent() {
@@ -107,15 +130,7 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
                 dbController.close();
             }
 
-            tagId = extras.getInt("tagId");
-            if (tagId != 0) {
-                dbController.open();
-                tagName = dbController.getTagNameById(tagId);
-                if (tagName != null) {
-                    viewTagTextView.setText(tagName);
-                }
-                dbController.close();
-            }
+            viewTagTextView.setText(getTagListAsString(receiptId));
 
             imagePath = extras.getString("imagePath");
             if (imagePath != null) {
@@ -149,9 +164,22 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         goToUpdateIntent.putExtra("comment", comment);
         goToUpdateIntent.putExtra("paymentMethod", paymentMethod);
         goToUpdateIntent.putExtra("categoryId", categoryId);
-        goToUpdateIntent.putExtra("tagId", tagId);
         goToUpdateIntent.putExtra("imagePath", imagePath);
 
         startActivity(goToUpdateIntent);
+    }
+
+    private String getTagListAsString(int receiptId) {
+        Cursor cursor;
+        dbController.open();
+        StringBuilder builder = new StringBuilder();
+        cursor = dbController.getReceiptTagIds(receiptId);
+
+        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+            builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME))+",");
+        }
+        builder.deleteCharAt(builder.length()-1);
+        dbController.close();
+        return builder.toString();
     }
 }

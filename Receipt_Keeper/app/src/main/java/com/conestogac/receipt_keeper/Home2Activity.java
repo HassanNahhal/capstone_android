@@ -9,25 +9,27 @@ import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
+import com.conestogac.receipt_keeper.helpers.BaseActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
+import com.conestogac.receipt_keeper.uploader.ItemUploadTaskFragment;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
-public class Home2Activity extends AppCompatActivity {
+public class Home2Activity extends BaseActivity
+            implements ItemUploadTaskFragment.TaskCallbacks {
 
     private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
@@ -35,10 +37,10 @@ public class Home2Activity extends AppCompatActivity {
     private SQLController dbController;
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
-
-    private SimpleCursorAdapter adapter;
-    private Cursor cursor;
     int receiptId;
+
+    public  static final String TAG_TASK_FRAGMENT = "ItemUploadTaskFragment";
+    private ItemUploadTaskFragment mTaskFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,14 @@ public class Home2Activity extends AppCompatActivity {
         receiptListView = (ListView) findViewById(R.id.receiptListView);
         receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
 
+        FragmentManager fm = getSupportFragmentManager();
+        mTaskFragment = (ItemUploadTaskFragment) fm.findFragmentByTag(TAG_TASK_FRAGMENT);
+        // create the fragment and data the first time
+        if (mTaskFragment == null) {
+            // add the fragment
+            mTaskFragment = new ItemUploadTaskFragment();
+            fm.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commit();
+        }
 
         dbController.open();
         final Cursor cursor = dbController.getAllReceipts();
@@ -59,7 +69,7 @@ public class Home2Activity extends AppCompatActivity {
         Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
 
         dbController.open();
-        final Cursor cursor1 = dbController.getAllReceiptTag();
+        final Cursor cursor1 = dbController.getReceiptTagIds(-1);
         dbController.close();
         Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
 
@@ -83,8 +93,6 @@ public class Home2Activity extends AppCompatActivity {
                     String comment = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_COMMENT));
                     String paymentMethod = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD));
                     int categoryId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_CATEGORY_ID));
-                    int tagId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.TAG_ID));
-                    Log.d(TAG, "tag id :" + tagId);
                     String imagePath = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_URL));
 
                     Intent goToSingleView = new Intent(receiptListView.getContext(), ViewReceiptActivity.class);
@@ -95,9 +103,7 @@ public class Home2Activity extends AppCompatActivity {
                     goToSingleView.putExtra("comment", comment);
                     goToSingleView.putExtra("paymentMethod", paymentMethod);
                     goToSingleView.putExtra("categoryId", categoryId);
-                    goToSingleView.putExtra("tagId", tagId);
                     goToSingleView.putExtra("imagePath", imagePath);
-
 
                     startActivity(goToSingleView);
                 }
@@ -117,6 +123,7 @@ public class Home2Activity extends AppCompatActivity {
 
             }
         });
+
 
         receiptListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -167,7 +174,6 @@ public class Home2Activity extends AppCompatActivity {
 
         // [ Go to AddReceiptActivity when clicked]
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_add_circle_black_24dp));
 
         //fab.setImageResource(R.drawable.ic_add);
         if (fab != null) {
@@ -206,7 +212,24 @@ public class Home2Activity extends AppCompatActivity {
 
         super.onResume();
         readAllDataFromDatabase();
+    }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setIconAttribute(android.R.attr.alertDialogIcon)
+                .setTitle("Exit the receipt keeper")
+                .setMessage(getString(R.string.message_to_confirm_exit))
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     @Override
@@ -226,13 +249,13 @@ public class Home2Activity extends AppCompatActivity {
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setQueryHint(getString(R.string.search_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String queryFor) {
                 // perform query here
                 dbController.open();
                 final Cursor cursor = dbController.getAllReceiptsWithValue(queryFor);
-                dbController.close();
                 if (cursor != null) {
                     new Handler().post(new Runnable() {
                         @Override
@@ -279,10 +302,12 @@ public class Home2Activity extends AppCompatActivity {
             case R.id.action_auto_login:
                 if (item.isChecked()) {
                     item.setChecked(false);
+                    loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false);
                 } else {
                     item.setChecked(true);
-
+                    loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,true);
                 }
+                loginPrefsEditor.commit();
                 return true;
 
             case R.id.action_setting:
@@ -304,7 +329,12 @@ public class Home2Activity extends AppCompatActivity {
                 return true;
 
             case R.id.action_sync_now:
-
+                if (dbController.numberOfItemsToSync() == 0) {
+                    Toast.makeText(Home2Activity.this, getString(R.string.nothing_to_save_message), Toast.LENGTH_SHORT).show();
+                } else {
+                    showProgressDialog(getString(R.string.upload_progress_message));
+                    mTaskFragment.uploadItem();
+                }
                 return true;
 
             default:
@@ -314,4 +344,38 @@ public class Home2Activity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+   public void viewReceiptImageButton(View view) {
+
+       int index;
+       String imagePath;
+       ViewGroup parent = (ViewGroup) view.getParent();
+
+       //Get index of checked task to delete
+       Log.d(TAG, "Checked _ID: "+parent.getChildAt(2).getTag());
+       index = (Integer) parent.getChildAt(2).getTag();
+
+       Intent popIntent = new Intent(Home2Activity.this, Pop.class);
+       imagePath = dbController.getUrlReceipt(index);
+
+        if (imagePath != null) {
+            popIntent.putExtra("imagePath", imagePath);
+            popIntent.putExtra("POP_INFO", "Receit ID: "+String.valueOf(index));
+            startActivity(popIntent);
+        }
+   }
+    /*
+        After uploading, this method will be called
+     */
+    @Override
+    public void onItemUploaded(final String error) {
+        dismissProgressDialog();
+        Home2Activity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dismissProgressDialog();
+                Toast.makeText(Home2Activity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        readAllDataFromDatabase();
+    }
 }

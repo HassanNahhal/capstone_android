@@ -144,12 +144,16 @@ public class AddReceiptActivity extends Activity {
                 dayToSet = Integer.parseInt(day);
             }
 
-
             Calendar cal = Calendar.getInstance();
 
-            cal.set(Calendar.YEAR, yearToSet);
-            cal.set(Calendar.DAY_OF_MONTH, dayToSet);
-            cal.set(Calendar.MONTH, monthToSet);
+            if (dayToSet==0||monthToSet==0||yearToSet==0) {
+                cal.getTime();
+            } else {
+                cal.set(Calendar.YEAR, yearToSet);
+                cal.set(Calendar.DAY_OF_MONTH, dayToSet);
+                cal.set(Calendar.MONTH, monthToSet);
+            }
+
             String format = ReceiptCursorAdapter.sdf_user.format(cal.getTime());
 
             dateEditText.setText(dateAndTime.toString());
@@ -239,9 +243,10 @@ public class AddReceiptActivity extends Activity {
 
                 dbController.insertReceipt(receipt, tags);
                 dbController.close();
-
-                Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);
+                Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);;
+                goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(goToHomePage);
+                finish();
             }
 
         });
@@ -254,13 +259,12 @@ public class AddReceiptActivity extends Activity {
                 saveReceiptDataInDB(receipt, tags);*/
 
                 Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
-                if (imagePath != null) {
-                    popIntent.putExtra("imagePath", imagePath);
+                if (imagePath != null && imageFileName != null) {
+                    File f = new File(imagePath, imageFileName);
+                    popIntent.putExtra("imagePath", f.getAbsolutePath());
+                    startActivity(popIntent);
                 }
-                if (imageFileName != null) {
-                    popIntent.putExtra("imageFileName", imageFileName);
-                }
-                startActivity(popIntent);
+
             }
         });
         /*SearchableListDialog ialog = new SearchableListDialog(categoryItems);
@@ -300,7 +304,7 @@ public class AddReceiptActivity extends Activity {
          * -1 is no by default selection
          * 0 to length will select corresponding values
          */
-        tagSearchSpinner.setItems(tagsListArray, "Tag search", -1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
+        tagSearchSpinner.setItems(tagsListArray, "[Select Tag]", -1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
             @Override
             public void onItemsSelected(LinkedList<KeyPairBoolData> items) {

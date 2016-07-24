@@ -2,6 +2,7 @@ package com.conestogac.receipt_keeper;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.models.Receipt;
@@ -22,6 +24,7 @@ import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.io.File;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -41,6 +44,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
     private Button updateEditReceiptButton;
     private ImageButton updateReceiptImageButton;
     private Calendar dateAndTime = Calendar.getInstance();
+    private List<String> tagArraySelected = new ArrayList<String>();
 
     // [ Intent values to send to UpdateReceiptActivity and receive from Home2Activity]
     String storeName;
@@ -87,21 +91,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         for (String item : categoryList) {
             categoryItems.put(item, Boolean.FALSE);
         }
-        final List<String> tagList = Arrays.asList(getResources().getStringArray(R.array.tags));
-        TreeMap<String, Boolean> tagItems = new TreeMap<>();
-        for (String item : tagList) {
-            tagItems.put(item, Boolean.FALSE);
-        }
-
-
-        for (int i = 0; i < tagList.size(); i++) {
-            KeyPairBoolData h = new KeyPairBoolData();
-            h.setId(i + 1);
-            h.setName(tagList.get(i));
-            h.setSelected(false);
-            tagsListArray.add(h);
-        }
-
 
         setAllDataFromIntent();
 
@@ -111,7 +100,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
                 new DatePickerDialog(updateDateEditText.getContext(), d, dateAndTime.get(Calendar.YEAR),
                         dateAndTime.get(Calendar.MONTH),
                         dateAndTime.get(Calendar.DAY_OF_MONTH)).show();
-
             }
         });
 
@@ -119,6 +107,8 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
     private void setAllDataFromIntent() {
         Bundle extras = getIntent().getExtras();
+        Cursor cursor;
+
         if (extras != null) {
             receiptId = extras.getInt("receiptId");
             Log.d(LOG_NAME, "receipt id :" + receiptId);
@@ -162,25 +152,24 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             }
         }
 
+        buildTagList(); //read from db. receipt_id should be set
+
         //String tagName = extras.getString("tagName");
-        int tagId = extras.getInt("tagId");
-        if (tagId != 0) {
-            updateTagSearchMultiSpinner.setItems(tagsListArray, "Tag search", tagId - 1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
-                @Override
-                public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
+        updateTagSearchMultiSpinner.setItems(tagsListArray, "Tag search", -1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
-                    for (int i = 0; i < items.size(); i++) {
-                        if (items.get(i).isSelected()) {
-                            Log.i("TAG", i + " : " + items.get(i).getName() + " : " + items.get(i).isSelected());
+            @Override
+            public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
 
-                        }
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).isSelected()) {
+                        Log.i("TAG", i + " : " + items.get(i).getName() + " : " + items.get(i).isSelected());
+
                     }
                 }
-            });
+            }
+        });
 
-
-        }
 
         imagePath = extras.getString("imagePath");
         if (imagePath != null) {
@@ -208,7 +197,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         //===============
         dbController.open();
         Receipt receipt = new Receipt();
-        final String image = "/storage/emulated/0/ReceiptKeeperFolder/2016_07_05_20_00_04.Receipt.bmp";
         String customerId = null;
         try {
             //customerId = app.getCurrentUser().getId().toString();
@@ -227,7 +215,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             receipt.setDate(updateDateEditText.getText().toString());
             receipt.setComment(updateCommentEditText.getText().toString());
             receipt.setPaymentMethod(updatePaymentEditText.getText().toString());
-            receipt.setUrl(image);
+            receipt.setUrl(imagePath);
             String receiptCategory = updateCategorySearchMultiSpinner.getSelectedItem().toString();
             if (!Objects.equals(receiptCategory, "Select Category")) {
                 receipt.setCategoryId(dbController.getCategoryIdByName(receiptCategory));
@@ -245,7 +233,9 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         dbController.close();
 
         Intent goToHomePage = new Intent(this, Home2Activity.class);
+        goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToHomePage);
+        finish();
     }
 
     DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
@@ -263,5 +253,39 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         updateDateEditText.setText(DateUtils
                 .formatDateTime(this,
                         dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
+    }
+
+    private void buildTagList() {
+        Cursor cursor;
+        dbController.open();
+        String tag;
+
+        cursor = dbController.getReceiptTagIds(receiptId);
+        if (cursor != null) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                tag = cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME));
+                tagArraySelected.add(tag);
+            }
+        }
+        dbController.close();
+
+
+        final List<String> tagList = Arrays.asList(getResources().getStringArray(R.array.tags));
+        TreeMap<String, Boolean> tagItems = new TreeMap<>();
+        for (String item : tagList) {
+            tagItems.put(item, Boolean.FALSE);
+        }
+
+        for (int i = 0; i < tagList.size(); i++) {
+            KeyPairBoolData h = new KeyPairBoolData();
+            h.setId(i + 1);
+            h.setName(tagList.get(i));
+            if (tagArraySelected.contains(tagList.get(i))) {
+                h.setSelected(true);
+            } else {
+                h.setSelected(false);
+            }
+            tagsListArray.add(h);
+        }
     }
 }

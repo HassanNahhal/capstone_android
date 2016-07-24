@@ -1226,7 +1226,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         TextView translationLanguageLabelTextView = (TextView) findViewById(R.id.translation_language_label_text_view);
         TextView translationLanguageTextView = (TextView) findViewById(R.id.translation_language_text_view);
         TextView translationTextView = (TextView) findViewById(R.id.translation_text_view);
-        if (isTranslationActive) {
+        if (false) {
             // Handle translation text fields
             translationLanguageLabelTextView.setVisibility(View.VISIBLE);
             translationLanguageTextView.setText(targetLanguageReadable);

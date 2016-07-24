@@ -51,19 +51,15 @@ public class Pop extends Activity {
             ImageView ivToast = (ImageView) findViewById(R.id.ivPopUp);
 
             String imagePath = extras.getString("imagePath");
-            String imageFileName = extras.getString("imageFileName");
 
-            File Root = Environment.getExternalStorageDirectory();
-            File Dir = new File(imagePath);
-            File file = new File(Dir, imageFileName);
+            File file = new File(imagePath);
 
             try {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
                 // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-                File f=new File(imagePath, imageFileName);
-                Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
+                Bitmap b = BitmapFactory.decodeStream(new FileInputStream(file));
                 ivToast.setImageBitmap(b);
                // ImageView img=(ImageView)findViewById(R.id.receiptImage);
                // img.setImageBitmap(b);

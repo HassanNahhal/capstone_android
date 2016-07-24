@@ -16,7 +16,6 @@ import com.conestogac.receipt_keeper.Home2Activity;
 import com.conestogac.receipt_keeper.helpers.BaseActivity;
 import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.ReceiptKeeperApplication;
-import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.Customer;
 import com.conestogac.receipt_keeper.uploader.CustomerRepository;
 import com.strongloop.android.loopback.AccessToken;
