@@ -47,6 +47,7 @@ public class ItemUploadTaskFragment extends Fragment {
     private CategoryRepository categoryRepository;
     private StoreCategoryRepository storeCategoryRepository;
     private String customerId;
+    private String groupId;
 
     private ReceiptKeeperApplication app;
     private RestAdapter adapter;
@@ -137,13 +138,17 @@ public class ItemUploadTaskFragment extends Fragment {
             Check Login
             If does not login, it will login background and will call save at the callback
             If it is return true to make caller can go proceed
-         */
+            To get Group ID, it will login at first uploading try
+      */
     private boolean isLogin(int callbacKId) {
-        if (userRepo.getCurrentUserId() == null){
+        if ((userRepo.getCurrentUserId() == null) || (callbacKId == CALLBACK_UPLOAD_IMAGE)){
             silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
             return false;
         }
         customerId = userRepo.getCurrentUserId().toString();
+        groupId = app.getCurrentUser().getGroupId();
+        if (groupId == null) groupId = "";
+
         return true;
     }
 
@@ -154,6 +159,9 @@ public class ItemUploadTaskFragment extends Fragment {
                     @Override
                     public void onSuccess(AccessToken token, Customer currentUser) {
                         customerId = currentUser.getId().toString();
+                        groupId = currentUser.getGroupId();
+                        if (groupId == null) groupId = "";
+
                         app.setCurrentUser(currentUser);
                         Log.d(TAG, "current user's token:Id "+token.getUserId() + ":" + currentUser.getId());
                         switch (callbackId) {
@@ -351,7 +359,7 @@ public class ItemUploadTaskFragment extends Fragment {
         tag  = tagRepository.createObject(ImmutableMap.of(
                 "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)),
                 "customerId", customerID,
-                "groupId", ""));
+                "groupId", groupId));
 
         tag.save(new VoidCallback() {
             @Override
@@ -414,7 +422,7 @@ public class ItemUploadTaskFragment extends Fragment {
         store  = storeRepository.createObject(ImmutableMap.of(
                 "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)),
                 "customerId", customerID,
-                "groupId", ""));
+                "groupId", groupId));
 
         store.save(new VoidCallback() {
             @Override
@@ -476,7 +484,7 @@ public class ItemUploadTaskFragment extends Fragment {
         category  = categoryRepository.createObject(ImmutableMap.of(
                 "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.CATEGORY_NAME)),
                 "customerId", customerID,
-                "groupId", ""));
+                "groupId", groupId));
 
         category.save(new VoidCallback() {
             @Override
@@ -540,7 +548,7 @@ public class ItemUploadTaskFragment extends Fragment {
                 "storeId", dbController.getStoreRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STORE_CATEGORY_FK_STORE_ID))),
                 "categoryId", dbController.getCategoryRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID))),
                 "customerId", customerID,
-                "groupId", ""));
+                "groupId", groupId));
 
         storeCategory.save(new VoidCallback() {
             @Override
@@ -602,9 +610,9 @@ public class ItemUploadTaskFragment extends Fragment {
         receipt  = receiptRepository.createObject(ImmutableMap.of(
                 "total", cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL)),
                 "customerId", customerID,
-                "numberOfItem", 3,
+                "numberOfItem", 1,
                 "storeId", dbController.getStoreRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_STORE_ID))),
-                "groupId", ""));
+                "groupId", groupId));
         receipt.setImageFilePath(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_REMOTE_URL)));
         receipt.setComment(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_COMMENT)));
         receipt.setCategoryId(dbController.getCategoryRemoteId(cursor.getInt(cursor.getColumnIndex(DBHelper.RECEIPT_FK_CATEGORY_ID))));
@@ -684,7 +692,7 @@ public class ItemUploadTaskFragment extends Fragment {
                 "receiptId", dbController.getReceiptRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID))),
                 "tagId", dbController.getTagRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TAG_FK_TAG_ID))),
                 "customerId", customerID,
-                "groupId", ""));
+                "groupId", groupId));
 
         receiptTag.save(new VoidCallback() {
             @Override
