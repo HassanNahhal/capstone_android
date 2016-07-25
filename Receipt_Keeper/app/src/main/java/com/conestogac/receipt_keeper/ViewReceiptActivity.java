@@ -12,6 +12,8 @@ import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 
+import org.w3c.dom.Text;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +32,7 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
     private TextView viewCommentTextView;
     private TextView viewPaymentTextView;
     private ImageButton viewReceiptImageButton;
-
+    private TextView viewReceiptIdTextView;
 
     // [ Intent values to send to UpdateReceiptActivity and receive from Home2Activity]
     String storeName;
@@ -60,6 +62,7 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
 
 
         // [ Setting IDs to Views ]
+        viewReceiptIdTextView = (TextView) findViewById(R.id.viewReceiptIdTextView);
         viewStoreNamTextView = (TextView) findViewById(R.id.viewStoreNamTextView);
         viewTotalTextView = (TextView) findViewById(R.id.viewTotalTextView);
         viewDateTextView = (TextView) findViewById(R.id.viewDateTextView);
@@ -95,6 +98,9 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             receiptId = extras.getInt("receiptId");
+            if (receiptId != 0) {
+                viewReceiptIdTextView.setText("ID: "+String.valueOf(receiptId));
+            }
 
             storeName = extras.getString("storeName");
             if (storeName != null) {

@@ -27,6 +27,7 @@
             android:backgroundTint="@color/blue_grey_500"
             android:useDefaultMargins="true">
 
+
             <ImageButton
                 android:layout_row="0"
                 android:layout_column="0"
@@ -36,10 +37,31 @@
                 android:contentDescription="@string/image_of_the_receipt"
                 android:layout_columnSpan="2"
                 android:layout_marginBottom="20dp" />
-
-
             <ImageView
                 android:layout_row="1"
+                android:layout_column="0"
+                android:id="@+id/viewReceiptIdImageVIew"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_receipt_black_24dp"
+                android:text="@string/receipt_id"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_gravity="center_vertical" />
+
+            <TextView
+                android:layout_row="1"
+                android:layout_column="1"
+                android:id="@+id/viewReceiptIdTextView"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:hint="Receipt ID"
+                android:singleLine="true"
+                android:textSize="20dp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="20dp" />
+
+            <ImageView
+                android:layout_row="2"
                 android:layout_column="0"
                 android:id="@+id/viewStoreNameImageView"
                 android:layout_width="50dp"
@@ -50,7 +72,7 @@
                 android:layout_gravity="center_vertical" />
 
             <TextView
-                android:layout_row="1"
+                android:layout_row="2"
                 android:layout_column="1"
                 android:id="@+id/viewStoreNamTextView"
                 android:layout_width="220dp"
@@ -62,7 +84,7 @@
                 android:layout_marginLeft="20dp" />
 
             <ImageView
-                android:layout_row="2"
+                android:layout_row="3"
                 android:layout_column="0"
                 android:id="@+id/viewTotalImageView"
                 android:layout_width="50dp"
@@ -73,7 +95,7 @@
                 android:layout_gravity="center_vertical|left" />
 
             <TextView
-                android:layout_row="2"
+                android:layout_row="3"
                 android:layout_column="1"
                 android:id="@+id/viewTotalTextView"
                 android:layout_width="220dp"
@@ -87,7 +109,7 @@
                 android:layout_marginLeft="20dp" />
 
             <ImageView
-                android:layout_row="3"
+                android:layout_row="4"
                 android:layout_column="0"
                 android:id="@+id/viewPaymentImageView"
                 android:layout_width="50dp"
@@ -98,7 +120,7 @@
                 android:layout_gravity="center_vertical" />
 
             <TextView
-                android:layout_row="3"
+                android:layout_row="4"
                 android:layout_column="1"
                 android:id="@+id/viewPaymentTextView"
                 android:layout_width="220dp"
@@ -110,7 +132,7 @@
                 android:layout_marginLeft="20dp" />
 
             <ImageView
-                android:layout_row="4"
+                android:layout_row="5"
                 android:layout_column="0"
                 android:id="@+id/viewDateImageView"
                 android:layout_width="50dp"
@@ -121,7 +143,7 @@
                 android:layout_gravity="center_vertical" />
 
             <TextView
-                android:layout_row="4"
+                android:layout_row="5"
                 android:layout_column="1"
                 android:id="@+id/viewDateTextView"
                 android:layout_width="220dp"
@@ -137,7 +159,7 @@
 
 
             <ImageView
-                android:layout_row="5"
+                android:layout_row="6"
                 android:layout_column="0"
                 android:id="@+id/viewTagImageView"
                 android:layout_width="50dp"
@@ -148,7 +170,7 @@
                 android:layout_gravity="center_vertical" />
 
             <TextView
-                android:layout_row="5"
+                android:layout_row="6"
                 android:layout_column="1"
                 android:id="@+id/viewTagTextView"
                 android:layout_width="150dp"
@@ -159,7 +181,7 @@
                 android:layout_marginLeft="20dp" />
 
             <ImageView
-                android:layout_row="6"
+                android:layout_row="7"
                 android:layout_column="0"
                 android:id="@+id/viewCategoryImageView"
                 android:layout_width="50dp"
@@ -171,7 +193,7 @@
 
 
             <TextView
-                android:layout_row="6"
+                android:layout_row="7"
                 android:layout_column="1"
                 android:id="@+id/viewCategoryTextView"
                 android:layout_width="150dp"
@@ -182,7 +204,7 @@
                 android:layout_marginLeft="20dp" />
 
             <ImageView
-                android:layout_row="7"
+                android:layout_row="8"
                 android:layout_column="0"
                 android:id="@+id/viewCommentImageView"
                 android:layout_width="50dp"
@@ -193,7 +215,7 @@
                 android:layout_gravity="center_vertical" />
 
             <TextView
-                android:layout_row="7"
+                android:layout_row="8"
                 android:layout_column="1"
                 android:id="@+id/viewCommentTextView"
                 android:layout_width="220dp"
