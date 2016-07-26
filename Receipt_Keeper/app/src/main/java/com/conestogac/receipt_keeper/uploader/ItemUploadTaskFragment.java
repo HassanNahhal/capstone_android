@@ -141,7 +141,8 @@ public class ItemUploadTaskFragment extends Fragment {
             To get Group ID, it will login at first uploading try
       */
     private boolean isLogin(int callbacKId) {
-        if ((userRepo.getCurrentUserId() == null) || (callbacKId == CALLBACK_UPLOAD_IMAGE)){
+        if ((userRepo.getCurrentUserId() == null) || (groupId == null)){
+            groupId = "";
             silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
             return false;
         }
