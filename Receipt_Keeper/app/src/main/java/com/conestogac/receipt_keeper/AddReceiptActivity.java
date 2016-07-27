@@ -1,8 +1,11 @@
 package com.conestogac.receipt_keeper;
 
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
+
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -10,12 +13,14 @@ import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
@@ -28,19 +33,19 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.TreeMap;
+
 
 public class AddReceiptActivity extends Activity {
 
     // [Layout views]
-    private EditText storeNamEditText;
+    private AutoCompleteTextView storeNamEditText;
     private EditText totalEditText;
     private EditText dateEditText;
     private EditText commentEditText;
@@ -99,7 +104,7 @@ public class AddReceiptActivity extends Activity {
         // [ Setting IDs to Views ]
         totalEditText = (EditText) findViewById(R.id.totalEditText);
         dateEditText = (EditText) findViewById(R.id.dateEditText);
-        storeNamEditText = (EditText) findViewById(R.id.storeNamEditText);
+        storeNamEditText = (AutoCompleteTextView) findViewById(R.id.storeNamEditText);
         commentEditText = (EditText) findViewById(R.id.commentEditText);
         paymentEditText = (EditText) findViewById(R.id.paymentEditText);
         saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
@@ -317,6 +322,8 @@ public class AddReceiptActivity extends Activity {
                 }
             }
         });
+
+        addStoreToAutoComplete();
     }
 
    /* // []
@@ -358,4 +365,30 @@ public class AddReceiptActivity extends Activity {
         }
         return date;
     }*/
+
+
+    private void addStoreToAutoComplete() {
+        List<String> storeCollection = new ArrayList<>();
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllStore();
+        if (cursor == null || cursor.getCount() == 0) {
+            dbController.close();
+            return;
+        }
+
+        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+            storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+        }
+
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(AddReceiptActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, storeCollection);
+
+        storeNamEditText.setAdapter(adapter);
+        dbController.close();
+    }
 }
+

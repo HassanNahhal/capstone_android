@@ -644,6 +644,20 @@ public class SQLController {
         return localCursor;
     }
 
+    //to get list by recent added
+    public Cursor getAllStore() {
+        Cursor localCursor = this.database.query(DBHelper.TABLE_STORE,
+                new String[]{
+                        DBHelper.STORE_ID,
+                        DBHelper.STORE_NAME,
+                }
+                , null,
+                null, null, null, DBHelper.STORE_ID+" DESC");
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+    }
+
     public int setSyncedStore(long localId, String remoteId) {
         int ret_value;
         ContentValues values = new ContentValues();
