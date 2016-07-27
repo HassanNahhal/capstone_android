@@ -20,6 +20,34 @@
 		<item>Single shot</item>
 	</string-array>
 
+	<string-array name="payment">
+		<item>cash</item>
+		<item>debit card</item>
+		<item>Visa card</item>
+		<item>Master card</item>
+	</string-array>
+
+	<string-array name="storename">
+		<item>Best Buy</item>
+		<item>Bell</item>
+		<item>Canadian Tire</item>
+		<item>The Home Depot</item>
+		<item>Dominos</item>
+		<item>fido</item>
+		<item>Food Basics</item>
+		<item>FreshCo</item>
+		<item>Hydro</item>
+		<item>Kumon</item>
+		<item>Metro</item>
+		<item>PetSmart</item>
+		<item>Rogers</item>
+		<item>Sobeys</item>
+		<item>Shoppers Drug Mart‎</item>
+		<item>The Home Depot</item>
+		<item>Walmart</item>
+		<item>Zehrs</item>
+	</string-array>
+
     <string-array name="categories">
         <item>[Select Category]</item>
 		<item>Grocery</item>

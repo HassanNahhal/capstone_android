@@ -108,7 +108,7 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
             }
             total = extras.getInt("total");
             if (total != 0) {
-                viewTotalTextView.setText("$" + String.valueOf(total));
+                viewTotalTextView.setText(String.valueOf(total));
             }
 
             date = extras.getString("date");

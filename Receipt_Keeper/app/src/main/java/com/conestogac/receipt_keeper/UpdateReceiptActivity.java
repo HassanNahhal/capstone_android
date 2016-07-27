@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -34,13 +36,13 @@ import java.util.TreeMap;
 
 public class UpdateReceiptActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText updateStoreNamEditText;
+    private AutoCompleteTextView updateStoreNamEditText;
     private EditText updateTotalEditText;
     private EditText updateDateEditText;
     private MultiSpinnerSearch updateTagSearchMultiSpinner;
     private SearchableSpinner updateCategorySearchMultiSpinner;
     private EditText updateCommentEditText;
-    private EditText updatePaymentEditText;
+    private AutoCompleteTextView updatePaymentEditText;
     private Button updateEditReceiptButton;
     private ImageButton updateReceiptImageButton;
     private Calendar dateAndTime = Calendar.getInstance();
@@ -75,13 +77,13 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         dbController = new SQLController(this);
 
         // [ Setting IDs to Views ]
-        updateStoreNamEditText = (EditText) findViewById(R.id.updateStoreNamEditText);
+        updateStoreNamEditText = (AutoCompleteTextView) findViewById(R.id.updateStoreNamEditText);
         updateTotalEditText = (EditText) findViewById(R.id.updateTotalEditText);
         updateDateEditText = (EditText) findViewById(R.id.updateDateEditText);
         updateTagSearchMultiSpinner = (MultiSpinnerSearch) findViewById(R.id.updateTagSearchMultiSpinner);
         updateCategorySearchMultiSpinner = (SearchableSpinner) findViewById(R.id.updateCategorySearchMultiSpinner);
         updateCommentEditText = (EditText) findViewById(R.id.updateCommentEditText);
-        updatePaymentEditText = (EditText) findViewById(R.id.updatePaymentEditText);
+        updatePaymentEditText = (AutoCompleteTextView) findViewById(R.id.updatePaymentEditText);
         findViewById(R.id.updateEditReceiptButton).setOnClickListener(this);
         updateReceiptImageButton = (ImageButton) findViewById(R.id.updateReceiptImageButton);
 
@@ -102,7 +104,9 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
                         dateAndTime.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-
+        
+        addPaymentToAutoComplete();
+        addStoreToAutoComplete();
     }
 
     private void setAllDataFromIntent() {
@@ -119,7 +123,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             }
             total = extras.getInt("total");
             if (total != 0) {
-                updateTotalEditText.setText("$" + String.valueOf(total));
+                updateTotalEditText.setText(String.valueOf(total));
             }
 
             date = extras.getString("date");
@@ -184,6 +188,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         int id = v.getId();
         switch (id) {
             case R.id.updateEditReceiptButton:
+                if (!validateForm()) return;
                 updateReceipt();
                 break;
             default:
@@ -287,5 +292,97 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             }
             tagsListArray.add(h);
         }
+    }
+
+    private void addStoreToAutoComplete() {
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllStore();
+        if (cursor != null && cursor.getCount() != 0) {
+            for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+                if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                    storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                }
+            }
+        }
+
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(UpdateReceiptActivity.this,
+                android.R.layout.simple_dropdown_item_1line, storeCollection);
+
+        updateStoreNamEditText.setAdapter(adapter);
+        dbController.close();
+    }
+
+
+    private void addPaymentToAutoComplete() {
+        List<String> paymentCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.payment)));
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllPaymentMethod();
+        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+            if (!paymentCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)))) {
+                paymentCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)));
+            }
+        }
+
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(UpdateReceiptActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, paymentCollection);
+
+        updatePaymentEditText.setAdapter(adapter);
+        dbController.close();
+    }
+
+    /*
+      Form validation
+    */
+    private boolean validateForm() {
+        boolean isValid = true;
+        // Reset errors.
+        updateStoreNamEditText.setError(null);
+        updateTotalEditText.setError(null);
+        updateDateEditText.setError(null);
+
+        // Store values at the time of the login attempt.
+        String storeName = updateStoreNamEditText.getText().toString();
+        String total = updateTotalEditText.getText().toString();
+        String dateEdit = updateDateEditText.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        if (TextUtils.isEmpty(storeName)) {
+            updateStoreNamEditText.setError(getString(R.string.error_field_required));
+            focusView = updateStoreNamEditText;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(total)) {
+            updateTotalEditText.setError(getString(R.string.error_field_required));
+            focusView = updateTotalEditText;
+            cancel = true;
+        }
+
+
+        if (TextUtils.isEmpty(dateEdit)) {
+            updateDateEditText.setError(getString(R.string.error_field_required));
+            focusView = updateDateEditText;
+            cancel = true;
+        }
+
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+            isValid = false;
+        }
+
+        return isValid;
     }
 }

@@ -325,6 +325,18 @@ public class SQLController {
         return receiptId;
     }
 
+    //to get list by recent added
+    public Cursor getAllPaymentMethod() {
+        Cursor localCursor = this.database.query(true, DBHelper.TABLE_RECEIPT,
+                new String[]{
+                        DBHelper.RECEIPT_PAYMENT_METHOD,
+                }
+                , null,
+                null, null, null, DBHelper.RECEIPT_PAYMENT_METHOD+" DESC", null);
+        if (localCursor != null)
+            localCursor.moveToFirst();
+        return localCursor;
+    }
 
     public int setSyncedReceiptTag(int receiptId, int tagId, String remoteId) {
         int ret_value;
@@ -404,6 +416,8 @@ public class SQLController {
 
         return database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
     }
+
+
 
     private int getTagIdByName(String tagName) {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_TAG + " WHERE " + DBHelper.TAG_NAME + "=\'" + tagName + "\'";
@@ -646,13 +660,12 @@ public class SQLController {
 
     //to get list by recent added
     public Cursor getAllStore() {
-        Cursor localCursor = this.database.query(DBHelper.TABLE_STORE,
+        Cursor localCursor = this.database.query(true, DBHelper.TABLE_STORE,
                 new String[]{
-                        DBHelper.STORE_ID,
                         DBHelper.STORE_NAME,
                 }
                 , null,
-                null, null, null, DBHelper.STORE_ID+" DESC");
+                null, null, null, DBHelper.STORE_NAME+" DESC", null);
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;

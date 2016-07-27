@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
@@ -33,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -49,7 +51,7 @@ public class AddReceiptActivity extends Activity {
     private EditText totalEditText;
     private EditText dateEditText;
     private EditText commentEditText;
-    private EditText paymentEditText;
+    private AutoCompleteTextView paymentEditText;
     private SearchableSpinner categorySearchMultiSpinner;
     private MultiSpinnerSearch tagSearchSpinner;
     private Button saveReceiptButton;
@@ -106,7 +108,7 @@ public class AddReceiptActivity extends Activity {
         dateEditText = (EditText) findViewById(R.id.dateEditText);
         storeNamEditText = (AutoCompleteTextView) findViewById(R.id.storeNamEditText);
         commentEditText = (EditText) findViewById(R.id.commentEditText);
-        paymentEditText = (EditText) findViewById(R.id.paymentEditText);
+        paymentEditText = (AutoCompleteTextView) findViewById(R.id.paymentEditText);
         saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
         categorySearchMultiSpinner = (SearchableSpinner) findViewById(R.id.categorySearchMultiSpinner);
         tagSearchSpinner = (MultiSpinnerSearch) findViewById(R.id.searchMultiSpinner);
@@ -114,11 +116,10 @@ public class AddReceiptActivity extends Activity {
 
         Log.d(LOG_NAME, "in on create");
         categorySearchMultiSpinner.setTitle("Select Item");
-        categorySearchMultiSpinner.setPositiveButton("Ok");
-
+        categorySearchMultiSpinner.setPositiveButton("OK");
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryList);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
         categorySearchMultiSpinner.setAdapter(spinnerAdapter);
         spinnerAdapter.notifyDataSetChanged();
 
@@ -215,8 +216,10 @@ public class AddReceiptActivity extends Activity {
             @Override
             public void onClick(View v) {
                 long _id;
-                File f = new File(imagePath, imageFileName);
 
+                if (!validateForm()) return;
+
+                File f = new File(imagePath, imageFileName);
                 dbController.open();
                 Receipt receipt = new Receipt();
                 String customerId = null;
@@ -322,7 +325,7 @@ public class AddReceiptActivity extends Activity {
                 }
             }
         });
-
+        addPaymentToAutoComplete();
         addStoreToAutoComplete();
     }
 
@@ -368,27 +371,96 @@ public class AddReceiptActivity extends Activity {
 
 
     private void addStoreToAutoComplete() {
-        List<String> storeCollection = new ArrayList<>();
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
         Cursor cursor;
 
         dbController.open();
         cursor = dbController.getAllStore();
-        if (cursor == null || cursor.getCount() == 0) {
-            dbController.close();
-            return;
+        if (cursor != null && cursor.getCount() != 0) {
+            for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+                if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                    storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                }
+            }
         }
 
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(AddReceiptActivity.this,
+                android.R.layout.simple_dropdown_item_1line, storeCollection);
+
+        storeNamEditText.setAdapter(adapter);
+        dbController.close();
+    }
+
+
+    private void addPaymentToAutoComplete() {
+        List<String> paymentCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.payment)));
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllPaymentMethod();
         for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
-            storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+            if (!paymentCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)))) {
+                paymentCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)));
+            }
         }
 
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(AddReceiptActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, storeCollection);
+                        android.R.layout.simple_dropdown_item_1line, paymentCollection);
 
-        storeNamEditText.setAdapter(adapter);
+        paymentEditText.setAdapter(adapter);
         dbController.close();
     }
+
+    /*
+      Form validation
+    */
+    private boolean validateForm() {
+        boolean isValid = true;
+        // Reset errors.
+        storeNamEditText.setError(null);
+        totalEditText.setError(null);
+        dateEditText.setError(null);
+
+        // Store values at the time of the login attempt.
+        String storeName = storeNamEditText.getText().toString();
+        String total = totalEditText.getText().toString();
+        String dateEdit = dateEditText.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        if (TextUtils.isEmpty(storeName)) {
+            storeNamEditText.setError(getString(R.string.error_field_required));
+            focusView = storeNamEditText;
+            cancel = true;
+        }
+
+        if (TextUtils.isEmpty(total)) {
+            totalEditText.setError(getString(R.string.error_field_required));
+            focusView = totalEditText;
+            cancel = true;
+        }
+
+
+        if (TextUtils.isEmpty(dateEdit)) {
+            dateEditText.setError(getString(R.string.error_field_required));
+            focusView = dateEditText;
+            cancel = true;
+        }
+
+
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
 }
 
