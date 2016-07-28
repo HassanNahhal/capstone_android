@@ -87,8 +87,9 @@ public class MultiSpinnerSearch extends Spinner implements OnCancelListener {
                 new String[]{spinnerText});
         setAdapter(adapterSpinner);
 
-        if (adapter != null)
+        if (adapter != null) {
             adapter.notifyDataSetChanged();
+        }
 
         listener = new MultiSpinnerSearchListener() {
             @Override
@@ -135,12 +136,12 @@ public class MultiSpinnerSearch extends Spinner implements OnCancelListener {
         //builder.setMultiChoiceItems(items.toArray(new CharSequence[items.size()]), selected, this);
         builder.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
-
-
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //items = (ArrayList<KeyPairBoolData>) adapter.arrayList;
                         boolean isNewTag = true;
+                        tags.clear();
+
                         for (int i = 0; i < items.size(); i++) {
                             if (items.get(i).isSelected()) {
                                 tags.add(new Tag(items.get(i).getName()));
@@ -162,25 +163,33 @@ public class MultiSpinnerSearch extends Spinner implements OnCancelListener {
         return true;
     }
 
-    public void setItems(LinkedList<KeyPairBoolData> items, String allText, int position,
+    public void setItems(LinkedList<KeyPairBoolData> items, String allText, List<String> tagArraySelected,
                          MultiSpinnerSearchListener listener) {
-
+        ArrayAdapter<String> adapterSpinner;
         this.items = items;
         this.defaultText = allText;
         this.listener = listener;
 
-        //                tags.add(new Tag(items.get(i).getName()));
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).isSelected()) {
+                tags.add(new Tag(items.get(i).getName()));
+                Log.i("TAG", i + " : " + items.get(i).getName() + " : " + items.get(i).isSelected());
+            }
+        }
 
-        ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(getContext(),
-                R.layout.textview_for_spinner,
-                new String[]{defaultText});
+        if (tagArraySelected != null) {
+            adapterSpinner = new ArrayAdapter<>(getContext(),
+                    R.layout.textview_for_spinner,
+                    tagArraySelected);
+        } else {
+            adapterSpinner = new ArrayAdapter<>(getContext(),
+                    R.layout.textview_for_spinner,
+                    new String[]{defaultText});
+        }
         setAdapter(adapterSpinner);
 
-        if (position != -1) {
-            items.get(position).setSelected(true);
-            //listener.onItemsSelected(items);
-            onCancel(null);
-        }
+        onCancel(null);
+
     }
 
     public interface MultiSpinnerSearchListener {

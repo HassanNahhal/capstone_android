@@ -67,7 +67,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
     private static final String LOG_NAME = "UpdateReceiptActivity";
     private LinkedList<Tag> tags = new LinkedList<>();
-
+    private ReceiptKeeperApplication app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +75,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_update_receipt);
 
         dbController = new SQLController(this);
-
-        // [ Setting IDs to Views ]
+        app = (ReceiptKeeperApplication)this.getApplication();
         updateStoreNamEditText = (AutoCompleteTextView) findViewById(R.id.updateStoreNamEditText);
         updateTotalEditText = (EditText) findViewById(R.id.updateTotalEditText);
         updateDateEditText = (EditText) findViewById(R.id.updateDateEditText);
@@ -87,7 +86,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         findViewById(R.id.updateEditReceiptButton).setOnClickListener(this);
         updateReceiptImageButton = (ImageButton) findViewById(R.id.updateReceiptImageButton);
 
-        //TODO delete when XMLParser added
         categoryList = Arrays.asList(getResources().getStringArray(R.array.categories));
         TreeMap<String, Boolean> categoryItems = new TreeMap<>();
         for (String item : categoryList) {
@@ -104,7 +102,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
                         dateAndTime.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
-        
+
         addPaymentToAutoComplete();
         addStoreToAutoComplete();
     }
@@ -160,7 +158,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
         //String tagName = extras.getString("tagName");
 
-        updateTagSearchMultiSpinner.setItems(tagsListArray, "Tag search", -1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
+        updateTagSearchMultiSpinner.setItems(tagsListArray,"[Select Tag]" ,tagArraySelected , new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
             @Override
             public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
@@ -168,7 +166,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
                 for (int i = 0; i < items.size(); i++) {
                     if (items.get(i).isSelected()) {
                         Log.i("TAG", i + " : " + items.get(i).getName() + " : " + items.get(i).isSelected());
-
                     }
                 }
             }
@@ -204,7 +201,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         Receipt receipt = new Receipt();
         String customerId = null;
         try {
-            //customerId = app.getCurrentUser().getId().toString();
+            customerId = app.getCurrentUser().getId().toString();
         } catch (NullPointerException e) {
             e.printStackTrace();
             customerId = null;
@@ -225,22 +222,22 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             if (!Objects.equals(receiptCategory, "Select Category")) {
                 receipt.setCategoryId(dbController.getCategoryIdByName(receiptCategory));
             } else {
-                //// TODO: 2016-07-13  make category spinner focused when on SELECT CATEGORY
-                Toast.makeText(getApplicationContext(),
-                        "Please choose a category", Toast.LENGTH_SHORT).show();
+                receipt.setCategoryId(dbController.getCategoryIdByName("None"));
             }
 
             tags = updateTagSearchMultiSpinner.getAllTags();
+            if (tags.size() == 0) {
+                tags.add(new Tag(""));
+            }
         }
 
+            dbController.updateReceipt(receipt, tags);
+            dbController.close();
 
-        dbController.updateReceipt(receipt, tags);
-        dbController.close();
-
-        Intent goToHomePage = new Intent(this, Home2Activity.class);
-        goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(goToHomePage);
-        finish();
+            Intent goToHomePage = new Intent(this, Home2Activity.class);
+            goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(goToHomePage);
+            finish();
     }
 
     DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
@@ -368,7 +365,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             cancel = true;
         }
 
-
         if (TextUtils.isEmpty(dateEdit)) {
             updateDateEditText.setError(getString(R.string.error_field_required));
             focusView = updateDateEditText;
@@ -385,4 +381,6 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
         return isValid;
     }
+
+
 }

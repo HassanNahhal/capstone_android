@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <categories>
+    <item>None</item>
+    <item>Communication</item>
     <item>Grocery</item>
     <item>Fastfood</item>
     <item>Electronics</item>
@@ -8,7 +10,7 @@
     <item>Education</item>
     <item>Gynasium</item>
     <item>LCBO</item>
-    <item>Government</item>
+    <item>TAX</item>
     <item>Furniture</item>
     <item>Stationary</item>
     <item>Restaurant</item>
@@ -23,4 +25,5 @@
     <item>Baby Health</item>
     <item>Travel Agency</item>
     <item>Photography</item>
+    <item>House Keeping</item>
 </categories>

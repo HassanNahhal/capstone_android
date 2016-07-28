@@ -214,6 +214,23 @@ public class SQLController {
         updateORinsertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
         return receiptId;
     }
+
+    public long updateOrinsertReceiptTag(long receiptId, long tagId) {
+        long numOfUpdated;
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID, receiptId);
+        values.put(DBHelper.RECEIPT_TAG_FK_TAG_ID, tagId);
+
+        numOfUpdated= database.update(DBHelper.TABLE_RECEIPT_TAG, values,
+                "(" +DBHelper.RECEIPT_TAG_FK_RECEIPT_ID+" = ? and "
+                        + DBHelper.RECEIPT_TAG_FK_TAG_ID + " = ?)",
+                new String[] { String.valueOf(receiptId),String.valueOf(tagId) });
+        if (numOfUpdated == 0) {
+            numOfUpdated = database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
+        }
+        return numOfUpdated;
+    }
+
     public long updateReceiptTag(long receiptId, long tagId) {
         ContentValues values = new ContentValues();
         values.put(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID, receiptId);
@@ -320,7 +337,6 @@ public class SQLController {
             }
         }
         updateORinsertStoreCategory(receipt.getStoreId(), receipt.getCategoryId());
-
 
         return receiptId;
     }
@@ -470,7 +486,7 @@ public class SQLController {
         String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_CATEGORY + " WHERE " + DBHelper.CATEGORY_ID + "=" + String.valueOf(categoryId);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
 
-        if (localCursor != null) {
+        if ((localCursor != null) && (localCursor.getCount()>0)) {
             localCursor.moveToFirst();
             return localCursor.getString(localCursor.getColumnIndex(DBHelper.CATEGORY_NAME));
         } else {

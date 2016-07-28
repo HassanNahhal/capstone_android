@@ -28,54 +28,63 @@
 	</string-array>
 
 	<string-array name="storename">
-		<item>Best Buy</item>
-		<item>Bell</item>
-		<item>Canadian Tire</item>
-		<item>The Home Depot</item>
-		<item>Dominos</item>
-		<item>fido</item>
-		<item>Food Basics</item>
-		<item>FreshCo</item>
-		<item>Hydro</item>
-		<item>Kumon</item>
-		<item>Metro</item>
-		<item>PetSmart</item>
-		<item>Rogers</item>
-		<item>Sobeys</item>
-		<item>Shoppers Drug Mart‎</item>
-		<item>The Home Depot</item>
-		<item>Walmart</item>
-		<item>Zehrs</item>
+		<item>Best Buy</item><!--1-->
+		<item>Bell</item><!--2-->
+		<item>Canadian Tire</item><!--3-->
+		<item>Dominos</item><!--4-->
+		<item>fido</item><!--5-->
+		<item>Food Basics</item><!--6-->
+		<item>FreshCo</item><!--7-->
+		<item>Hudson\'s Bay</item><!--8-->
+		<item>Hydro</item><!--9-->
+		<item>Kumon</item><!--10-->
+		<item>LCBO</item><!--11-->
+		<item>McDonalds</item><!--12-->
+		<item>Metro</item><!--13-->
+		<item>PetSmart</item><!--14-->
+		<item>Rogers</item><!--15-->
+		<item>Sears</item><!--16-->
+		<item>Sobeys</item><!--17-->
+		<item>Shoppers Drug Mart‎</item><!--18-->
+		<item>Starbucks‎</item><!--19-->
+		<item>The Home Depot</item>><!--20-->
+		<item>Tim Hortons</item><!--21-->
+		<item>Walmart</item><!--22-->
+		<item>Zehrs</item><!--23-->
 	</string-array>
 
     <string-array name="categories">
         <item>[Select Category]</item>
-		<item>Grocery</item>
-		<item>Fastfood</item>
-		<item>Electronics</item>
-		<item>Books</item>
-		<item>Gas Station</item>
-		<item>Education</item>
-		<item>Gynasium</item>
-		<item>LCBO</item>
-		<item>Government</item>
-		<item>Furniture</item>
-		<item>Stationary</item>
-		<item>Restaurant</item>
-		<item>Medical</item>
-		<item>Financial</item>
-        <item>Automotive</item>
-        <item>Pet Supplies</item>
-        <item>Clothing</item>
-        <item>Jewelry</item>
-        <item>Hobbies</item>
-        <item>Party</item>
-        <item>Baby Health</item>
-		<item>Travel Agency</item>
-        <item>Photography</item>
+		<item>None</item> <!--1-->
+		<item>Communication</item><!--2-->
+		<item>Grocery</item><!--3-->
+		<item>Fastfood</item><!--4-->
+		<item>Electronics</item><!--5-->
+		<item>Books</item><!--6-->
+		<item>Gas Station</item><!--7-->
+		<item>Education</item><!--8-->
+		<item>Gynasium</item><!--9-->
+		<item>LCBO</item><!--10-->
+		<item>TAX</item><!--11-->
+		<item>Furniture</item><!--12-->
+		<item>Stationary</item><!--13-->
+		<item>Restaurant</item><!--14-->
+		<item>Medical</item><!--15-->
+		<item>Financial</item><!--16-->
+        <item>Automotive</item><!--17-->
+        <item>Pet Supplies</item><!--18-->
+        <item>Clothing</item><!--19-->
+        <item>Jewelry</item><!--20-->
+        <item>Hobbies</item><!--21-->
+        <item>Party</item><!--22-->
+        <item>Baby Health</item><!--23-->
+		<item>Travel Agency</item><!--24-->
+        <item>Photography</item><!--25-->
+		<item>House Keeping</item><!--26-->
     </string-array>
 
     <string-array name="tags">
+		<item>""</item>
         <item>gift</item>
         <item>food</item>
         <item>cloth</item>

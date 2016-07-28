@@ -10,6 +10,7 @@
     android:orientation="vertical"
     tools:context="com.conestogac.receipt_keeper.ViewReceiptActivity"
     style="@style/AppTheme">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,7 +57,7 @@
                 android:layout_height="50dp"
                 android:hint="Receipt ID"
                 android:singleLine="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
 
@@ -79,7 +80,7 @@
                 android:layout_height="50dp"
                 android:hint="Store name"
                 android:singleLine="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
 
@@ -104,7 +105,7 @@
                 android:hint="Total"
                 android:inputType="numberDecimal"
                 android:singleLine="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
 
@@ -127,7 +128,7 @@
                 android:layout_height="50dp"
                 android:hint="Payment method"
                 android:singleLine="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
 
@@ -152,7 +153,7 @@
                 android:hint="Date"
                 android:inputType="date"
                 android:singleLine="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:layout_centerVertical="true"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
@@ -173,10 +174,10 @@
                 android:layout_row="6"
                 android:layout_column="1"
                 android:id="@+id/viewTagTextView"
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:hint="Tag"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
 
@@ -199,7 +200,8 @@
                 android:layout_width="150dp"
                 android:layout_height="50dp"
                 android:hint="Category"
-                android:textSize="20dp"
+                android:textSize="18sp"
+                android:singleLine="true"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
 
@@ -218,12 +220,11 @@
                 android:layout_row="8"
                 android:layout_column="1"
                 android:id="@+id/viewCommentTextView"
-                android:layout_width="220dp"
+                android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:ems="10"
                 android:hint="Comment"
-                android:singleLine="true"
-                android:textSize="20dp"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
                 android:layout_marginLeft="20dp" />
         </GridLayout>

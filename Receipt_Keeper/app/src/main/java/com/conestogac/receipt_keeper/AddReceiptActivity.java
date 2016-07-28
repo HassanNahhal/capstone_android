@@ -77,8 +77,6 @@ public class AddReceiptActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_receipt);
 
-        // from TestUplaodActivity
-
         app = (ReceiptKeeperApplication) this.getApplication();
         adapter = app.getLoopBackAdapter();
         userRepo = adapter.createRepository(CustomerRepository.class);
@@ -92,18 +90,12 @@ public class AddReceiptActivity extends Activity {
         }
 
 
-        //TODO delete when XMLParser added
         final List<String> categoryList = Arrays.asList(getResources().getStringArray(R.array.categories));
         TreeMap<String, Boolean> categoryItems = new TreeMap<>();
         for (String item : categoryList) {
             categoryItems.put(item, Boolean.FALSE);
         }
 
-
-        //categories
-
-
-        // [ Setting IDs to Views ]
         totalEditText = (EditText) findViewById(R.id.totalEditText);
         dateEditText = (EditText) findViewById(R.id.dateEditText);
         storeNamEditText = (AutoCompleteTextView) findViewById(R.id.storeNamEditText);
@@ -119,9 +111,10 @@ public class AddReceiptActivity extends Activity {
         categorySearchMultiSpinner.setPositiveButton("OK");
 
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryList);
-        spinnerAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySearchMultiSpinner.setAdapter(spinnerAdapter);
         spinnerAdapter.notifyDataSetChanged();
+
 
         //TODO check with Nick how to refactor this method
         Bundle extras = getIntent().getExtras();
@@ -176,17 +169,9 @@ public class AddReceiptActivity extends Activity {
             File file = new File(Dir, imageFileName);
 
             try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                // BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
                 File f = new File(imagePath, imageFileName);
                 Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
                 receiptImageButton.setImageBitmap(b);
-                // ImageView img=(ImageView)findViewById(R.id.receiptImage);
-                // img.setImageBitmap(b);
-
-
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -211,15 +196,21 @@ public class AddReceiptActivity extends Activity {
             }
         });
 
-        // [ onClick will get data from views and insert them into database]
         saveReceiptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 long _id;
+                String absolutePath;
 
                 if (!validateForm()) return;
 
-                File f = new File(imagePath, imageFileName);
+                if (imageFileName== null || imagePath== null) {
+                    absolutePath = "";
+                } else {
+                    File f = new File(imagePath, imageFileName);
+                    absolutePath = f.getAbsolutePath();
+                }
+
                 dbController.open();
                 Receipt receipt = new Receipt();
                 String customerId = null;
@@ -235,14 +226,12 @@ public class AddReceiptActivity extends Activity {
                     receipt.setDate(dateEditText.getText().toString());
                     receipt.setComment(commentEditText.getText().toString());
                     receipt.setPaymentMethod(paymentEditText.getText().toString());
-                    receipt.setUrl(f.getAbsolutePath());
+                    receipt.setUrl(absolutePath);
                     String receiptCategory = categorySearchMultiSpinner.getSelectedItem().toString();
                     if (!Objects.equals(receiptCategory, "Select Category")) {
                         receipt.setCategoryId(dbController.getCategoryIdByName(receiptCategory));
                     } else {
-                        //// TODO: 2016-07-13  make category spinner focused when on SELECT CATEGORY
-                        Toast.makeText(getApplicationContext(),
-                                "Please choose a category", Toast.LENGTH_SHORT).show();
+                        receipt.setCategoryId(dbController.getCategoryIdByName("None"));  //None
                     }
 
                     tags = tagSearchSpinner.getAllTags();
@@ -312,7 +301,7 @@ public class AddReceiptActivity extends Activity {
          * -1 is no by default selection
          * 0 to length will select corresponding values
          */
-        tagSearchSpinner.setItems(tagsListArray, "[Select Tag]", -1, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
+        tagSearchSpinner.setItems(tagsListArray, "[Select Tag]", tagList , new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
             @Override
             public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
