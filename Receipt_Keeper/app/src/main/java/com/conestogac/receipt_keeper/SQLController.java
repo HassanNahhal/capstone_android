@@ -43,42 +43,7 @@ public class SQLController {
     }
 
 
-    /*public Cursor getAllReceipts() {
 
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
-                + DBHelper.TABLE_STORE + " st "
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
-        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
-        if (localCursor != null)
-            localCursor.moveToFirst();
-        return localCursor;
-
-    }*/
-
-
-
-
-   /* public Cursor getAllReceipts() {
-
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
-                + DBHelper.TABLE_STORE + " st " *//*+ DBHelper.TABLE_STORE + " st " *//*
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
-        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
-        if (localCursor != null)
-            localCursor.moveToFirst();
-        return localCursor;
-
-    }*/
-
-    /*
-    SELECT *
-    FROM receipt re INNER JOIN tag tg
-    ON re.tag_id=tag._id
-    WHERE tg.name=""
-    ORDER BY re.receiptdate
-     */
 
     public int numberOfItemsToSync() {
         int ret_count = 0;
@@ -111,18 +76,7 @@ public class SQLController {
     }
 
 
-/*    public Cursor getAllReceipts() {
 
-        String sqlQuery = "SELECT * FROM " + DBHelper.TABLE_RECEIPT + " re, "
-                + DBHelper.TABLE_STORE + " st " *//*+ DBHelper.TABLE_STORE + " st " *//*
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " ORDER BY re." + DBHelper.RECEIPT_DATE;
-        Cursor localCursor = this.database.rawQuery(sqlQuery, null);
-        if (localCursor != null)
-            localCursor.moveToFirst();
-        return localCursor;
-
-    }*/
 
     public Cursor getAllReceipts() {
 
@@ -773,17 +727,6 @@ public class SQLController {
     }*/
 
 
-    /*// [ Delete record using its location in the list]
-    public void delete(int orderInList) {
-        List<Integer> database_ids = new ArrayList<Integer>();
-        Cursor c = database.rawQuery("SELECT * FROM " + DBHelper.TABLE_USER, null);
-        while (c.moveToNext()) {
-            database_ids.add(Integer.parseInt(c.getString(0)));
-        }
-        database.delete(DBHelper.TABLE_USER, DBHelper.USER_ID + " =?",
-                new String[]{String.valueOf(database_ids.get(orderInList))});
-    }
-*/
 
 
 }

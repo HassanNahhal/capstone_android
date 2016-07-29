@@ -107,19 +107,6 @@ public class Home2Activity extends BaseActivity
 
                     startActivity(goToSingleView);
                 }
-/*
-                Log.d(TAG, storeName);
-                Log.d(TAG, total + "");
-                Log.d(TAG, date);
-                Log.d(TAG, comment);
-                Log.d(TAG, paymentMethod);
-                Log.d(TAG, categoryId + "");
-                Log.d(TAG, tagId + "");
-*/
-
-
-                // Get the cursor, positioned to the corresponding row in the result set
-                //Cursor cursor = (Cursor) listView.getItemAtPosition(position);
 
             }
         });

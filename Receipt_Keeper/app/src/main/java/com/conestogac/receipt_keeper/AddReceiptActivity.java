@@ -3,7 +3,6 @@ package com.conestogac.receipt_keeper;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,7 +18,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
@@ -31,10 +29,7 @@ import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -172,8 +167,6 @@ public class AddReceiptActivity extends Activity {
                 File f = new File(imagePath, imageFileName);
                 Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
                 receiptImageButton.setImageBitmap(b);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -251,11 +244,7 @@ public class AddReceiptActivity extends Activity {
         receiptImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*Receipt receipt = new Receipt();
-                //Date date = convertStringToDate(dateString);
-                saveReceiptDataInDB(receipt, tags);*/
-
-                Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
+                               Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
                 if (imagePath != null && imageFileName != null) {
                     File f = new File(imagePath, imageFileName);
                     popIntent.putExtra("imagePath", f.getAbsolutePath());
@@ -264,14 +253,7 @@ public class AddReceiptActivity extends Activity {
 
             }
         });
-        /*SearchableListDialog ialog = new SearchableListDialog(categoryItems);
-        categorySearchMultiSpinner.set*/
 
-        /**
-         * Search MultiSelection Spinner (With Search/Filter Functionality)
-         *
-         *  Using MultiSpinnerSearch class
-         */
         final LinkedList<KeyPairBoolData> tagsListArray = new LinkedList<>();
 
         for (int i = 0; i < tagList.size(); i++) {
@@ -283,24 +265,11 @@ public class AddReceiptActivity extends Activity {
         }
 
 
-
-/*        final LinkedList<KeyPairBoolData> categoriesListArray = new LinkedList<>();
-
-        for (int i = 0; i < categoryList.size(); i++) {
-            KeyPairBoolData h = new KeyPairBoolData();
-            h.setId(i + 1);
-            h.setName(categoryList.get(i));
-            h.setSelected(false);
-            categoriesListArray.add(h);
-        }*/
-
-        /*LinkedList<Tag> tags = tagSearchSpinner.saveAllTags();
-        for (Tag tag : tags)
-            Log.d("tag.getTagName()", tag.getTagName());*/
-        /***
-         * -1 is no by default selection
-         * 0 to length will select corresponding values
-         */
+        /*
+        *
+        * @Params tagList = -1 is empty defualt selection
+        *         A list of objects can be sent and set in the spinner
+        * */
         tagSearchSpinner.setItems(tagsListArray, "[Select Tag]", tagList , new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
             @Override
@@ -317,13 +286,6 @@ public class AddReceiptActivity extends Activity {
         addPaymentToAutoComplete();
         addStoreToAutoComplete();
     }
-
-   /* // []
-    private void saveReceiptDataInDB(Receipt receipt, LinkedList<Tag> tag) {
-        dbController.open();
-        dbController.insertReceipt(receipt, tag);
-        dbController.close();
-    }*/
 
     // [DatePickerDialog population]
     DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
@@ -342,21 +304,6 @@ public class AddReceiptActivity extends Activity {
                 .formatDateTime(this,
                         dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
     }
-
-    // [Convert string we got from the EditText to Date ]
-    /*private Date convertStringToDate(String dateString) {
-        Date date = new Date();
-        Log.d("dateString", dateString + "");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            date = format.parse(dateString);
-            Log.d("date", date + "");
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return date;
-    }*/
 
 
     private void addStoreToAutoComplete() {

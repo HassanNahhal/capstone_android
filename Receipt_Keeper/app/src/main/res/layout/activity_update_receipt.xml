@@ -11,19 +11,19 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fillViewport="true"
         android:layout_weight="0.6">
 
         <GridLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:columnCount="2"
             android:padding="2dp"
             android:nestedScrollingEnabled="false"
             android:columnOrderPreserved="false"
             android:background="@drawable/design_snackbar_background"
-            android:backgroundTint="@color/blue_grey_500"
+            android:backgroundTint="@android:color/transparent"
             android:useDefaultMargins="true">
 
             <ImageButton
