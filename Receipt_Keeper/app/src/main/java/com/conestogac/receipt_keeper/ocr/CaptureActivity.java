@@ -27,6 +27,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -56,6 +57,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -82,6 +84,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -273,6 +276,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     String fullPathAndFilename = "";
     String imageDirectory = "";
     String imageFilename = "";
+    private SQLController dbController;
 
     Handler getHandler() {
         return handler;
@@ -316,6 +320,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         hasSurface = false;
         beepManager = new BeepManager(this);
 
+        dbController = new SQLController(this);
+
         // Camera shutter button
         if (DISPLAY_SHUTTER_BUTTON) {
             shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
@@ -323,64 +329,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
 
         ocrResultView = (TextView) findViewById(R.id.ocr_result_text_view);
-        // registerForContextMenu(ocrResultView);
-        ocrResultView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                Log.v("tag", "textView" + event.getAction());
-                Layout layout = ((TextView) v).getLayout();
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.v("tag", "textViewup");
-                    int x = (int) event.getX();
-                    int y = (int) event.getY();
-                    Log.v("Co-ordinates", "X:" + x + "Y:" + y);
-                    if (layout != null) {
-                        int line = layout.getLineForVertical(y);
-                        int offset = layout.getOffsetForHorizontal(line, x);
-                        Log.v("index", "" + offset);
-                        Log.v("index line", "" + line);
-                        String theLine = "";
-                        int selectionStart = Selection.getSelectionStart(ocrResultView.getText());
-                        int selectedLineNumber = line;
-                        if (!(selectionStart == -1)) {
-                            selectedLineNumber = layout.getLineForOffset(selectionStart);
-                        }
 
-                        int startPos = ocrResultView.getLayout().getLineStart(selectedLineNumber);
-                        int endPos = ocrResultView.getLayout().getLineEnd(selectedLineNumber);
-                        theLine = ocrResultView.getText().toString().substring(startPos, endPos);
 
-                        com.conestogac.receipt_keeper.ocr.MultiSelectionDialog fieldChoice = new com.conestogac.receipt_keeper.ocr.MultiSelectionDialog();
-                        Bundle args = new Bundle();
-
-                        args.putString("Store Name", gatheredData.getStoreName());
-                        args.putString("Amount", gatheredData.getAmount());
-                        args.putString("selected", theLine);
-                       // args.putString("imagePath", gatheredData.getPathAndFileName());
-                        fieldChoice.setArguments(args);
-                        fieldChoice.show(getFragmentManager(), "multi_choice");
-
-                        //String fieldSelected = fieldChoice.getResult();
-                        String fieldSelected = fieldChoice.result;
-                        if (fieldSelected.equals("Store Name")) {
-                            gatheredData.setStoreName(theLine);
-                        }
-                        if (fieldSelected.equals("Amount")) {
-                            gatheredData.setAmount(theLine);
-                        }
-           /* toastString += "Store Name:";
-            toastString += gatheredData.getStoreName();
-            toastString += "Amount:";
-            toastString += gatheredData.getAmount();
-            Toast toast = Toast.makeText(CaptureActivity.this, toastString, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.BOTTOM, 0, 0);
-            toast.show();*/
-
-                    }
-                }
-                return true;
-            }
-        });
         translationView = (TextView) findViewById(R.id.translation_text_view);
         registerForContextMenu(translationView);
 
@@ -632,6 +582,26 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             //isContinuousModeActive = false;
             Intent addReceiptIntent = new Intent(this, AddReceiptActivity.class);
             if (storeName != "") {
+                List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
+                Cursor cursor;
+
+                dbController.open();
+                cursor = dbController.getAllStore();
+                if (cursor != null && cursor.getCount() != 0) {
+                    for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+                        if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                            storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                        }
+                    }
+                }
+                dbController.close();
+                for (int i=0; i < storeCollection.size(); i++) {
+                    if (storeCollection.get(i).toUpperCase().contains(storeName)) {
+                        storeName = storeCollection.get(i);
+                    }
+                }
+
+
                 addReceiptIntent.putExtra("StoreName", storeName);
             }
             if (amount != "") {
@@ -651,6 +621,10 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             //  cameraManager = null;
             //    finish();
             cameraManager.paused = true;
+
+           // viewfinderView.setVisibility(View.GONE);
+            isContinuousModeActive = false;
+            goToAddReceipt();
            // startActivity(addReceiptIntent);
         } else {
             Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
@@ -968,6 +942,31 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, false);
     }
 
+
+    private void addStoreToAutoComplete() {
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllStore();
+        if (cursor != null && cursor.getCount() != 0) {
+            for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+                if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                    storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                }
+            }
+        }
+
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+       // ArrayAdapter<String> adapter = new ArrayAdapter<>(CaptureActivity.this,
+       //         android.R.layout.simple_dropdown_item_1line, storeCollection);
+
+        //storeNamEditText.setAdapter(adapter);
+        dbController.close();
+
+
+    }
+
     /**
      * Displays information relating to the result of OCR, and requests a translation if necessary.
      *
@@ -1070,7 +1069,9 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             if (monthFound != "") {
                 String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
                 int p = 0;
-                while (dayToDisplay == "") {
+                int daySnippetLength = daySnippet.length();
+                int i = daySnippetLength;
+                while (dayToDisplay == "" && p < daySnippet.length() - 2) {
                     if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
                         dayToDisplay = daySnippet.substring(p, p + 2);
                     }
@@ -1081,7 +1082,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             if (monthFound != "") {
                 String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
                 int p = 0;
-                while (yearToDisplay == "") {
+                while (yearToDisplay == "" && p < yearSnippet.length() - 4) {
+
                     if (yearSnippet.substring(p, p + 4).matches("[0-9]{4}")) {
                         yearToDisplay = yearSnippet.substring(p, p + 4);
                     }
@@ -1123,11 +1125,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 infoToDisplay += "Year:" + yearToDisplay;
             }
 
-            String[] paymentMethods = {"VISA", "CASH"};
+
+            //String[] paymentMethods = {"VISA", "CASH"};
+            String[] paymentMethods = getResources().getStringArray(R.array.payment);
 
             for (int k = 0; k < lines.length; k++) {
                 for (int j = 0; j < paymentMethods.length; j++) {
-                    for (int l = -1; (l = lines[k].toUpperCase().indexOf(paymentMethods[j], l + 1)) != -1; ) {
+                    for (int l = -1; (l = lines[k].toUpperCase().indexOf(paymentMethods[j].toUpperCase(), l + 1)) != -1; ) {
                         paymentMethod = paymentMethods[j];
                     }
                 }

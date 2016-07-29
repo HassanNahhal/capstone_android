@@ -25,6 +25,8 @@
 		<item>debit card</item>
 		<item>Visa card</item>
 		<item>Master card</item>
+		<item>Visa</item>
+		<item>Interac</item>
 	</string-array>
 
 	<string-array name="storename">
