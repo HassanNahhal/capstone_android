@@ -10,14 +10,8 @@ import android.widget.TextView;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
-import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
 
 
 public class ViewReceiptActivity extends AppCompatActivity implements View.OnClickListener {
@@ -78,10 +72,6 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         viewReceiptImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            /*Receipt receipt = new Receipt();
-            //Date date = convertStringToDate(dateString);
-            saveReceiptDataInDB(receipt, tags);*/
-
             Intent popIntent = new Intent(ViewReceiptActivity.this, Pop.class);
 
             if (imagePath != null) {
