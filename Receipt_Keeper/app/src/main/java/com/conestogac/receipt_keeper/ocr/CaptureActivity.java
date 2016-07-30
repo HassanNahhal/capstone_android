@@ -581,29 +581,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             handleOcrDecode(lastResult);
             //isContinuousModeActive = false;
             Intent addReceiptIntent = new Intent(this, AddReceiptActivity.class);
-            if (storeName != "") {
-                List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
-                Cursor cursor;
 
-                dbController.open();
-                cursor = dbController.getAllStore();
-                if (cursor != null && cursor.getCount() != 0) {
-                    for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
-                        if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
-                            storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
-                        }
-                    }
-                }
-                dbController.close();
-                for (int i=0; i < storeCollection.size(); i++) {
-                    if (storeCollection.get(i).toUpperCase().contains(storeName)) {
-                        storeName = storeCollection.get(i);
-                    }
-                }
-
-
-                addReceiptIntent.putExtra("StoreName", storeName);
-            }
             if (amount != "") {
                 addReceiptIntent.putExtra("Amount", amount);
             }
@@ -967,6 +945,62 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
     }
 
+    public void  getStoreName(String[] ocrLines) {
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
+
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllStore();
+        if (cursor != null && cursor.getCount() != 0) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                    storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                }
+            }
+        }
+        dbController.close();
+
+        //Look for a store that we already know and use that to fill in the store name
+        //for the user.  Look in the result of the ocr for each store name starting with
+        //the full name and reducing the number of characters to look for one by one.
+        String StoreNameSubstring;
+        int confidenceLevel = 0;
+        for (int j = 0; j < storeCollection.size(); j++) {
+            for (int m = storeCollection.get(j).length(); m > 2; m--) {
+                StoreNameSubstring = storeCollection.get(j).substring(0, m);
+                for (int k = 0; k < ocrLines.length; k++) {
+                    for (int l = -1; (l = ocrLines[k].toUpperCase().indexOf(StoreNameSubstring.toUpperCase(), l + 1)) != -1; ) {
+                        if (m > confidenceLevel) {  //The more matching letters, the higher the confidence level
+                            confidenceLevel = m;
+                            storeName = storeCollection.get(j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Scan ocr for known payment methods
+    public void getPaymentMethod(String[] ocrLines) {
+        String[] paymentMethods = getResources().getStringArray(R.array.payment);
+        String PaymentMethodSubstring;
+        int confidenceLevel = 0;
+        for (int j=0; j<paymentMethods.length;j++) {
+            for (int m=paymentMethods[j].length();m>2;m--) {
+                PaymentMethodSubstring = paymentMethods[j].substring(0, m);
+                for (int k = 0; k < ocrLines.length; k++) {
+                    for (int l = -1; (l = ocrLines[k].toUpperCase().indexOf(PaymentMethodSubstring.toUpperCase(), l + 1)) != -1; ) {
+                        if (m > confidenceLevel) {
+                            confidenceLevel = m;
+                            paymentMethod = paymentMethods[j];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Displays information relating to the result of OCR, and requests a translation if necessary.
      *
@@ -995,10 +1029,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             String delimiter = "\n";
             lines = multiLines.split(delimiter);
             infoToDisplay += "Store Name:";
-            infoToDisplay += lines[0];
-            storeName = lines[0];
-            infoToDisplay += "\n";
             infoToDisplay += "Amount:";
+            infoToDisplay += storeName;
+            infoToDisplay += "\n";
+            storeName = lines[0];
+            getStoreName(lines);
+
 
             List<String> amountLines = new ArrayList<String>();
             String lineWithAmount = "";
@@ -1124,18 +1160,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 infoToDisplay += "Day:" + dayToDisplay;
                 infoToDisplay += "Year:" + yearToDisplay;
             }
+            getPaymentMethod(lines);
 
-
-            //String[] paymentMethods = {"VISA", "CASH"};
-            String[] paymentMethods = getResources().getStringArray(R.array.payment);
-
-            for (int k = 0; k < lines.length; k++) {
-                for (int j = 0; j < paymentMethods.length; j++) {
-                    for (int l = -1; (l = lines[k].toUpperCase().indexOf(paymentMethods[j].toUpperCase(), l + 1)) != -1; ) {
-                        paymentMethod = paymentMethods[j];
-                    }
-                }
-            }
         }
         // Turn off capture-related UI elements
         shutterButton.setVisibility(View.GONE);
@@ -1427,11 +1453,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             catch (Exception e) {
             }
             infoToDisplay2 += "\n";
-
+            storeName = lines[0];
             infoToDisplay2 += "Store Name:";
-            infoToDisplay2 += lines[0];
+            getStoreName(lines);
+            infoToDisplay2 += storeName;
             simpleConfidenceView.setText(infoToDisplay2);
-            }
+        }
     }
 
     /**
