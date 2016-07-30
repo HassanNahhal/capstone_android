@@ -52,7 +52,6 @@
         <activity
             android:name=".ocr.CaptureActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="landscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
@@ -64,13 +63,6 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".HomeActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/app_name"
-            android:parentActivityName=".HomeActivity"
-            android:theme="@style/Theme.AppCompat.Light"
-            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".AddReceiptActivity" />
         <activity
             android:name=".authenticate.UserProfileActivity"
@@ -78,11 +70,35 @@
             android:taskAffinity="" />
         <activity android:name=".uploader.TestUploadActivity" />
         <activity android:name=".helpers.BaseActivity" />
+        <activity android:name=".Home2Activity" />
         <activity
-            android:name=".LearnMoreActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_learn_more"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"/>
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".Home2Activity"
+            android:theme="@style/Theme.AppCompat.Light">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.conestogac.receipt_keeper.Home2Activity" />
+        </activity>
+
+        <receiver android:name=".widget.GoOCRWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider" />
+        </receiver>
+
+        <activity
+            android:name=".Pop"
+            android:theme="@style/AppTheme.CustomTheme" />
+        <activity android:name=".ViewReceiptActivity" />
+        <activity android:name=".UpdateReceiptActivity"></activity>
+        <activity
+            android:name=".FilterActivity"
+            android:theme="@style/MyTheme"/>
     </application>
 
 </manifest>

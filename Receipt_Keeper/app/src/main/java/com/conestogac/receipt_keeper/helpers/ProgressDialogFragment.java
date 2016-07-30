@@ -11,7 +11,7 @@ public class ProgressDialogFragment extends DialogFragment {
 
     public static ProgressDialogFragment newInstance(String text) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
-        frag.setCancelable(false);
+        frag.setCancelable(true);
         Bundle args = new Bundle();
         args.putString(KEY_TITLE, text);
         frag.setArguments(args);
@@ -23,7 +23,7 @@ public class ProgressDialogFragment extends DialogFragment {
         ProgressDialog dialog = new ProgressDialog(getActivity(), getTheme());
         dialog.setMessage(getArguments().getString(KEY_TITLE));
         dialog.setIndeterminate(true);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
     }

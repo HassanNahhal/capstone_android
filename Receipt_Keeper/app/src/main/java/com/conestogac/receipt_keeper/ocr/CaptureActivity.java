@@ -24,8 +24,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -55,6 +57,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -79,8 +83,13 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -261,8 +270,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     String monthFound = "";
     String yearToDisplay = "";
     String dayToDisplay = "";
+    private String paymentMethod = "";
     int monthNumber = 0;
     public com.conestogac.receipt_keeper.GatheredData gatheredData = new com.conestogac.receipt_keeper.GatheredData();
+    String fullPathAndFilename = "";
+    String imageDirectory = "";
+    String imageFilename = "";
+    private SQLController dbController;
 
     Handler getHandler() {
         return handler;
@@ -306,6 +320,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         hasSurface = false;
         beepManager = new BeepManager(this);
 
+        dbController = new SQLController(this);
+
         // Camera shutter button
         if (DISPLAY_SHUTTER_BUTTON) {
             shutterButton = (ShutterButton) findViewById(R.id.shutter_button);
@@ -313,63 +329,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         }
 
         ocrResultView = (TextView) findViewById(R.id.ocr_result_text_view);
-        // registerForContextMenu(ocrResultView);
-        ocrResultView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                Log.v("tag", "textView" + event.getAction());
-                Layout layout = ((TextView) v).getLayout();
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.v("tag", "textViewup");
-                    int x = (int) event.getX();
-                    int y = (int) event.getY();
-                    Log.v("Co-ordinates", "X:" + x + "Y:" + y);
-                    if (layout != null) {
-                        int line = layout.getLineForVertical(y);
-                        int offset = layout.getOffsetForHorizontal(line, x);
-                        Log.v("index", "" + offset);
-                        Log.v("index line", "" + line);
-                        String theLine = "";
-                        int selectionStart = Selection.getSelectionStart(ocrResultView.getText());
-                        int selectedLineNumber = line;
-                        if (!(selectionStart == -1)) {
-                            selectedLineNumber = layout.getLineForOffset(selectionStart);
-                        }
 
-                        int startPos = ocrResultView.getLayout().getLineStart(selectedLineNumber);
-                        int endPos = ocrResultView.getLayout().getLineEnd(selectedLineNumber);
-                        theLine = ocrResultView.getText().toString().substring(startPos, endPos);
 
-                        com.conestogac.receipt_keeper.MultiSelectionDialog fieldChoice = new com.conestogac.receipt_keeper.MultiSelectionDialog();
-                        Bundle args = new Bundle();
-
-                        args.putString("Store Name", gatheredData.getStoreName());
-                        args.putString("Amount", gatheredData.getAmount());
-                        args.putString("selected", theLine);
-                        fieldChoice.setArguments(args);
-                        fieldChoice.show(getFragmentManager(), "multi_choice");
-
-                        //String fieldSelected = fieldChoice.getResult();
-                        String fieldSelected = fieldChoice.result;
-                        if (fieldSelected.equals("Store Name")) {
-                            gatheredData.setStoreName(theLine);
-                        }
-                        if (fieldSelected.equals("Amount")) {
-                            gatheredData.setAmount(theLine);
-                        }
-           /* toastString += "Store Name:";
-            toastString += gatheredData.getStoreName();
-            toastString += "Amount:";
-            toastString += gatheredData.getAmount();
-            Toast toast = Toast.makeText(CaptureActivity.this, toastString, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.BOTTOM, 0, 0);
-            toast.show();*/
-
-                    }
-                }
-                return true;
-            }
-        });
         translationView = (TextView) findViewById(R.id.translation_text_view);
         registerForContextMenu(translationView);
 
@@ -460,6 +421,86 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         });
 
         isEngineReady = false;
+
+        Button proceedButton = (Button) findViewById(R.id.Proceed);
+        proceedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToAddReceipt();
+            }
+        });
+
+        Button goBack = (Button) findViewById(R.id.goBack);
+        goBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // First check if we're paused in continuous mode, and if so, just unpause.
+
+                setResult(RESULT_CANCELED);
+                lastResult = null;
+                resetStatusView();
+                handler.sendEmptyMessage(R.id.restart_preview);
+                resumeContinuousDecoding();
+                /*
+                if (isPaused) {
+                    Log.d(TAG, "only resuming continuous recognition, not quitting...");
+                    resumeContinuousDecoding();
+
+                }
+
+                // Exit the app if we're not viewing an OCR result.
+                if (lastResult == null) {
+                    setResult(RESULT_CANCELED);
+                    finish();
+
+                }   else {
+                    // Go back to previewing in regular OCR mode.
+                    resetStatusView();
+                    if (handler != null) {
+                        handler.sendEmptyMessage(R.id.restart_preview);
+                    }
+
+                }*/
+            }
+        });
+    }
+
+    protected void goToAddReceipt()
+    {
+        Intent addReceiptIntent = new Intent(this, AddReceiptActivity.class);
+        if (storeName != "") {
+            addReceiptIntent.putExtra("StoreName", storeName);
+        }
+        if (amount != "") {
+            addReceiptIntent.putExtra("Amount", amount);
+        }
+        if (monthFound != "") {
+            addReceiptIntent.putExtra("Month", monthNumber);
+        }
+        if (yearToDisplay != "") {
+            addReceiptIntent.putExtra("Year", yearToDisplay);
+        }
+        if (dayToDisplay != "") {
+            addReceiptIntent.putExtra("Day", dayToDisplay);
+        }
+
+        if (imageDirectory != "") {
+            addReceiptIntent.putExtra("imagePath", imageDirectory);
+        }
+        if (imageFilename != "") {
+            addReceiptIntent.putExtra("imageFileName", imageFilename);
+        }
+
+        if (paymentMethod != "") {
+            addReceiptIntent.putExtra("paymentMethod", paymentMethod);
+        }
+
+        addReceiptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        addReceiptIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        //  cameraManager = null;
+        //    finish();
+        cameraManager.paused = true;
+        startActivity(addReceiptIntent);
     }
 
     @Override
@@ -504,7 +545,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      */
     void resumeOCR() {
         Log.d(TAG, "resumeOCR()");
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         cameraManager.paused = false;
         isContinuousModeActive = true;
         // This method is called when Tesseract has already been successfully initialized, so set
@@ -540,9 +581,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             handleOcrDecode(lastResult);
             //isContinuousModeActive = false;
             Intent addReceiptIntent = new Intent(this, AddReceiptActivity.class);
-            if (storeName != "") {
-                addReceiptIntent.putExtra("StoreName", storeName);
-            }
+
             if (amount != "") {
                 addReceiptIntent.putExtra("Amount", amount);
             }
@@ -560,7 +599,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             //  cameraManager = null;
             //    finish();
             cameraManager.paused = true;
-            startActivity(addReceiptIntent);
+
+           // viewfinderView.setVisibility(View.GONE);
+            isContinuousModeActive = false;
+            goToAddReceipt();
+           // startActivity(addReceiptIntent);
         } else {
             Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.TOP, 0, 0);
@@ -877,6 +920,87 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         prefs.edit().putBoolean(PreferencesActivity.KEY_CONTINUOUS_PREVIEW, false);
     }
 
+
+    private void addStoreToAutoComplete() {
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllStore();
+        if (cursor != null && cursor.getCount() != 0) {
+            for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+                if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                    storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                }
+            }
+        }
+
+        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
+       // ArrayAdapter<String> adapter = new ArrayAdapter<>(CaptureActivity.this,
+       //         android.R.layout.simple_dropdown_item_1line, storeCollection);
+
+        //storeNamEditText.setAdapter(adapter);
+        dbController.close();
+
+
+    }
+
+    public void  getStoreName(String[] ocrLines) {
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.storename)));
+
+        Cursor cursor;
+
+        dbController.open();
+        cursor = dbController.getAllStore();
+        if (cursor != null && cursor.getCount() != 0) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
+                    storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
+                }
+            }
+        }
+        dbController.close();
+
+        //Look for a store that we already know and use that to fill in the store name
+        //for the user.  Look in the result of the ocr for each store name starting with
+        //the full name and reducing the number of characters to look for one by one.
+        String StoreNameSubstring;
+        int confidenceLevel = 0;
+        for (int j = 0; j < storeCollection.size(); j++) {
+            for (int m = storeCollection.get(j).length(); m > 2; m--) {
+                StoreNameSubstring = storeCollection.get(j).substring(0, m);
+                for (int k = 0; k < ocrLines.length; k++) {
+                    for (int l = -1; (l = ocrLines[k].toUpperCase().indexOf(StoreNameSubstring.toUpperCase(), l + 1)) != -1; ) {
+                        if (m > confidenceLevel) {  //The more matching letters, the higher the confidence level
+                            confidenceLevel = m;
+                            storeName = storeCollection.get(j);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Scan ocr for known payment methods
+    public void getPaymentMethod(String[] ocrLines) {
+        String[] paymentMethods = getResources().getStringArray(R.array.payment);
+        String PaymentMethodSubstring;
+        int confidenceLevel = 0;
+        for (int j=0; j<paymentMethods.length;j++) {
+            for (int m=paymentMethods[j].length();m>2;m--) {
+                PaymentMethodSubstring = paymentMethods[j].substring(0, m);
+                for (int k = 0; k < ocrLines.length; k++) {
+                    for (int l = -1; (l = ocrLines[k].toUpperCase().indexOf(PaymentMethodSubstring.toUpperCase(), l + 1)) != -1; ) {
+                        if (m > confidenceLevel) {
+                            confidenceLevel = m;
+                            paymentMethod = paymentMethods[j];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Displays information relating to the result of OCR, and requests a translation if necessary.
      *
@@ -887,6 +1011,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         String infoToDisplay = "";
         lastResult = ocrResult;
 
+        String dateFormatted2 = "";
         // Test whether the result is null
         if (ocrResult.getText() == null || ocrResult.getText().equals("")) {
             Toast toast = Toast.makeText(this, "OCR failed. Please try again.", Toast.LENGTH_SHORT);
@@ -897,29 +1022,57 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
             String currentSnippet = "";
             int indexOfReturn;
-            String amounts = "";
-            for (int i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
-
-                currentSnippet = ocrResult.getText().substring(i);
-            }
 
             monthFound = "";
             String multiLines = ocrResult.getText().toString();
             String[] lines;
             String delimiter = "\n";
             lines = multiLines.split(delimiter);
-            indexOfReturn = currentSnippet.indexOf(".");
             infoToDisplay += "Store Name:";
-            infoToDisplay += lines[0];
-            storeName = lines[0];
-            infoToDisplay += "\n";
             infoToDisplay += "Amount:";
-            if (currentSnippet != "") {
-                infoToDisplay += currentSnippet.substring(0, indexOfReturn + 3);
-                amount = currentSnippet.substring(0, indexOfReturn + 3);
-            }
-            infoToDisplay += " ";
+            infoToDisplay += storeName;
+            infoToDisplay += "\n";
+            storeName = lines[0];
+            getStoreName(lines);
 
+
+            List<String> amountLines = new ArrayList<String>();
+            String lineWithAmount = "";
+
+            for (int k = 0; k < lines.length; k++) {
+                if (lines[k].indexOf("$") != -1) {
+                    amountLines.add(lines[k]);
+                }
+            }
+            if (amountLines.size() == 1) {
+                lineWithAmount = amountLines.get(0);
+            }
+            else
+            {
+                if (amountLines.size() > 1) {
+                    for (int o = 0; o < amountLines.size(); o++) {
+                        if (amountLines.get(o).toUpperCase().contains("TOTAL") &&
+                                !amountLines.get(o).toUpperCase().contains("SUB"))
+                            lineWithAmount = amountLines.get(o);
+                    }
+                }
+            }
+            if (lineWithAmount != "") {
+                currentSnippet = lineWithAmount.substring(lineWithAmount.indexOf("$"));
+
+                indexOfReturn = currentSnippet.indexOf(".");
+
+                if (indexOfReturn > -1) {
+
+                    if (indexOfReturn + 3 > currentSnippet.length()) {
+                        amount = currentSnippet.substring(1, currentSnippet.length());
+                    } else {
+                        amount = currentSnippet.substring(1, indexOfReturn + 3);
+                    }
+                }
+            }
+
+            infoToDisplay += " ";
             String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
             int dateLine = -1;
             int indexOfMonthInLne = -1;
@@ -951,11 +1104,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
             if (monthFound != "") {
                 String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
-                //for (int p = 0; p < daySnippet.length(); p++) {
                 int p = 0;
-                while (dayToDisplay == "") {
+                int daySnippetLength = daySnippet.length();
+                int i = daySnippetLength;
+                while (dayToDisplay == "" && p < daySnippet.length() - 2) {
                     if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
-
                         dayToDisplay = daySnippet.substring(p, p + 2);
                     }
                     p++;
@@ -965,7 +1118,8 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             if (monthFound != "") {
                 String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
                 int p = 0;
-                while (yearToDisplay == "") {
+                while (yearToDisplay == "" && p < yearSnippet.length() - 4) {
+
                     if (yearSnippet.substring(p, p + 4).matches("[0-9]{4}")) {
                         yearToDisplay = yearSnippet.substring(p, p + 4);
                     }
@@ -973,30 +1127,42 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 }
             }
 
-            infoToDisplay += "Month:" + monthFound;
-            infoToDisplay += "Day:" + dayToDisplay;
-            infoToDisplay += "Year:" + yearToDisplay;
 
-      /*String currentSnippet;
-      int indexOfReturn;
-      String amounts = "";
-      for (int i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
-        currentSnippet = ocrResult.getText().substring(i);
-        indexOfReturn = currentSnippet.indexOf(".");
-        amounts += currentSnippet.substring(0, indexOfReturn + 3);
-        amounts += " ";
-      }
-      new AlertDialog.Builder(this)
-              .setTitle("Amounts")
-              .setMessage(amounts)
-              .setOnCancelListener(new FinishListener(this))
-              .setPositiveButton( "Done", new FinishListener(this))
-              .show();
-     // Toast toast = Toast.makeText(this, "Amounts:" + amounts, Toast.LENGTH_LONG);
-     // toast.setGravity(Gravity.TOP, 0, 0);
-     // toast.show();*/
+            if (monthFound == "") {
+                int count=0;
+                String[] allMatches = new String[2];
+                Matcher m = Pattern.compile("(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d").matcher(multiLines);
+                while (m.find()) {
+                    allMatches[count] = m.group();
+                    infoToDisplay += "Date:";
+                    infoToDisplay += allMatches[count];
+                    dateFormatted2 = allMatches[count];
+
+                    List<Integer> delimiterIndices = new ArrayList<Integer>();
+
+                    int index = dateFormatted2.indexOf("/");
+                    while (index >= 0) {
+                        //System.out.println(index);
+                        delimiterIndices.add(index);
+                        index = dateFormatted2.indexOf("/", index + 1);
+                    }
+
+                    if (delimiterIndices.size() == 2) {
+                        monthFound = dateFormatted2.substring(0, 2);
+                        monthNumber = Integer.parseInt(monthFound) -1;
+                        dayToDisplay = dateFormatted2.substring(delimiterIndices.get(0) + 1, delimiterIndices.get(0) + 3);
+                        yearToDisplay = dateFormatted2.substring(delimiterIndices.get(1) + 1, delimiterIndices.get(1) + 5);
+                    }
+                }
+            }
+            else {
+                infoToDisplay += "Month:" + monthFound;
+                infoToDisplay += "Day:" + dayToDisplay;
+                infoToDisplay += "Year:" + yearToDisplay;
+            }
+            getPaymentMethod(lines);
+
         }
-
         // Turn off capture-related UI elements
         shutterButton.setVisibility(View.GONE);
         statusViewBottom.setVisibility(View.GONE);
@@ -1007,7 +1173,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         ImageView bitmapImageView = (ImageView) findViewById(R.id.image_view);
         lastBitmap = ocrResult.getBitmap();
-
 
         if (lastBitmap == null) {
                 bitmapImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
@@ -1027,11 +1192,12 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 Dir.mkdir();
                 fullPathAndFilename += Dir.toString() + "/ReceiptKeeperFolder";
             }
+            imageDirectory = Dir.toString();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
             Date now = new Date();
             String fileName = formatter.format(now) + ".Receipt.bmp";
             File file = new File(Dir, fileName);
-            fullPathAndFilename += fileName;
+            imageFilename = fileName;
             try {
                 FileOutputStream fileOutPutStream = new FileOutputStream(file);
                 Bitmap bmpToSave = lastBitmap;
@@ -1051,44 +1217,34 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         newReceipt.setComment(fullPathAndFilename);
         if (yearToDisplay != "" && monthNumber != 0 && dayToDisplay != "") {
             int yearFound = Integer.parseInt(yearToDisplay);
-            int dayFound = Integer.parseInt(dayToDisplay);
-            Date dateToSave = new Date();
 
             // <====================I used startDateString rather than  startDate=========>
             String startDateString = String.valueOf(monthNumber) + "/" + dayToDisplay + "/" + yearFound;
-            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-            Date startDate;
-            try {
-                startDate = df.parse(startDateString);
-                newReceipt.setDate(startDateString);
-                //System.out.println(newDateString);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            newReceipt.setDate(startDateString);
         }
-
-        DBHelper db = new DBHelper(this);
-        SQLController dbcontrol = new SQLController(this);
-        dbcontrol.open();
 
         // <====================I used tags of type linkedLinst rather than  tag_ids=========>
         long[] tag_ids = {0};
         LinkedList<Tag> tags = new LinkedList<>();
 
-        dbcontrol.insertReceipt(newReceipt, tags);
-        dbcontrol.close();
-
         // Display the recognized text
         TextView sourceLanguageTextView = (TextView) findViewById(R.id.source_language_text_view);
         sourceLanguageTextView.setText(sourceLanguageReadable);
         TextView ocrResultTextView = (TextView) findViewById(R.id.ocr_result_text_view);
-        //ocrResultTextView.setText(ocrResult.getText());
         EditText etStoreName = (EditText) findViewById(R.id.etStoreName);
         EditText etAmount = (EditText) findViewById(R.id.etAmount);
         EditText etDate = (EditText) findViewById(R.id.etDate);
+        EditText etPaymentMethod = (EditText) findViewById(R.id.etPaymentMethod);
         etStoreName.setText(storeName);
         etAmount.setText(amount);
-        etDate.setText(dayToDisplay + "-" + monthFound + "-" + yearToDisplay);
+
+        if (monthFound != "") {
+            etDate.setText(dayToDisplay + "-" + monthFound + "-" + yearToDisplay);
+        }
+        else {
+            etDate.setText(dateFormatted2);
+        }
+        etPaymentMethod.setText(paymentMethod);
 
         TextView ocrResultDataGathered = (TextView) findViewById(R.id.ocr_result_data_gathered);
 
@@ -1100,7 +1256,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         TextView translationLanguageLabelTextView = (TextView) findViewById(R.id.translation_language_label_text_view);
         TextView translationLanguageTextView = (TextView) findViewById(R.id.translation_language_text_view);
         TextView translationTextView = (TextView) findViewById(R.id.translation_text_view);
-        if (isTranslationActive) {
+        if (false) {
             // Handle translation text fields
             translationLanguageLabelTextView.setVisibility(View.VISIBLE);
             translationLanguageTextView.setText(targetLanguageReadable);
@@ -1133,9 +1289,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
      * @param ocrResult Object representing successful OCR results
      */
     void handleOcrContinuousDecode(OcrResult ocrResult) {
-
         lastResult = ocrResult;
-
         // Send an OcrResultText object to the ViewfinderView for text rendering
         viewfinderView.addResultText(new OcrResultText(ocrResult.getText(),
                 ocrResult.getWordConfidences(),
@@ -1177,36 +1331,55 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             }
             String currentSnippet = "";
             int indexOfReturn;
-            int i = -1;
             String infoToDisplay2 = "";
-            String textRetrieved = ocrResult.getText();
-            for (i = -1; (i = ocrResult.getText().indexOf("$", i + 1)) != -1; ) {
-                currentSnippet = ocrResult.getText().substring(i);
+            String multiLines = ocrResult.getText().toString();
+            String[] lines;
+            String delimiter = "\n";
+            lines = multiLines.split(delimiter);
+
+            List<String> amountLines = new ArrayList<String>();
+            String lineWithAmount = "";
+
+            for (int k = 0; k < lines.length; k++) {
+               if (lines[k].indexOf("$") != -1) {
+                   amountLines.add(lines[k]);
+               }
             }
+            if (amountLines.size() == 1) {
+                lineWithAmount = amountLines.get(0);
+            }
+            else
+            {
+                if (amountLines.size() > 1) {
+                    for (int o = 0; o < amountLines.size(); o++) {
+                        if (amountLines.get(o).toUpperCase().contains("TOTAL") &&
+                                !amountLines.get(o).toUpperCase().contains("SUB"))
+                            lineWithAmount = amountLines.get(o);
+                    }
+                }
+            }
+            if (lineWithAmount != "") {
+                currentSnippet = lineWithAmount.substring(lineWithAmount.indexOf("$"));
 
+                indexOfReturn = currentSnippet.indexOf(".");
 
-            indexOfReturn = currentSnippet.indexOf(".");
-            if (indexOfReturn > -1) {
-                infoToDisplay2 += "Amount:";
-                if (indexOfReturn + 3 > currentSnippet.length()) {
-                    infoToDisplay2 += currentSnippet.substring(0, currentSnippet.length());
-                } else {
-                    infoToDisplay2 += currentSnippet.substring(0, indexOfReturn + 3);
+                if (indexOfReturn > -1) {
+                    infoToDisplay2 += "Amount:";
+                    if (indexOfReturn + 3 > currentSnippet.length()) {
+                        infoToDisplay2 += currentSnippet.substring(0, currentSnippet.length());
+                    } else {
+                        infoToDisplay2 += currentSnippet.substring(0, indexOfReturn + 3);
+                    }
                 }
             }
 
             String yearToDisplay = "";
             String dayToDisplay = "";
-            int monthNumber = 0;
-            String multiLines = ocrResult.getText().toString();
-            String[] lines;
-            String delimiter = "\n";
-            lines = multiLines.split(delimiter);
+
             String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
             int dateLine = -1;
             int indexOfMonthInLne = -1;
             String monthFound = "";
-
 
             try {
                 for (int k = 0; k < lines.length; k++) {
@@ -1223,7 +1396,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 if (monthFound == "") {
                     String[] months2 = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-
                     for (int k = 0; k < lines.length; k++) {
                         for (int j = 0; j < months2.length; j++) {
                             for (int l = -1; (l = lines[k].indexOf(months2[j], l + 1)) != -1; ) {
@@ -1237,7 +1409,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 }
                 if (monthFound != "") {
                     String daySnippet = lines[dateLine].substring(indexOfMonthInLne);
-                    //for (int p = 0; p < daySnippet.length(); p++) {
                     int p = 0;
                     while (dayToDisplay == "") {
                         if (daySnippet.substring(p, p + 2).matches("[0-9]{2}")) {
@@ -1247,7 +1418,6 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                         p++;
                     }
                 }
-
 
                 if (monthFound != "") {
                     String yearSnippet = lines[dateLine].substring(indexOfMonthInLne);
@@ -1260,21 +1430,35 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                     }
                 }
 
-                infoToDisplay2 += "Month:" + monthFound;
-                infoToDisplay2 += "Day:" + dayToDisplay;
-                infoToDisplay2 += "Year:" + yearToDisplay;
+                //Use a regular expression to search for a date that is formatted with '/' or '-' if we did not find a month
+                //name in the logic above.
+                if (monthFound == "") {
+                    int count=0;
+                    String[] allMatches = new String[2];
+                    Matcher m = Pattern.compile("(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\\d\\d").matcher(multiLines);
+                    while (m.find()) {
+                        allMatches[count] = m.group();
+                        infoToDisplay2 += "Date:";
+                        infoToDisplay2 += allMatches[count];
+                    }
+                }
+                else {
+                    infoToDisplay2 += "Month:" + monthFound;
+                    infoToDisplay2 += "Day:" + dayToDisplay;
+                    infoToDisplay2 += "Year:" + yearToDisplay;
+                }
+
             }
 
             catch (Exception e) {
             }
             infoToDisplay2 += "\n";
-
-
+            storeName = lines[0];
             infoToDisplay2 += "Store Name:";
-            infoToDisplay2 += lines[0];
+            getStoreName(lines);
+            infoToDisplay2 += storeName;
             simpleConfidenceView.setText(infoToDisplay2);
-            }
-
+        }
     }
 
     /**
@@ -1499,13 +1683,14 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
                 // Record the last version for which we last displayed the What's New (Help) page
                 prefs.edit().putInt(PreferencesActivity.KEY_HELP_VERSION_SHOWN, currentVersion).commit();
-                Intent intent = new Intent(this, HelpActivity.class);
+               /* Intent intent = new Intent(this, HelpActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
 
                 // Show the default page on a clean install, and the what's new page on an upgrade.
+
                 String page = lastVersion == 0 ? HelpActivity.DEFAULT_PAGE : HelpActivity.WHATS_NEW_PAGE;
                 intent.putExtra(HelpActivity.REQUESTED_PAGE_KEY, page);
-                startActivity(intent);
+                startActivity(intent);*/
                 return true;
             }
         } catch (PackageManager.NameNotFoundException e) {

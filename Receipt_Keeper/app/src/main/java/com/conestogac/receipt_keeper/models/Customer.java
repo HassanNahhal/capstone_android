@@ -3,7 +3,7 @@ package com.conestogac.receipt_keeper.models;
 /**
  * Created by hassannahhal on 2016-06-14.
  */
-public class Customer extends com.strongloop.android.loopback.User {
+public class Customer  {
 
     private int id;
     private String email;

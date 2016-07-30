@@ -83,6 +83,8 @@ public class OcrResult {
     Canvas canvas = new Canvas(bitmap);
     
     // Draw bounding boxes around each word
+
+    /*
     for (int i = 0; i < wordBoundingBoxes.size(); i++) {
       paint.setAlpha(0xFF);
       paint.setColor(0xFF00CCFF);
@@ -90,7 +92,7 @@ public class OcrResult {
       paint.setStrokeWidth(2);
       Rect r = wordBoundingBoxes.get(i);
       canvas.drawRect(r, paint);
-    }    
+    }    */
     
 //    // Draw bounding boxes around each character
 //    for (int i = 0; i < characterBoundingBoxes.size(); i++) {

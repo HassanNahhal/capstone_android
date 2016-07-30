@@ -4,12 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.conestogac.receipt_keeper.helpers.ProgressDialogFragment;
-
-/**
- * BaseActivity to show progress bar which uses ProgressDialogFragment
- * Just inherit this activity and call showProgressDialog with message as argument
- * To dismiss just call dismissProgressDialog()
+/*
+    This is wrapper class which will be used call the progress dialog
+    ProgressDialogFragment shoudl be used together
  */
 public class BaseActivity extends AppCompatActivity {
     private static final String TAG_DIALOG_FRAGMENT = "tagDialogFragment";
@@ -19,7 +16,9 @@ public class BaseActivity extends AppCompatActivity {
         Fragment prev = getExistingDialogFragment();
         if (prev == null) {
             ProgressDialogFragment fragment = ProgressDialogFragment.newInstance(message);
+            ft.addToBackStack(TAG_DIALOG_FRAGMENT);
             fragment.show(ft, TAG_DIALOG_FRAGMENT);
+
         }
     }
 

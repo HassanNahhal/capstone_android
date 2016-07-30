@@ -161,6 +161,34 @@
               android:layout_below="@+id/IDeditText"
               android:layout_alignParentEnd="true"
               android:layout_toEndOf="@+id/textView" />
+
+          <EditText
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:id="@+id/etPaymentMethod"
+              android:gravity="bottom"
+              android:layout_below="@+id/etDate"
+              android:layout_alignParentEnd="true"
+              android:layout_toEndOf="@+id/textView" />
+
+          <Button
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Proceed"
+              android:id="@+id/Proceed"
+              android:layout_alignParentTop="true"
+              android:layout_centerHorizontal="true"
+              android:layout_marginTop="82dp" />
+
+          <Button
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="Back"
+              android:id="@+id/goBack"
+              android:layout_centerVertical="true"
+              android:layout_centerHorizontal="true" />
+
+
         
           <TextView android:id="@+id/translation_text_view"
                     android:layout_width="wrap_content"

@@ -1,4 +1,4 @@
-package com.conestogac.receipt_keeper;
+package com.conestogac.receipt_keeper.ocr;
 
 /**
  * Created by Nicholas on 2016-06-15.
@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import com.conestogac.receipt_keeper.R;
 
 import java.util.ArrayList;
 
