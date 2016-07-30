@@ -206,7 +206,7 @@ public class Home2Activity extends BaseActivity
                 if (cursor != null && cursor.getCount() > 0) {
                     cursor.moveToFirst();
                     receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
-                    homeTotalTextView.setText(Float.toString(getTotalOfReceipts(cursor)));
+                    homeTotalTextView.setText("$ " + Float.toString(getTotalOfReceipts(cursor)));
                     dbController.close();
 
                     //set cursor adapter to listview
