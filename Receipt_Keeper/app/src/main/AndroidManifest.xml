@@ -96,6 +96,9 @@
             android:theme="@style/AppTheme.CustomTheme" />
         <activity android:name=".ViewReceiptActivity" />
         <activity android:name=".UpdateReceiptActivity"></activity>
+        <activity
+            android:name=".FilterActivity"
+            android:theme="@style/MyTheme"/>
     </application>
 
 </manifest>

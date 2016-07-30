@@ -1,6 +1,7 @@
 package com.conestogac.receipt_keeper;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.authenticate.UserProfileActivity;
@@ -29,17 +31,21 @@ import com.conestogac.receipt_keeper.uploader.ItemUploadTaskFragment;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 
 public class Home2Activity extends BaseActivity
-            implements ItemUploadTaskFragment.TaskCallbacks {
+        implements ItemUploadTaskFragment.TaskCallbacks {
 
     private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
+    private TextView homeTotalTextView;
     private ReceiptCursorAdapter receiptAdapter;
     private SQLController dbController;
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
     int receiptId;
 
-    public  static final String TAG_TASK_FRAGMENT = "ItemUploadTaskFragment";
+    SharedPreferences filterPreferences;
+
+
+    public static final String TAG_TASK_FRAGMENT = "ItemUploadTaskFragment";
     private ItemUploadTaskFragment mTaskFragment;
 
     @Override
@@ -50,7 +56,10 @@ public class Home2Activity extends BaseActivity
 
         loginPreferences = getSharedPreferences("loginPrefs", MODE_PRIVATE);
         loginPrefsEditor = loginPreferences.edit();
+        filterPreferences = getSharedPreferences(FilterActivity.FILTER_PREF, Context.MODE_PRIVATE);
 
+
+        homeTotalTextView = (TextView) findViewById(R.id.homeTotalTextView);
         receiptListView = (ListView) findViewById(R.id.receiptListView);
         receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
 
@@ -65,13 +74,13 @@ public class Home2Activity extends BaseActivity
 
         dbController.open();
         final Cursor cursor = dbController.getAllReceipts();
-        dbController.close();
         Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
+        dbController.close();
 
-        dbController.open();
+        /*dbController.open();
         final Cursor cursor1 = dbController.getReceiptTagIds(-1);
         dbController.close();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
+        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));*/
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -184,14 +193,36 @@ public class Home2Activity extends BaseActivity
             @Override
             public void run() {
                 //get cursor and load data into adapter
-                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, dbController.getAllReceipts());
-                dbController.close();
+                Cursor cursor;
+                if (filterPreferences.contains(FilterActivity.FILTER_PREF))
+                    cursor = dbController.getAllReceiptsBetweenDate(
+                            filterPreferences.getString(FilterActivity.FROM_DATE, ""),
+                            filterPreferences.getString(FilterActivity.TO_DATE, ""));
+                else {
+                    cursor = dbController.getAllReceipts();
 
-                //set cursor adapter to listview
-                receiptListView.setAdapter(receiptAdapter);
+                }
 
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();
+                    receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
+                    homeTotalTextView.setText(Float.toString(getTotalOfReceipts(cursor)));
+                    dbController.close();
+
+                    //set cursor adapter to listview
+                    receiptListView.setAdapter(receiptAdapter);
+                }
             }
         });
+    }
+
+    private float getTotalOfReceipts(Cursor cursor) {
+        float total = 0.0f;
+        if (cursor != null && cursor.getCount() > 0)
+            do {
+                total += cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
+            } while (cursor.moveToNext());
+        return total;
     }
 
     @Override
@@ -207,8 +238,7 @@ public class Home2Activity extends BaseActivity
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle("Exit the receipt keeper")
                 .setMessage(getString(R.string.message_to_confirm_exit))
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                {
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
@@ -277,6 +307,42 @@ public class Home2Activity extends BaseActivity
         return true;
     }
 
+    public void viewReceiptImageButton(View view) {
+
+        int index;
+        String imagePath;
+        ViewGroup parent = (ViewGroup) view.getParent();
+
+        //Get index of checked task to delete
+        Log.d(TAG, "Checked _ID: " + parent.getChildAt(2).getTag());
+        index = (Integer) parent.getChildAt(2).getTag();
+
+        Intent popIntent = new Intent(Home2Activity.this, Pop.class);
+        imagePath = dbController.getUrlReceipt(index);
+
+        if (imagePath != null) {
+            popIntent.putExtra("imagePath", imagePath);
+            popIntent.putExtra("POP_INFO", "Receit ID: " + String.valueOf(index));
+            startActivity(popIntent);
+        }
+    }
+
+    /*
+        After uploading, this method will be called
+     */
+    @Override
+    public void onItemUploaded(final String error) {
+        dismissProgressDialog();
+        Home2Activity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dismissProgressDialog();
+                Toast.makeText(Home2Activity.this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        readAllDataFromDatabase();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -289,10 +355,10 @@ public class Home2Activity extends BaseActivity
             case R.id.action_auto_login:
                 if (item.isChecked()) {
                     item.setChecked(false);
-                    loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,false);
+                    loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, false);
                 } else {
                     item.setChecked(true);
-                    loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN,true);
+                    loginPrefsEditor.putBoolean(UserProfileActivity.SHAREDPREF_KEY_AUTOLOGIN, true);
                 }
                 loginPrefsEditor.commit();
                 return true;
@@ -315,6 +381,11 @@ public class Home2Activity extends BaseActivity
                 startActivity(goInsert);
                 return true;
 
+            case R.id.action_filter:
+                Intent goToFilter = new Intent(this, FilterActivity.class);
+                startActivity(goToFilter);
+                return true;
+
             case R.id.action_sync_now:
                 if (dbController.numberOfItemsToSync() == 0) {
                     Toast.makeText(Home2Activity.this, getString(R.string.nothing_to_save_message), Toast.LENGTH_SHORT).show();
@@ -331,38 +402,5 @@ public class Home2Activity extends BaseActivity
         return super.onOptionsItemSelected(item);
     }
 
-   public void viewReceiptImageButton(View view) {
 
-       int index;
-       String imagePath;
-       ViewGroup parent = (ViewGroup) view.getParent();
-
-       //Get index of checked task to delete
-       Log.d(TAG, "Checked _ID: "+parent.getChildAt(2).getTag());
-       index = (Integer) parent.getChildAt(2).getTag();
-
-       Intent popIntent = new Intent(Home2Activity.this, Pop.class);
-       imagePath = dbController.getUrlReceipt(index);
-
-        if (imagePath != null) {
-            popIntent.putExtra("imagePath", imagePath);
-            popIntent.putExtra("POP_INFO", "Receit ID: "+String.valueOf(index));
-            startActivity(popIntent);
-        }
-   }
-    /*
-        After uploading, this method will be called
-     */
-    @Override
-    public void onItemUploaded(final String error) {
-        dismissProgressDialog();
-        Home2Activity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dismissProgressDialog();
-                Toast.makeText(Home2Activity.this, error, Toast.LENGTH_SHORT).show();
-            }
-        });
-        readAllDataFromDatabase();
-    }
 }

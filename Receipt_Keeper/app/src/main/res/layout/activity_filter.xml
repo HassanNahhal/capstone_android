@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.conestogac.receipt_keeper.FilterActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_date_range_black_24dp" />
+
+    <!-- <org.florescu.android.rangeseekbar.RangeSeekBar
+         android:id="@+id/filterDateRangeSeekbarView"
+         android:layout_width="250dp"
+         android:layout_height="wrap_content"
+         android:layout_alignParentEnd="true"
+         android:layout_alignParentTop="true" />-->
+
+    <ImageView
+        android:id="@+id/filterDateToImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/imageView"
+        android:layout_marginTop="81dp"
+        android:src="@drawable/ic_date_range_black_24dp" />
+
+    <!-- <com.conestogac.receipt_keeper.RangeSeekBar
+         android:id="@+id/filterPriceRangeSeekbarView"
+         android:layout_width="250dp"
+         android:layout_height="wrap_content"
+         android:layout_alignBottom="@+id/filterPriceImageView"
+         android:layout_alignEnd="@+id/filterDateRangeSeekbarView" />-->
+
+    <ImageView
+        android:id="@+id/filterStoreImageView"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_domain_black_24dp"
+        android:visibility="invisible"
+        android:layout_below="@+id/filterDateToImageView"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="62dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="From"
+        android:id="@+id/textView3"
+        android:layout_above="@+id/filterDateToImageView"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_marginLeft="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="To"
+        android:id="@+id/textView4"
+        android:layout_above="@+id/filterStoreImageView"
+        android:layout_alignStart="@+id/textView3" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dateFromButton"
+        android:layout_alignBottom="@+id/textView3"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dateToButton"
+        android:layout_alignBottom="@+id/filterDateToImageView"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply filter"
+        android:id="@+id/filterButton"
+        android:layout_alignBottom="@+id/filterStoreImageView"
+        android:layout_alignParentEnd="true" />
+
+    <!--<com.conestogac.receipt_keeper.RangeSeekBar
+        android:id="@+id/filterStoreSearchMultiSpinner"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:visibility="invisible"
+        android:layout_below="@+id/filterPriceRangeSeekbarView"
+        android:layout_alignEnd="@+id/filterPriceRangeSeekbarView"
+        android:layout_marginTop="34dp" />-->
+
+
+</RelativeLayout>

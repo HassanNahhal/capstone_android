@@ -32,6 +32,14 @@
         android:title="InsertReceipt Test"
         app:showAsAction="never">
     </item>
+
+    <item
+        android:id="@+id/action_filter"
+        android:title="Filter Test"
+        app:showAsAction="never">
+    </item>
+
+
     <item
         android:id="@+id/action_upload_test"
         android:orderInCategory="100"
