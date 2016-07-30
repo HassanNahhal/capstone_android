@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
+import com.conestogac.receipt_keeper.helpers.PublicHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
 import com.conestogac.receipt_keeper.uploader.CustomerRepository;
@@ -140,7 +141,7 @@ public class AddReceiptActivity extends Activity {
 
             Calendar cal = Calendar.getInstance();
 
-            if (dayToSet==0||monthToSet==0||yearToSet==0) {
+            if (dayToSet == 0 || monthToSet == 0 || yearToSet == 0) {
                 cal.getTime();
             } else {
                 cal.set(Calendar.YEAR, yearToSet);
@@ -197,7 +198,7 @@ public class AddReceiptActivity extends Activity {
 
                 if (!validateForm()) return;
 
-                if (imageFileName== null || imagePath== null) {
+                if (imageFileName == null || imagePath == null) {
                     absolutePath = "";
                 } else {
                     File f = new File(imagePath, imageFileName);
@@ -215,6 +216,8 @@ public class AddReceiptActivity extends Activity {
                 } finally {
                     receipt.setCustomerId(customerId);
                     receipt.setStoreId(dbController.insertStoreByName(storeNamEditText.getText().toString()));
+
+                    //TODO check the amount, it should be in float
                     receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
                     receipt.setDate(dateEditText.getText().toString());
                     receipt.setComment(commentEditText.getText().toString());
@@ -233,7 +236,8 @@ public class AddReceiptActivity extends Activity {
 
                 dbController.insertReceipt(receipt, tags);
                 dbController.close();
-                Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);;
+                Intent goToHomePage = new Intent(AddReceiptActivity.this, Home2Activity.class);
+                ;
                 goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(goToHomePage);
                 finish();
@@ -244,7 +248,7 @@ public class AddReceiptActivity extends Activity {
         receiptImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                               Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
+                Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
                 if (imagePath != null && imageFileName != null) {
                     File f = new File(imagePath, imageFileName);
                     popIntent.putExtra("imagePath", f.getAbsolutePath());
@@ -270,7 +274,7 @@ public class AddReceiptActivity extends Activity {
         * @Params tagList = -1 is empty defualt selection
         *         A list of objects can be sent and set in the spinner
         * */
-        tagSearchSpinner.setItems(tagsListArray, "[Select Tag]", tagList , new MultiSpinnerSearch.MultiSpinnerSearchListener() {
+        tagSearchSpinner.setItems(tagsListArray, "[Select Tag]", tagList, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
             @Override
             public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
@@ -298,11 +302,18 @@ public class AddReceiptActivity extends Activity {
         }
     };
 
+
+
+
     // [Show date on TextView]
     private void updateDate() {
-        dateEditText.setText(DateUtils
+
+        String dateString = DateUtils
                 .formatDateTime(this,
-                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
+                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
+
+        dateEditText.setText(PublicHelper.formatDateToString(dateString));
+
     }
 
 
@@ -313,7 +324,7 @@ public class AddReceiptActivity extends Activity {
         dbController.open();
         cursor = dbController.getAllStore();
         if (cursor != null && cursor.getCount() != 0) {
-            for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
                     storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
                 }
@@ -335,7 +346,7 @@ public class AddReceiptActivity extends Activity {
 
         dbController.open();
         cursor = dbController.getAllPaymentMethod();
-        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             if (!paymentCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)))) {
                 paymentCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)));
             }
@@ -349,6 +360,7 @@ public class AddReceiptActivity extends Activity {
         paymentEditText.setAdapter(adapter);
         dbController.close();
     }
+
 
     /*
       Form validation
