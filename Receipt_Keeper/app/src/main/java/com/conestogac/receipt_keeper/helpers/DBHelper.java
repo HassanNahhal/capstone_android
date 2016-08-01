@@ -13,6 +13,9 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -90,8 +93,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_RECEIPT = " CREATE TABLE " + TABLE_RECEIPT
             + "( "
             + RECEIPT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-            + RECEIPT_FK_CUSTOMER_ID + " INTEGER ," + RECEIPT_FK_STORE_ID + " INTEGER ,"
-            + RECEIPT_FK_CATEGORY_ID + " INTEGER ," + RECEIPT_COMMENT + " TEXT ,"
+            + RECEIPT_FK_CUSTOMER_ID + " INTEGER ,"
+            + RECEIPT_FK_STORE_ID + " INTEGER ,"
+            + RECEIPT_FK_CATEGORY_ID + " INTEGER DEFAULT 1,"
+            + RECEIPT_COMMENT + " TEXT ,"
             + RECEIPT_DATE + " TEXT ," + RECEIPT_TOTAL + " REAL, "
             + RECEIPT_URL + " TEXT," + RECEIPT_CREATEDATE + " TEXT ,"
             + RECEIPT_PAYMENT_METHOD + " TEXT DEFAULT \'CASH\',"
@@ -159,6 +164,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_STORE_CATEGORY);
         this.insertTagInDB(db);
         this.insertCategoryInDB(db);
+        this.insertStoreInDB(db);
+        this.insertStoreCategoryInDB(db);
 
         Log.d(LOG_NAME, "Database CREATED");
     }
@@ -256,6 +263,101 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         //return flag;
     }
+
+    private void insertStoreInDB(SQLiteDatabase db) {
+
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(context.getResources().getStringArray(R.array.storename)));
+
+        ContentValues values = new ContentValues();
+
+        for (int index=0; index < storeCollection.size(); index++) {
+            values.put(DBHelper.STORE_NAME, storeCollection.get(index));
+            db.insert(TABLE_STORE, null, values);
+        }
+
+    }
+
+    //for testing
+    //todo managing list at one place
+    private void insertStoreCategoryInDB(SQLiteDatabase db) {
+        List<String> storeCollection = new ArrayList<>(Arrays.asList(context.getResources().getStringArray(R.array.storename)));
+        ContentValues values = new ContentValues();
+
+        for (int index=0; index < storeCollection.size(); index++) {
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,1);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,5);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,2);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,2);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,26);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,4);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,4);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,5);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,2);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,6);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,7);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,8);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,19);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,9);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,11);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,10);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,8);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,11);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,10);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,12);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,4);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,13);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,14);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,18);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,15);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,2);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,16);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,19);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,17);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,18);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,15);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,19);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,14);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,20);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,26);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,21);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,14);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,22);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,23);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+
+            db.insert(TABLE_STORE_CATEGORY, null, values);
+        }
+
+    }
+
     /*private void insertCategoryInDB(SQLiteDatabase db) {
 
         XmlResourceParser xmlParser = context.getResources().getXml(R.xml.categories);

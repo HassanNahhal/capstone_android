@@ -21,10 +21,10 @@
 	</string-array>
 
 	<string-array name="payment">
-		<item>cash</item>
-		<item>debit card</item>
-		<item>Visa card</item>
-		<item>Master card</item>
+		<item>Cash</item>
+		<item>Debit</item>
+		<item>Visa</item>
+		<item>Master</item>
 		<item>Visa</item>
 		<item>Interac</item>
 	</string-array>
