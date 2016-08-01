@@ -16,7 +16,7 @@
  -->
 <resources>
     <!-- Strings related to Common -->
-    <string name="app_name">receipt keeper</string>
+    <string name="app_name">Receipt Keeper</string>
     <string name="submit_button_text">Submit</string>
 
     <!-- Strings related to Welcome -->
