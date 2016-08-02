@@ -23,7 +23,6 @@ public class SQLController {
     private Context ourContext;
     private SQLiteDatabase database;
 
-    // Logcat tag
     private static final String LOG_NAME = "DatabaseHelper";
 
 
@@ -91,8 +90,8 @@ public class SQLController {
 
         Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
-        /*if (localCursor != null)
-            localCursor.moveToFirst();*/
+        if (localCursor != null)
+            localCursor.moveToFirst();
         return localCursor;
 
     }
@@ -107,11 +106,8 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
                 + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-//                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + "<> -1"
-                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
@@ -134,11 +130,9 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
                 + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
                 + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
-                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
 
@@ -715,8 +709,8 @@ public class SQLController {
         return flag;
     }
 
-    // [ Delete record using id in the database]
-    // [if isSync with remote set customerId to -1 , else delete it ]
+    //  Delete record using id in the database
+    // if isSync with remote set customerId to -1 , else delete it
     public void deleteReceipt(int receiptID) {
         long id;
         if (!isSync(receiptID)) {
@@ -734,20 +728,6 @@ public class SQLController {
                     + " = '" + receiptID + "'", null);
         }
     }
-
-
-
-
-    /*public String convertDateToString() {
-        String datetime;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date date = new Date();
-        datetime = dateFormat.format(date);
-        System.out.println("Current Date Time : " + datetime);
-
-
-        return datetime;
-    }*/
 
 
 }

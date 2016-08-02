@@ -72,15 +72,12 @@ public class Home2Activity extends BaseActivity
             fm.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commit();
         }
 
+        //TODO this is for testing purposes must be deleted before deployment
         dbController.open();
         final Cursor cursor = dbController.getAllReceipts();
         Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
         dbController.close();
 
-        /*dbController.open();
-        final Cursor cursor1 = dbController.getReceiptTagIds(-1);
-        dbController.close();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));*/
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
