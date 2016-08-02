@@ -7,12 +7,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,9 +35,11 @@ import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.ItemUploadTaskFragment;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
+import com.conestogac.receipt_keeper.webview.DashboardView;
 
 public class Home2Activity extends BaseActivity
-        implements ItemUploadTaskFragment.TaskCallbacks {
+        implements ItemUploadTaskFragment.TaskCallbacks,
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
@@ -41,10 +49,7 @@ public class Home2Activity extends BaseActivity
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
     int receiptId;
-
     SharedPreferences filterPreferences;
-
-
     public static final String TAG_TASK_FRAGMENT = "ItemUploadTaskFragment";
     private ItemUploadTaskFragment mTaskFragment;
 
@@ -76,6 +81,18 @@ public class Home2Activity extends BaseActivity
         final Cursor cursor = dbController.getAllReceipts();
         Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
         dbController.close();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Get Drwaer pointer and settup  - listener, toolbar
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer,toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
         /*dbController.open();
         final Cursor cursor1 = dbController.getReceiptTagIds(-1);
@@ -234,19 +251,24 @@ public class Home2Activity extends BaseActivity
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle("Exit the receipt keeper")
-                .setMessage(getString(R.string.message_to_confirm_exit))
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle("Exit the receipt keeper")
+                    .setMessage(getString(R.string.message_to_confirm_exit))
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
 
-                })
-                .setNegativeButton("No", null)
-                .show();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
     }
 
     @Override
@@ -255,6 +277,41 @@ public class Home2Activity extends BaseActivity
 
         dbController.close();
         super.onDestroy();
+    }
+
+
+    /**
+     * For selecting each item at drawer, proper fragement will be called
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Todo Handle navigation view item clicks here.
+        int id = item.getItemId();
+        Intent goWebView;
+        switch (id) {
+            case R.id.nav_dashboard:
+                goWebView = new Intent(this, DashboardView.class);
+                goWebView.putExtra(DashboardView.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/Dashboard");
+                startActivity(goWebView);
+                break;
+            case R.id.nav_chart:
+                goWebView = new Intent(this, DashboardView.class);
+                goWebView.putExtra(DashboardView.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/chart");
+                startActivity(goWebView);
+                break;
+            case R.id.nav_about:
+                goWebView = new Intent(this, DashboardView.class);
+                goWebView.putExtra(DashboardView.EXTRA_URL, "https://receipt-keeper.herokuapp.com");
+                startActivity(goWebView);
+                break;
+            default:
+                break;
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
