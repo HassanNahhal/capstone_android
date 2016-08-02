@@ -94,10 +94,6 @@ public class Home2Activity extends BaseActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        /*dbController.open();
-        final Cursor cursor1 = dbController.getReceiptTagIds(-1);
-        dbController.close();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));*/
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
