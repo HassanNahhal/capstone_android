@@ -47,7 +47,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String RECEIPT_TOTAL = "total";
     public static final String RECEIPT_URL = "url";
     public static final String RECEIPT_PAYMENT_METHOD = "payment_method";
-    public static final String RECEIPT_REMOTE_URL= "remote_url";
+    public static final String RECEIPT_REMOTE_URL = "remote_url";
     public static final String RECEIPT_REMOTE_ID = "remote_id";
     public static final String RECEIPT_IS_SYNCED = "isSynced";
 
@@ -107,50 +107,50 @@ public class DBHelper extends SQLiteOpenHelper {
 
     // Receipt_Tag table create statement
     private static final String CREATE_TABLE_RECEIPT_TAG = " CREATE TABLE " + TABLE_RECEIPT_TAG
-                    + "( "
-                    + RECEIPT_TAG_FK_RECEIPT_ID + " INTEGER ,"
-                    + RECEIPT_TAG_FK_TAG_ID + " INTEGER ,"
-                    + RECEIPT_TAG_REMOTE_ID + " TEXT, "
-                    + RECEIPT_TAG_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + RECEIPT_TAG_FK_RECEIPT_ID + " INTEGER ,"
+            + RECEIPT_TAG_FK_TAG_ID + " INTEGER ,"
+            + RECEIPT_TAG_REMOTE_ID + " TEXT, "
+            + RECEIPT_TAG_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
     // Tag table create statement
     private static final String CREATE_TABLE_TAG = " CREATE TABLE " + TABLE_TAG
-                    + "( "
-                    + TAG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-                    + TAG_NAME + " TEXT ,"
-                    + TAG_REMOTE_ID + " TEXT,"
-                    + TAG_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + TAG_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + TAG_NAME + " TEXT ,"
+            + TAG_REMOTE_ID + " TEXT,"
+            + TAG_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
 
     // Store table create statement
     private static final String CREATE_TABLE_STORE = " CREATE TABLE " + TABLE_STORE
-                    + "( "
-                    + STORE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
-                    + STORE_NAME + " TEXT ,"
-                    + STORE_REMOTE_ID + " TEXT,"
-                    + STORE_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + STORE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ,"
+            + STORE_NAME + " TEXT ,"
+            + STORE_REMOTE_ID + " TEXT,"
+            + STORE_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
 
     // Category table create statement
     private static final String CREATE_TABLE_CATEGORY = " CREATE TABLE " + TABLE_CATEGORY
-                    + "( "
-                    + CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + CATEGORY_NAME + " TEXT, "
-                    + CATEGORY_REMOTE_ID + " TEXT, "
-                    + CATEGORY_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + CATEGORY_NAME + " TEXT, "
+            + CATEGORY_REMOTE_ID + " TEXT, "
+            + CATEGORY_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
     // Category table create statement
     private static final String CREATE_TABLE_STORE_CATEGORY = " CREATE TABLE " + TABLE_STORE_CATEGORY
-                    + "( "
-                    + STORE_CATEGORY_FK_CATEGORY_ID + " INTEGER ,"
-                    + STORE_CATEGORY_FK_STORE_ID + " INTEGER ,"
-                    + STORE_CATEGORY_REMOTE_ID + " TEXT,"
-                    + STORE_CATEGORY_IS_SYNCED + " INTEGER DEFAULT 0"
-                    + ")";
+            + "( "
+            + STORE_CATEGORY_FK_CATEGORY_ID + " INTEGER ,"
+            + STORE_CATEGORY_FK_STORE_ID + " INTEGER ,"
+            + STORE_CATEGORY_REMOTE_ID + " TEXT,"
+            + STORE_CATEGORY_IS_SYNCED + " INTEGER DEFAULT 0"
+            + ")";
 
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -209,7 +209,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         long id = db.insert(TABLE_TAG, null, values);
                         Log.d(LOG_NAME, "tag id" + id + "\n" + tagName);
                     }
-                    
+
                 }
 
             }
@@ -270,7 +270,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        for (int index=0; index < storeCollection.size(); index++) {
+        for (int index = 0; index < storeCollection.size(); index++) {
             values.put(DBHelper.STORE_NAME, storeCollection.get(index));
             db.insert(TABLE_STORE, null, values);
         }
@@ -283,128 +283,80 @@ public class DBHelper extends SQLiteOpenHelper {
         List<String> storeCollection = new ArrayList<>(Arrays.asList(context.getResources().getStringArray(R.array.storename)));
         ContentValues values = new ContentValues();
 
-        for (int index=0; index < storeCollection.size(); index++) {
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,1);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,5);
+        for (int index = 0; index < storeCollection.size(); index++) {
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 1);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 5);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,2);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,2);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 2);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 2);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,3);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,26);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 3);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 26);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,4);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,4);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 4);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 4);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,5);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,2);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 5);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 2);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,6);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 6);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 3);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,7);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 7);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 3);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,8);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,19);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 8);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 19);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,9);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,11);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 9);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 11);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,10);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,8);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 10);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 8);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,11);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,10);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 11);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 10);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,12);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,4);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 12);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 4);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,13);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 13);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 3);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,14);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,18);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 14);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 18);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,15);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,2);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 15);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 2);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,16);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,19);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 16);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 19);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,17);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 17);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 3);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,18);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,15);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 18);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 15);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,19);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,14);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 19);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 14);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,20);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,26);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 20);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 26);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,21);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,14);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 21);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 14);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,22);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 22);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 3);
 
-            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID,23);
-            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID,3);
+            values.put(DBHelper.STORE_CATEGORY_FK_STORE_ID, 23);
+            values.put(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID, 3);
 
             db.insert(TABLE_STORE_CATEGORY, null, values);
         }
 
     }
-
-    /*private void insertCategoryInDB(SQLiteDatabase db) {
-
-        XmlResourceParser xmlParser = context.getResources().getXml(R.xml.categories);
-        String categoryName;
-        boolean flag;
-        //database
-
-        try {
-            while (xmlParser.next() != XmlPullParser.END_DOCUMENT) {
-                if (xmlParser.getEventType() != XmlPullParser.START_TAG) {
-                    continue;
-                }
-                String name = xmlParser.getName();
-                Log.d(LOG_NAME, "name:" + name);
-                if (name.equals("categories")) {
-                    Log.d(LOG_NAME, " in if ");
-                    while (xmlParser.next() != XmlPullParser.END_DOCUMENT) {
-                        Log.d(LOG_NAME, "in while ");
-                        if (xmlParser.getEventType() != XmlPullParser.START_TAG) {
-                            Log.d(LOG_NAME, "in frist if ");
-                            continue;
-                        }
-                        categoryName = readText(xmlParser);
-                        Log.d(LOG_NAME, "categoryName: " + categoryName);
-
-                        if (!Objects.equals(categoryName, "[Select Category]")) {
-//                            Log.d(LOG_NAME, "name in else :" + name);
-                            ContentValues values = new ContentValues();
-                            values.put(DBHelper.CATEGORY_NAME, categoryName);
-                            long id = db.insert(TABLE_CATEGORY, null, values);
-                            Log.d(LOG_NAME, "category id" + id + "\n" + categoryName);
-                        } else {
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-            flag = true;
-        } catch (XmlPullParserException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            flag = false;
-        }
-        //return flag;
-    }*/
 
 
     private String readText(XmlPullParser parser) throws IOException,
