@@ -103,7 +103,7 @@
             android:name=".FilterActivity"
             android:theme="@style/MyTheme"/>
         <activity
-            android:name=".webview.DashboardView"
+            android:name=".webview.WebViewActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

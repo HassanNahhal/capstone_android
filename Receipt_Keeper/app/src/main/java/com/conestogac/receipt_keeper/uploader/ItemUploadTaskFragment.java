@@ -1,5 +1,12 @@
 package com.conestogac.receipt_keeper.uploader;
 
+/**
+ * Uploading Items at Mobile to Server
+ * Todo: Update Sync
+ * Todo: Delete Sync
+ * Todo: 2-way Sync
+ */
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;

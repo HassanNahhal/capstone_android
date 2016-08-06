@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -35,7 +34,7 @@ import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.ItemUploadTaskFragment;
 import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
-import com.conestogac.receipt_keeper.webview.DashboardView;
+import com.conestogac.receipt_keeper.webview.WebViewActivity;
 
 public class Home2Activity extends BaseActivity
         implements ItemUploadTaskFragment.TaskCallbacks,
@@ -94,6 +93,10 @@ public class Home2Activity extends BaseActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        /*dbController.open();
+        final Cursor cursor1 = dbController.getReceiptTagIds(-1);
+        dbController.close();
+        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));*/
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -288,18 +291,20 @@ public class Home2Activity extends BaseActivity
         Intent goWebView;
         switch (id) {
             case R.id.nav_dashboard:
-                goWebView = new Intent(this, DashboardView.class);
-                goWebView.putExtra(DashboardView.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/Dashboard");
+                goWebView = new Intent(this, WebViewActivity.class);
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/Dashboard");
                 startActivity(goWebView);
                 break;
+
             case R.id.nav_chart:
-                goWebView = new Intent(this, DashboardView.class);
-                goWebView.putExtra(DashboardView.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/chart");
+                goWebView = new Intent(this, WebViewActivity.class);
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/chart");
                 startActivity(goWebView);
                 break;
+
             case R.id.nav_about:
-                goWebView = new Intent(this, DashboardView.class);
-                goWebView.putExtra(DashboardView.EXTRA_URL, "https://receipt-keeper.herokuapp.com");
+                goWebView = new Intent(this, WebViewActivity.class);
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com");
                 startActivity(goWebView);
                 break;
             default:
@@ -419,20 +424,6 @@ public class Home2Activity extends BaseActivity
             case R.id.action_setting:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
-
-            case R.id.action_upload_test:
-                startActivity(new Intent(this, TestUploadActivity.class));
-                return true;
-
-            case R.id.action_test_ocr:
-                Intent ocrIntent = new Intent(this, CaptureActivity.class);
-                startActivity(ocrIntent);
-                return true;
-
-            case R.id.action_insert_receipt:
-                Intent goInsert = new Intent(this, AddReceiptActivity.class);
-                startActivity(goInsert);
-                return true;
 
             case R.id.action_filter:
                 Intent goToFilter = new Intent(this, FilterActivity.class);
