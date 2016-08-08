@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
@@ -64,6 +63,7 @@ public class SQLController {
                 + " ON re." + DBHelper.RECEIPT_ID
                 + " =tg." + DBHelper.TAG_ID
                 + " WHERE tg." + DBHelper.TAG_NAME + "= '" + tagName + "'"
+                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS null"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
@@ -83,12 +83,12 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
+                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS null"
                 + " AND re." + DBHelper.RECEIPT_DATE + " BETWEEN ('" + fromDate + "') AND ('" + toDate + "')"
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
-        Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -108,11 +108,11 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
+                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS null"
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
-        Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -132,11 +132,11 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
+                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS null"
                 + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
                 + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
 
-        Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -568,7 +568,6 @@ public class SQLController {
                     + " WHERE re." + DBHelper.RECEIPT_ID + "=" + String.valueOf(receiptId);
         }
 
-        Log.d(LOG_NAME, sqlQuery);
         localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor != null) {
@@ -698,14 +697,15 @@ public class SQLController {
                 new String[]{String.valueOf(receiptId)},
                 null, null, null);
 
-        if (localCursor != null) {
+        if (localCursor != null)
             localCursor.moveToFirst();
-            if (localCursor.getInt(localCursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED)) == 1) {
-                flag = true;
-            } else {
-                flag = false;
-            }
+
+        if (localCursor.getInt(localCursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED)) == 1) {
+            flag = true;
+        } else {
+            flag = false;
         }
+
         return flag;
     }
 
@@ -713,19 +713,19 @@ public class SQLController {
     // if isSync with remote set customerId to -1 , else delete it
     public void deleteReceipt(int receiptID) {
         long id;
-        if (!isSync(receiptID)) {
-            id = database.delete(DBHelper.TABLE_RECEIPT,
-                    DBHelper.RECEIPT_ID + "=?",
-                    new String[]{String.valueOf(receiptID)});
-
-            database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receiptID)});
-
-        } else {
+        if (isSync(receiptID)) {
             ContentValues values = new ContentValues();
-            values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, -1);
+            values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, "-1");
 
             id = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
                     + " = '" + receiptID + "'", null);
+
+        } else {
+            id = database.delete(DBHelper.TABLE_RECEIPT,
+                    DBHelper.RECEIPT_ID + "=?",
+                    new String[]{String.valueOf(receiptID)});
+            database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receiptID)});
+
         }
     }
 
