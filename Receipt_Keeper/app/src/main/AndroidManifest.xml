@@ -43,7 +43,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".authenticate.WelcomeActivity"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen">
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -63,22 +64,25 @@
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.Light"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:screenOrientation="portrait"/>
         <activity android:name=".AddReceiptActivity"/>
         <activity
             android:name=".authenticate.UserProfileActivity"
             android:excludeFromRecents="true"
-            android:taskAffinity=""/>
-        <activity android:name=".uploader.TestUploadActivity"/>
+            android:taskAffinity=""
+            android:screenOrientation="portrait"/>
         <activity android:name=".helpers.BaseActivity"/>
         <activity
             android:name=".Home2Activity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".Home2Activity"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.AppCompat.Light"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.conestogac.receipt_keeper.Home2Activity"/>
@@ -96,15 +100,20 @@
 
         <activity
             android:name=".Pop"
-            android:theme="@style/AppTheme.CustomTheme"/>
-        <activity android:name=".ViewReceiptActivity"/>
-        <activity android:name=".UpdateReceiptActivity"/>
+            android:theme="@style/AppTheme.CustomTheme"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".ViewReceiptActivity"
+                  android:screenOrientation="portrait"/>
+        <activity android:name=".UpdateReceiptActivity"
+                  android:screenOrientation="portrait"/>
         <activity
             android:name=".FilterActivity"
-            android:theme="@style/MyTheme"/>
+            android:theme="@style/MyTheme"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".webview.WebViewActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
