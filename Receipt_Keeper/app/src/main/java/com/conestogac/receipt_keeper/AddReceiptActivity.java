@@ -8,13 +8,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -50,7 +50,7 @@ public class AddReceiptActivity extends Activity {
     private AutoCompleteTextView paymentEditText;
     private SearchableSpinner categorySearchMultiSpinner;
     private MultiSpinnerSearch tagSearchSpinner;
-    private Button saveReceiptButton;
+    private FloatingActionButton saveReceiptButton;
     private ImageButton receiptImageButton;
 
 
@@ -97,7 +97,7 @@ public class AddReceiptActivity extends Activity {
         storeNamEditText = (AutoCompleteTextView) findViewById(R.id.storeNamEditText);
         commentEditText = (EditText) findViewById(R.id.commentEditText);
         paymentEditText = (AutoCompleteTextView) findViewById(R.id.paymentEditText);
-        saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
+        //saveReceiptButton = (Button) findViewById(R.id.saveReceiptButton);
         categorySearchMultiSpinner = (SearchableSpinner) findViewById(R.id.categorySearchMultiSpinner);
         tagSearchSpinner = (MultiSpinnerSearch) findViewById(R.id.searchMultiSpinner);
         receiptImageButton = (ImageButton) findViewById(R.id.receiptImageButton);
@@ -110,6 +110,10 @@ public class AddReceiptActivity extends Activity {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorySearchMultiSpinner.setAdapter(spinnerAdapter);
         spinnerAdapter.notifyDataSetChanged();
+
+        //  Go to AddReceiptActivity when clicked
+        final FloatingActionButton saveReceiptButton = (FloatingActionButton) findViewById(R.id.saveReceiptButton);
+        saveReceiptButton.setImageResource(R.drawable.ic_save_white_24dp);
 
 
         //TODO check with Nick how to refactor this method
@@ -261,11 +265,15 @@ public class AddReceiptActivity extends Activity {
         final LinkedList<KeyPairBoolData> tagsListArray = new LinkedList<>();
 
         for (int i = 0; i < tagList.size(); i++) {
-            KeyPairBoolData h = new KeyPairBoolData();
-            h.setId(i + 1);
-            h.setName(tagList.get(i));
-            h.setSelected(false);
-            tagsListArray.add(h);
+            if (tagList.get(i).equals("")) {
+                continue;
+            } else {
+                KeyPairBoolData h = new KeyPairBoolData();
+                h.setId(i + 1);
+                h.setName(tagList.get(i));
+                h.setSelected(false);
+                tagsListArray.add(h);
+            }
         }
 
 
@@ -303,9 +311,8 @@ public class AddReceiptActivity extends Activity {
     };
 
 
-
-
     // [Show date on TextView]
+
     private void updateDate() {
 
         String dateString = DateUtils
