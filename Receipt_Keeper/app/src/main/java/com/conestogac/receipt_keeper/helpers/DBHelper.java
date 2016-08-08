@@ -207,7 +207,6 @@ public class DBHelper extends SQLiteOpenHelper {
                         ContentValues values = new ContentValues();
                         values.put(DBHelper.TAG_NAME, tagName);
                         long id = db.insert(TABLE_TAG, null, values);
-                        Log.d(LOG_NAME, "tag id" + id + "\n" + tagName);
                     }
 
                 }
@@ -247,7 +246,6 @@ public class DBHelper extends SQLiteOpenHelper {
                             ContentValues values = new ContentValues();
                             values.put(DBHelper.CATEGORY_NAME, categoryName);
                             long id = db.insert(TABLE_CATEGORY, null, values);
-                            Log.d(LOG_NAME, "category id" + id + "\n" + categoryName);
                         }
                     }
 

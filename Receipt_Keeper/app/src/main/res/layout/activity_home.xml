@@ -40,7 +40,8 @@
             android:layout_height="40dp"
             android:background="#3F51B5"
             android:orientation="horizontal"
-            android:layout_below="@id/toolbar">
+            android:layout_below="@id/toolbar"
+            >
 
             <TextView
                 android:layout_width="100dp"
