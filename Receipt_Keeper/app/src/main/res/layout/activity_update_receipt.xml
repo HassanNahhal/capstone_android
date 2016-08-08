@@ -50,13 +50,13 @@
                 android:layout_width="220dp"
                 android:layout_height="50dp"
                 android:layout_column="1"
+                android:layout_marginLeft="@dimen/edittext_horizontal_margin"
                 android:layout_row="1">
 
                 <AutoCompleteTextView
                     android:id="@+id/updateStoreNamEditText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/edittext_horizontal_margin"
                     android:gravity="center_vertical"
                     android:hint="Store name"
                     android:singleLine="true" />
@@ -97,13 +97,13 @@
                 android:layout_width="220dp"
                 android:layout_height="50dp"
                 android:layout_column="1"
+                android:layout_marginLeft="@dimen/edittext_horizontal_margin"
                 android:layout_row="3">
 
                 <AutoCompleteTextView
                     android:id="@+id/updatePaymentEditText"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/edittext_horizontal_margin"
                     android:gravity="center_vertical"
                     android:hint="@string/payment"
                     android:singleLine="true" />

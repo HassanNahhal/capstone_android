@@ -9,7 +9,6 @@ public class Receipt {
     private String comment;
     private String date;
     private float total;
-    private int tagId;
     private String createDate;
     private String url;
     private String paymentMethod;
@@ -28,7 +27,7 @@ public class Receipt {
 
     }
 
-    public Receipt(int id, String customerId, int storeId, int categoryId, String comment, String date, float total, int tagId) {
+    public Receipt(int id, String customerId, int storeId, int categoryId, String comment, String date, float total) {
         this.id = id;
         this.customerId = customerId;
         this.storeId = storeId;
@@ -36,7 +35,6 @@ public class Receipt {
         this.comment = comment;
         this.date = date;
         this.total = total;
-        this.tagId = tagId;
     }
 
 
@@ -75,10 +73,6 @@ public class Receipt {
 
     public float getTotal() {
         return total;
-    }
-
-    public int getTagId() {
-        return tagId;
     }
 
     public String getPaymentMethod() {
@@ -122,9 +116,6 @@ public class Receipt {
         this.total = total;
     }
 
-    public void setTagId(int tagId) {
-        this.tagId = tagId;
-    }
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
