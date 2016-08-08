@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -15,7 +16,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
@@ -25,7 +25,6 @@ import com.conestogac.receipt_keeper.models.Tag;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
 import java.io.File;
-import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -50,7 +49,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
     // [ Intent values to send to UpdateReceiptActivity and receive from Home2Activity]
     String storeName;
-    int total;
+    float total;
     String date;
     String comment;
     String paymentMethod;
@@ -75,7 +74,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_update_receipt);
 
         dbController = new SQLController(this);
-        app = (ReceiptKeeperApplication)this.getApplication();
+        app = (ReceiptKeeperApplication) this.getApplication();
         updateStoreNamEditText = (AutoCompleteTextView) findViewById(R.id.updateStoreNamEditText);
         updateTotalEditText = (EditText) findViewById(R.id.updateTotalEditText);
         updateDateEditText = (EditText) findViewById(R.id.updateDateEditText);
@@ -85,6 +84,13 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         updatePaymentEditText = (AutoCompleteTextView) findViewById(R.id.updatePaymentEditText);
         findViewById(R.id.updateEditReceiptButton).setOnClickListener(this);
         updateReceiptImageButton = (ImageButton) findViewById(R.id.updateReceiptImageButton);
+
+
+        //  Go to AddReceiptActivity when clicked
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.updateEditReceiptButton);
+        fab.setImageResource(R.drawable.ic_done_white_24dp);
+        findViewById(R.id.updateEditReceiptButton).setOnClickListener(this);
+
 
         categoryList = Arrays.asList(getResources().getStringArray(R.array.categories));
         TreeMap<String, Boolean> categoryItems = new TreeMap<>();
@@ -119,7 +125,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             if (storeName != null) {
                 updateStoreNamEditText.setText(storeName);
             }
-            total = extras.getInt("total");
+            total = extras.getFloat("total");
             if (total != 0) {
                 updateTotalEditText.setText(String.valueOf(total));
             }
@@ -158,7 +164,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
         //String tagName = extras.getString("tagName");
 
-        updateTagSearchMultiSpinner.setItems(tagsListArray,"[Select Tag]" ,tagArraySelected , new MultiSpinnerSearch.MultiSpinnerSearchListener() {
+        updateTagSearchMultiSpinner.setItems(tagsListArray, "[Select Tag]", tagArraySelected, new MultiSpinnerSearch.MultiSpinnerSearchListener() {
 
             @Override
             public void onItemsSelected(LinkedList<KeyPairBoolData> items) {
@@ -210,10 +216,11 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             Log.d(LOG_NAME, "receipt id :" + receiptId);
             receipt.setId(receiptId);
             receipt.setStoreId(dbController.insertStoreByName(updateStoreNamEditText.getText().toString()));
+
             String total = updateTotalEditText.getText().toString();
-            // [ Remove $ from total]
-            String totalNormalized = Normalizer.normalize(total, Normalizer.Form.NFD).replaceAll("[^a-zA-Z0-9]+", "");
-            receipt.setTotal(Float.parseFloat(totalNormalized));
+            total.replace("$", "");
+            receipt.setTotal(Float.parseFloat(total));
+
             receipt.setDate(updateDateEditText.getText().toString());
             receipt.setComment(updateCommentEditText.getText().toString());
             receipt.setPaymentMethod(updatePaymentEditText.getText().toString());
@@ -231,13 +238,13 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             }
         }
 
-            dbController.updateReceipt(receipt, tags);
-            dbController.close();
+        dbController.updateReceipt(receipt, tags);
+        dbController.close();
 
-            Intent goToHomePage = new Intent(this, Home2Activity.class);
-            goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(goToHomePage);
-            finish();
+        Intent goToHomePage = new Intent(this, Home2Activity.class);
+        goToHomePage.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(goToHomePage);
+        finish();
     }
 
     DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
@@ -266,7 +273,8 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         if (cursor != null) {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 tag = cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME));
-                tagArraySelected.add(tag);
+                if (!(tag == null || tag.equals("")))
+                    tagArraySelected.add(tag);
             }
         }
         dbController.close();
@@ -279,15 +287,19 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         }
 
         for (int i = 0; i < tagList.size(); i++) {
-            KeyPairBoolData h = new KeyPairBoolData();
-            h.setId(i + 1);
-            h.setName(tagList.get(i));
-            if (tagArraySelected.contains(tagList.get(i))) {
-                h.setSelected(true);
+            if (tagList.get(i).equals("")) {
+                continue;
             } else {
-                h.setSelected(false);
+                KeyPairBoolData h = new KeyPairBoolData();
+                h.setId(i + 1);
+                h.setName(tagList.get(i));
+                if (tagArraySelected.contains(tagList.get(i))) {
+                    h.setSelected(true);
+                } else {
+                    h.setSelected(false);
+                }
+                tagsListArray.add(h);
             }
-            tagsListArray.add(h);
         }
     }
 
@@ -298,7 +310,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
         dbController.open();
         cursor = dbController.getAllStore();
         if (cursor != null && cursor.getCount() != 0) {
-            for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 if (!storeCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)))) {
                     storeCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.STORE_NAME)));
                 }
@@ -320,7 +332,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
         dbController.open();
         cursor = dbController.getAllPaymentMethod();
-        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             if (!paymentCollection.contains(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)))) {
                 paymentCollection.add(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_PAYMENT_METHOD)));
             }

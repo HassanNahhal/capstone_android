@@ -33,7 +33,6 @@ import com.conestogac.receipt_keeper.helpers.BaseActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.ItemUploadTaskFragment;
-import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
 import com.conestogac.receipt_keeper.webview.WebViewActivity;
 
 public class Home2Activity extends BaseActivity
@@ -77,8 +76,8 @@ public class Home2Activity extends BaseActivity
         }
 
         dbController.open();
-        final Cursor cursor = dbController.getAllReceipts();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
+        final Cursor cursor = dbController.getAllTags();
+        Log.v("getAllTags", DatabaseUtils.dumpCursorToString(cursor));
         dbController.close();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -89,14 +88,14 @@ public class Home2Activity extends BaseActivity
         NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
         navView.setNavigationItemSelectedListener(this);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer,toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        /*dbController.open();
-        final Cursor cursor1 = dbController.getReceiptTagIds(-1);
+        dbController.open();
+        final Cursor cursor1 = dbController.getAllReceipts();
         dbController.close();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));*/
+        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,11 +108,9 @@ public class Home2Activity extends BaseActivity
                 // [Get cursor items based on position in the ListView]
                 Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
                 if (cursorItem != null) {
-                    Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
                     int receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
-                    Log.d(TAG, "receiptId :" + receiptId);
                     String storeName = cursorItem.getString(cursorItem.getColumnIndex(DBHelper.STORE_NAME));
-                    int total = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
+                    float total = cursorItem.getFloat(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
                     String date = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE));
                     String comment = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_COMMENT));
                     String paymentMethod = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD));
@@ -184,7 +181,7 @@ public class Home2Activity extends BaseActivity
         });
 
 
-        // [ Go to AddReceiptActivity when clicked]
+        //  Go to AddReceiptActivity when clicked
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         //fab.setImageResource(R.drawable.ic_add);
@@ -203,31 +200,34 @@ public class Home2Activity extends BaseActivity
     // [ Retrieve data from database and set to ListView]
     private void readAllDataFromDatabase() {
         dbController.open();
+        final String fromDate = filterPreferences.getString(FilterActivity.FROM_DATE, "");
+        final String toDate = filterPreferences.getString(FilterActivity.TO_DATE, "");
         // Database query can be a time consuming task ..
         // so its safe to call database query in another thread
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 //get cursor and load data into adapter
-                Cursor cursor;
-                if (filterPreferences.contains(FilterActivity.FILTER_PREF))
-                    cursor = dbController.getAllReceiptsBetweenDate(
-                            filterPreferences.getString(FilterActivity.FROM_DATE, ""),
-                            filterPreferences.getString(FilterActivity.TO_DATE, ""));
-                else {
+                Cursor cursor = null;
+                if (filterPreferences.contains(FilterActivity.FILTER_PREF) &&
+                        !(fromDate.equals("") && toDate.equals(""))) {
+                    cursor = dbController.getAllReceiptsBetweenDate(fromDate, toDate);
+                } else {
                     cursor = dbController.getAllReceipts();
 
                 }
 
-                if (cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
-                    homeTotalTextView.setText("$ " + Float.toString(getTotalOfReceipts(cursor)));
-                    dbController.close();
+               /* if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();*/
+                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
+                String total = String.format("%.2f", getTotalOfReceipts(cursor));
+                homeTotalTextView.setText("$ " + total);
+                dbController.close();
 
-                    //set cursor adapter to listview
-                    receiptListView.setAdapter(receiptAdapter);
-                }
+                //set cursor adapter to listview
+                receiptListView.setAdapter(receiptAdapter);
+
+                //}
             }
         });
     }
@@ -281,6 +281,7 @@ public class Home2Activity extends BaseActivity
 
     /**
      * For selecting each item at drawer, proper fragement will be called
+     *
      * @param item
      * @return
      */

@@ -3,6 +3,7 @@ package com.conestogac.receipt_keeper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -30,7 +31,7 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
 
     // [ Intent values to send to UpdateReceiptActivity and receive from Home2Activity]
     String storeName;
-    int total;
+    float total;
     String date;
     String comment;
     String paymentMethod;
@@ -68,18 +69,23 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         viewReceiptImageButton = (ImageButton) findViewById(R.id.viewReceiptImageButton);
         setAllDataFromIntent();
 
+        //  Go to AddReceiptActivity when clicked
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.viewEditReceiptButton);
+        fab.setImageResource(R.drawable.ic_mode_edit_white_24dp);
+        findViewById(R.id.viewEditReceiptButton).setOnClickListener(this);
+
 
         viewReceiptImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            Intent popIntent = new Intent(ViewReceiptActivity.this, Pop.class);
+                Intent popIntent = new Intent(ViewReceiptActivity.this, Pop.class);
 
-            if (imagePath != null) {
-                popIntent.putExtra("imagePath", imagePath);
-                popIntent.putExtra("POP_INFO", "Receit ID: "+String.valueOf(receiptId));
-            }
+                if (imagePath != null) {
+                    popIntent.putExtra("imagePath", imagePath);
+                    popIntent.putExtra("POP_INFO", "Receit ID: " + String.valueOf(receiptId));
+                }
 
-            startActivity(popIntent);
+                startActivity(popIntent);
             }
         });
     }
@@ -89,14 +95,14 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         if (extras != null) {
             receiptId = extras.getInt("receiptId");
             if (receiptId != 0) {
-                viewReceiptIdTextView.setText("ID: "+String.valueOf(receiptId));
+                viewReceiptIdTextView.setText("ID: " + String.valueOf(receiptId));
             }
 
             storeName = extras.getString("storeName");
             if (storeName != null) {
                 viewStoreNamTextView.setText(storeName);
             }
-            total = extras.getInt("total");
+            total = extras.getFloat("total");
             if (total != 0) {
                 viewTotalTextView.setText(String.valueOf(total));
             }
@@ -171,10 +177,10 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         StringBuilder builder = new StringBuilder();
         cursor = dbController.getReceiptTagIds(receiptId);
 
-        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
-            builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME))+",");
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME)) + ",");
         }
-        builder.deleteCharAt(builder.length()-1);
+        builder.deleteCharAt(builder.length() - 1);
         dbController.close();
         return builder.toString();
     }

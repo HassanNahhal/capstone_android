@@ -26,7 +26,6 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     /**
      * Cursor Adapter to show cursor value on list item by reading from Database
      * This will be bind to listview which layout is defined at task_item.xml
-     *
      */
     private static final String TAG = ReceiptCursorAdapter.class.getSimpleName();
     private Context curConext;
@@ -75,18 +74,17 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         }
 
         try {
-            date = DateUtils.getRelativeDateTimeString(context, (sdf_user.parse(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)))).getTime(), DateUtils.DAY_IN_MILLIS ,DateUtils.WEEK_IN_MILLIS,0).toString();
+            date = DateUtils.getRelativeDateTimeString(context, (sdf_user.parse(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)))).getTime(), DateUtils.DAY_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0).toString();
         } catch (Exception e) {
-            date = DateUtils.getRelativeDateTimeString(context, new Date().getTime(), DateUtils.DAY_IN_MILLIS , DateUtils.FORMAT_NO_NOON,0).toString();
+            date = DateUtils.getRelativeDateTimeString(context, new Date().getTime(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_NO_NOON, 0).toString();
         }
         btIsSync.setTag(cursor.getInt(0));    //set id as tag which will be read during processing onclick()
 
         tvStoreName.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)));
-        tvTotal.setText("$ "+String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
-        tvDateTime.setText(date.substring(0,date.lastIndexOf(",")));
+        tvTotal.setText("$ " + String.valueOf(cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL))));
+        tvDateTime.setText(date.substring(0, date.lastIndexOf(",")));
         tvPayment.setText(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD)));
         tvTags.setText(getTagListAsString(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_ID))));
-
 
 
         //Todo depends on payment -> Show different icon
@@ -116,11 +114,15 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         StringBuilder builder = new StringBuilder();
         cursor = dbController.getReceiptTagIds(receiptId);
 
-        for (cursor.moveToFirst();!cursor.isAfterLast();cursor.moveToNext()) {
-            builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME))+",");
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME)) + ",");
         }
-        builder.deleteCharAt(builder.length()-1);
-        return builder.toString();
+        builder.deleteCharAt(builder.length() - 1);
+
+        if (builder.length() > 0)
+            return builder.toString();
+        else
+            return "";
     }
 
 }
