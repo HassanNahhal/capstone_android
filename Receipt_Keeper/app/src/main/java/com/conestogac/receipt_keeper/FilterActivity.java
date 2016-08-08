@@ -46,7 +46,25 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
         dateFromButton = (Button) findViewById(R.id.dateFromButton);
         dateToButton = (Button) findViewById(R.id.dateToButton);
+
+        String toDateString = filterPreferences.getString(TO_DATE, "");
+        String fromDateString = filterPreferences.getString(FROM_DATE, "");
+
+        if (toDateString.equals("")) {
+            dateToButton.setText("Select date");
+        } else {
+            dateToButton.setText(filterPreferences.getString(TO_DATE, ""));
+        }
+
+        if (fromDateString.equals("")) {
+            dateFromButton.setText("Select date");
+        } else {
+            dateFromButton.setText(filterPreferences.getString(FROM_DATE, ""));
+        }
+
+
         findViewById(R.id.filterButton).setOnClickListener(this);
+        findViewById(R.id.filterResetbutton).setOnClickListener(this);
 
         dateFromButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +127,22 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
             case R.id.filterButton:
                 filterReceipts();
                 break;
+            case R.id.filterResetbutton:
+                resetFilter();
+                break;
+            default:
+                break;
+
         }
+    }
+
+    private void resetFilter() {
+        editor.putString(TO_DATE, "");
+        editor.putString(FROM_DATE, "");
+        editor.commit();
+
+        Intent goToHomeActivityIntent = new Intent(this, Home2Activity.class);
+        startActivity(goToHomeActivityIntent);
     }
 
     private void filterReceipts() {
