@@ -64,7 +64,11 @@ public class WebViewActivity extends AppCompatActivity {
 
         webView = (WebView) findViewById(R.id.webView);
         setupWebView();
-        silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword());
+        try {
+            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword());
+        } catch (Exception e) {
+            Toast.makeText(WebViewActivity.this, R.string.login_error, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /*

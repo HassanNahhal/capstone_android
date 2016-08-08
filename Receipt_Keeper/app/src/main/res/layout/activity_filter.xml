@@ -13,8 +13,10 @@
         android:id="@+id/imageView"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:src="@drawable/ic_date_range_black_24dp"
+        android:layout_alignBottom="@+id/dateFromButton"
         android:layout_alignParentStart="true"
-        android:src="@drawable/ic_date_range_black_24dp" />
+        android:layout_alignParentTop="true"/>
 
     <!-- <org.florescu.android.rangeseekbar.RangeSeekBar
          android:id="@+id/filterDateRangeSeekbarView"
@@ -30,7 +32,8 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/imageView"
         android:layout_marginTop="81dp"
-        android:src="@drawable/ic_date_range_black_24dp" />
+        android:src="@drawable/ic_date_range_black_24dp"
+        android:layout_alignEnd="@+id/filterStoreImageView"/>
 
     <!-- <com.conestogac.receipt_keeper.RangeSeekBar
          android:id="@+id/filterPriceRangeSeekbarView"
@@ -55,9 +58,11 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="From"
         android:id="@+id/textView3"
-        android:layout_above="@+id/filterDateToImageView"
+        android:layout_alignBottom="@+id/imageView"
         android:layout_toEndOf="@+id/imageView"
-        android:layout_marginLeft="30dp" />
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -66,21 +71,24 @@
         android:text="To"
         android:id="@+id/textView4"
         android:layout_above="@+id/filterStoreImageView"
-        android:layout_alignStart="@+id/textView3" />
+        android:layout_alignStart="@+id/textView3"
+        android:layout_alignTop="@+id/filterDateToImageView"
+        android:layout_alignEnd="@+id/textView3"
+        android:gravity="center_vertical"/>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
         android:id="@+id/dateFromButton"
-        android:layout_alignBottom="@+id/textView3"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentTop="true"
+        android:layout_alignEnd="@+id/filterButton"/>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
         android:id="@+id/dateToButton"
-        android:layout_alignBottom="@+id/filterDateToImageView"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignBottom="@+id/textView4"
+        android:layout_alignEnd="@+id/filterButton"/>
 
     <Button
         android:layout_width="wrap_content"
