@@ -90,6 +90,14 @@
         android:layout_alignBottom="@+id/filterStoreImageView"
         android:layout_alignParentEnd="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset"
+        android:id="@+id/filterResetbutton"
+        android:layout_alignBottom="@+id/filterButton"
+        android:layout_alignParentStart="true" />
+
     <!--<com.conestogac.receipt_keeper.RangeSeekBar
         android:id="@+id/filterStoreSearchMultiSpinner"
         android:layout_width="150dp"
