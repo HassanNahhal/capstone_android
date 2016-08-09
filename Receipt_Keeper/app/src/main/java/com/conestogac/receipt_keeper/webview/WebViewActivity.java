@@ -64,11 +64,11 @@ public class WebViewActivity extends AppCompatActivity {
 
         webView = (WebView) findViewById(R.id.webView);
         setupWebView();
-        try {
-            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword());
-        } catch (Exception e) {
-            Toast.makeText(WebViewActivity.this, R.string.login_error, Toast.LENGTH_SHORT).show();
-        }
+//        try {
+//            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword());
+//        } catch (Exception e) {
+//            Toast.makeText(WebViewActivity.this, R.string.login_error, Toast.LENGTH_SHORT).show();
+//        }
     }
 
     /*
@@ -124,6 +124,7 @@ public class WebViewActivity extends AppCompatActivity {
         settings.setGeolocationDatabasePath("/data/data/receiptkeeper");
         webView.setFocusable(true);
         webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        showWebView();
     }
 
     private void silentLogin(String email, String password) {

@@ -3,6 +3,7 @@ package com.conestogac.receipt_keeper;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     private Context curConext;
     private File file;
     public static final SimpleDateFormat sdf_user = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
+    public static final SimpleDateFormat sdf_db = new SimpleDateFormat("yyyy-mm-dd", Locale.ENGLISH);
     private static SQLController dbController = null;
 
     // Default constructor
@@ -72,6 +74,8 @@ public class ReceiptCursorAdapter extends CursorAdapter {
             file = new java.io.File(imagePath);
             GlideUtil.loadImage(file, ivReceiptImage);
         }
+
+        Log.d("ReceiptCursorAdapter",cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)));
 
         try {
             date = DateUtils.getRelativeDateTimeString(context, (sdf_user.parse(cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE)))).getTime(), DateUtils.DAY_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0).toString();
@@ -117,7 +121,9 @@ public class ReceiptCursorAdapter extends CursorAdapter {
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME)) + ",");
         }
-        builder.deleteCharAt(builder.length() - 1);
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
 
         if (builder.length() > 0)
             return builder.toString();

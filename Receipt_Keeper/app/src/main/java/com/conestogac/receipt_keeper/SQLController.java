@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
@@ -63,7 +64,7 @@ public class SQLController {
                 + " ON re." + DBHelper.RECEIPT_ID
                 + " =tg." + DBHelper.TAG_ID
                 + " WHERE tg." + DBHelper.TAG_NAME + "= '" + tagName + "'"
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL"
+                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
@@ -73,22 +74,17 @@ public class SQLController {
     }
 
     public Cursor getAllReceiptsBetweenDate(String fromDate, String toDate) {
-
-        String sqlQuery = "SELECT re.*, tg.* , st.*" + " FROM "
-                + DBHelper.TABLE_STORE + " st, "
+        Log.d("SQLController", "getAllReceiptsBetweenDate");
+        String sqlQuery = "SELECT re.*, st.*" + " FROM "
                 + DBHelper.TABLE_RECEIPT + " re "
-                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
-                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL"
+                + " INNER JOIN " + DBHelper.TABLE_STORE + " st "
+                + " ON re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " WHERE re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
                 + " AND re." + DBHelper.RECEIPT_DATE + " BETWEEN ('" + fromDate + "') AND ('" + toDate + "')"
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
+        Log.d(LOG_NAME,sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -99,21 +95,16 @@ public class SQLController {
 
     public Cursor getAllReceipts() {
 
-        String sqlQuery = "SELECT re.*, tg.* , st.*" + " FROM "
-                + DBHelper.TABLE_STORE + " st, "
+        String sqlQuery = "SELECT re.*, st.*" + " FROM "
                 + DBHelper.TABLE_RECEIPT + " re "
-                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
-                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL"
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
+                + " INNER JOIN " + DBHelper.TABLE_STORE + " st "
+                + " ON re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " WHERE re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        Log.d("SQLController", "getAllReceipts");
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;
@@ -132,9 +123,8 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL"
+                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
                 + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
 
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
@@ -160,8 +150,10 @@ public class SQLController {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
         }
 
-        long receiptId = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
+        database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
                 + " = '" + receipt.getLocalId() + "'", null);
+
+        long receiptId  = receipt.getLocalId();
 
         //First delete all receipt_tag and insert
         database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receipt.getLocalId())});
@@ -283,6 +275,7 @@ public class SQLController {
         values.put(DBHelper.RECEIPT_TOTAL, receipt.getTotal());
         values.put(DBHelper.RECEIPT_PAYMENT_METHOD, receipt.getPaymentMethod());
 
+        Log.d("InsertReceipt", receipt.getDate());
 
         if (receipt.getUrl() != null) {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
@@ -395,11 +388,12 @@ public class SQLController {
     }
 
     public long insertReceiptTag(long receiptId, long tagId) {
+        long ret_value;
         ContentValues values = new ContentValues();
         values.put(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID, receiptId);
         values.put(DBHelper.RECEIPT_TAG_FK_TAG_ID, tagId);
-
-        return database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
+        ret_value = database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
+        return ret_value;
     }
 
 

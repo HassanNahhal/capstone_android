@@ -1,5 +1,7 @@
 package com.conestogac.receipt_keeper.helpers;
 
+import com.conestogac.receipt_keeper.ReceiptCursorAdapter;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,4 +36,33 @@ public class PublicHelper {
         return newDateString;
     }
 
+    // [ Method that takes a string and format it to another Date
+    //   then returns a String]
+    public static String formatUserToformatDB(String initialDate) {
+
+        Date newDateDate = null;
+        try {
+            newDateDate = ReceiptCursorAdapter.sdf_user.parse(initialDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String newDateString = ReceiptCursorAdapter.sdf_db.format(newDateDate);
+
+        return newDateString;
+    }
+
+    public static String formatDBToformatUser(String initialDate) {
+
+        Date newDateDate = null;
+        try {
+            newDateDate = ReceiptCursorAdapter.sdf_db.parse(initialDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String newDateString = ReceiptCursorAdapter.sdf_user.format(newDateDate);
+
+        return newDateString;
+    }
 }

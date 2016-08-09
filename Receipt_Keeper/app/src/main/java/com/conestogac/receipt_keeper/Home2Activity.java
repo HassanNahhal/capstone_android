@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -214,7 +215,6 @@ public class Home2Activity extends BaseActivity
                     cursor = dbController.getAllReceiptsBetweenDate(fromDate, toDate);
                 } else {
                     cursor = dbController.getAllReceipts();
-
                 }
 
                /* if (cursor != null && cursor.getCount() > 0) {
@@ -243,8 +243,8 @@ public class Home2Activity extends BaseActivity
 
     @Override
     protected void onResume() {
-
         super.onResume();
+        this.invalidateOptionsMenu();
         readAllDataFromDatabase();
     }
 
@@ -290,22 +290,25 @@ public class Home2Activity extends BaseActivity
         // Todo Handle navigation view item clicks here.
         int id = item.getItemId();
         Intent goWebView;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String hostAddress = prefs.getString("preference_host_address", "http://receipt-keeper.herokuapp.com");
+
         switch (id) {
             case R.id.nav_dashboard:
                 goWebView = new Intent(this, WebViewActivity.class);
-                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/Dashboard");
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, hostAddress+"/#/Dashboard");
                 startActivity(goWebView);
                 break;
 
-            case R.id.nav_chart:
-                goWebView = new Intent(this, WebViewActivity.class);
-                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/chart");
-                startActivity(goWebView);
-                break;
+//            case R.id.nav_chart:
+//                goWebView = new Intent(this, WebViewActivity.class);
+//                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/chart");
+//                startActivity(goWebView);
+//                break;
 
             case R.id.nav_about:
                 goWebView = new Intent(this, WebViewActivity.class);
-                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com");
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, hostAddress);
                 startActivity(goWebView);
                 break;
             default:

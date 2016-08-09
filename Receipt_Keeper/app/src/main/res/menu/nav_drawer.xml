@@ -4,10 +4,10 @@
             android:id="@+id/nav_dashboard"
             android:icon="@drawable/ic_av_timer_white_24dp"
             android:title="Dashboard" />
-        <item
-            android:id="@+id/nav_chart"
-            android:icon="@drawable/ic_assessment_white_24dp"
-            android:title="Charts" />
+        <!--<item-->
+            <!--android:id="@+id/nav_chart"-->
+            <!--android:icon="@drawable/ic_assessment_white_24dp"-->
+            <!--android:title="Charts" />-->
     <!--Can add Add Store or Category Setting  -->
     </group>
 

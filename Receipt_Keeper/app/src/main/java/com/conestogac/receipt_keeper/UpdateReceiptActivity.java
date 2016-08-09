@@ -233,9 +233,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             }
 
             tags = updateTagSearchMultiSpinner.getAllTags();
-            if (tags.size() == 0) {
-                tags.add(new Tag(""));
-            }
+
         }
 
         dbController.updateReceipt(receipt, tags);

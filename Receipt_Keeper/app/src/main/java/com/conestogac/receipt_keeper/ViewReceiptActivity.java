@@ -180,7 +180,9 @@ public class ViewReceiptActivity extends AppCompatActivity implements View.OnCli
         for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             builder.append(cursor.getString(cursor.getColumnIndex(DBHelper.TAG_NAME)) + ",");
         }
-        builder.deleteCharAt(builder.length() - 1);
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
         dbController.close();
         return builder.toString();
     }

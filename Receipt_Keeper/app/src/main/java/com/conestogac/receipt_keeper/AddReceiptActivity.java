@@ -223,7 +223,7 @@ public class AddReceiptActivity extends Activity {
 
                     //TODO check the amount, it should be in float
                     receipt.setTotal(Float.parseFloat(totalEditText.getText().toString()));
-                    receipt.setDate(dateEditText.getText().toString());
+                    receipt.setDate(PublicHelper.formatUserToformatDB((dateEditText.getText().toString())));
                     receipt.setComment(commentEditText.getText().toString());
                     receipt.setPaymentMethod(paymentEditText.getText().toString());
                     receipt.setUrl(absolutePath);
