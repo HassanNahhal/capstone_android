@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.helpers.GlideUtil;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
+import com.conestogac.receipt_keeper.helpers.PublicHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
@@ -221,7 +222,7 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
             total.replace("$", "");
             receipt.setTotal(Float.parseFloat(total));
 
-            receipt.setDate(updateDateEditText.getText().toString());
+            receipt.setDate(PublicHelper.formatUserToformatDB(updateDateEditText.getText().toString()));
             receipt.setComment(updateCommentEditText.getText().toString());
             receipt.setPaymentMethod(updatePaymentEditText.getText().toString());
             receipt.setUrl(imagePath);
@@ -257,9 +258,10 @@ public class UpdateReceiptActivity extends AppCompatActivity implements View.OnC
 
     // [Show date on TextView]
     private void updateDate() {
-        updateDateEditText.setText(DateUtils
-                .formatDateTime(this,
-                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
+//        updateDateEditText.setText(DateUtils
+//                .formatDateTime(this,
+//                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR));
+        updateDateEditText.setText(ReceiptCursorAdapter.sdf_db.format(dateAndTime.getTime()));
     }
 
     private void buildTagList() {

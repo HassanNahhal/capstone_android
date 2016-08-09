@@ -31,8 +31,8 @@ public class ReceiptCursorAdapter extends CursorAdapter {
     private static final String TAG = ReceiptCursorAdapter.class.getSimpleName();
     private Context curConext;
     private File file;
-    public static final SimpleDateFormat sdf_user = new SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH);
-    public static final SimpleDateFormat sdf_db = new SimpleDateFormat("yyyy-mm-dd", Locale.ENGLISH);
+    public static final SimpleDateFormat sdf_user = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+    public static final SimpleDateFormat sdf_db = new SimpleDateFormat("yyyy-MM-dd");
     private static SQLController dbController = null;
 
     // Default constructor

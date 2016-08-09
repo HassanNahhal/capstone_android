@@ -296,7 +296,7 @@ public class Home2Activity extends BaseActivity
         switch (id) {
             case R.id.nav_dashboard:
                 goWebView = new Intent(this, WebViewActivity.class);
-                goWebView.putExtra(WebViewActivity.EXTRA_URL, hostAddress + "/#/Dashboard");
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, hostAddress+"/#/Dashboard");
                 startActivity(goWebView);
                 break;
 
@@ -341,8 +341,7 @@ public class Home2Activity extends BaseActivity
                         public void run() {
                             //get cursor and load data into adapter
                             receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
-                            String total = String.format("%.2f", getTotalOfReceipts(cursor));
-                            homeTotalTextView.setText("$ " + total);
+
                             //set cursor adapter to listview
                             receiptListView.setAdapter(receiptAdapter);
                         }

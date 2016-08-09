@@ -79,8 +79,8 @@ public class SQLController {
                 + DBHelper.TABLE_RECEIPT + " re "
                 + " INNER JOIN " + DBHelper.TABLE_STORE + " st "
                 + " ON re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " WHERE re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
-                + " AND re." + DBHelper.RECEIPT_DATE + " BETWEEN ('" + fromDate + "') AND ('" + toDate + "')"
+                + " WHERE (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
+                + " AND re." + DBHelper.RECEIPT_DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 

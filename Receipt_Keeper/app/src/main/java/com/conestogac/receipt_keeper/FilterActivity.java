@@ -9,11 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CursorAdapter;
 import android.widget.DatePicker;
 
 import com.conestogac.receipt_keeper.helpers.PublicHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 
 public class FilterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -97,9 +100,10 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     };
 
     private void updateDateTo() {
-        dateToButton.setText(PublicHelper.formatDateToString(DateUtils
-                .formatDateTime(this,
-                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR)));
+//        dateToButton.setText(PublicHelper.formatDateToString(DateUtils
+//                .formatDateTime(this,
+//                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR)));
+        dateToButton.setText(ReceiptCursorAdapter.sdf_user.format(dateAndTime.getTime()));
     }
 
     DatePickerDialog.OnDateSetListener dateFrom = new DatePickerDialog.OnDateSetListener() {
@@ -114,9 +118,10 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void updateDateFrom() {
-        dateFromButton.setText(PublicHelper.formatDateToString(DateUtils
-                .formatDateTime(this,
-                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR)));
+//        dateFromButton.setText(PublicHelper.formatDateToString(DateUtils
+//                .formatDateTime(this,
+//                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR)));
+        dateFromButton.setText(ReceiptCursorAdapter.sdf_user.format(dateAndTime.getTime()));
     }
 
 
@@ -146,8 +151,8 @@ public class FilterActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void filterReceipts() {
-        String fromDateString = PublicHelper.formatDateToString(dateFromButton.getText().toString());
-        String toDateString = PublicHelper.formatDateToString(dateToButton.getText().toString());
+        String fromDateString = dateFromButton.getText().toString();
+        String toDateString = dateToButton.getText().toString();
 
         editor.putString(TO_DATE, toDateString);
         editor.putString(FROM_DATE, fromDateString);
