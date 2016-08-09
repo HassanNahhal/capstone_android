@@ -22,7 +22,7 @@
     <!-- Strings related to Welcome -->
     <string name="go_to_ocr">Go to OCR</string>
     <string name="go_to_login_page">Go to Login Page</string>
-    <string name="welcome_screen_text">Welcome to receipt keeper</string>
+    <string name="welcome_screen_text">Welcome to Receipt Keeper</string>
     <string name="sign_in_button_text">SIGN IN</string>
     <string name="sign_up_button_text">SIGN UP</string>
 
@@ -141,4 +141,5 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="login_error">Error in login, please try again later</string>
+    <string name="learn_more">Learn More</string>
 </resources>
