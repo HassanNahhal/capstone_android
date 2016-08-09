@@ -24,6 +24,7 @@ import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.helpers.PublicHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
 import com.conestogac.receipt_keeper.models.Tag;
+import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.CustomerRepository;
 import com.strongloop.android.loopback.RestAdapter;
 import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
@@ -254,13 +255,15 @@ public class AddReceiptActivity extends Activity {
         receiptImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
                 if (imagePath != null && imageFileName != null) {
+                    Intent popIntent = new Intent(AddReceiptActivity.this, Pop.class);
                     File f = new File(imagePath, imageFileName);
                     popIntent.putExtra("imagePath", f.getAbsolutePath());
                     startActivity(popIntent);
+                } else {
+                    Intent goToOcrIntent = new Intent(AddReceiptActivity.this, CaptureActivity.class);
+                    startActivity(goToOcrIntent);
                 }
-
             }
         });
 

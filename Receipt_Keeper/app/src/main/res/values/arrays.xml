@@ -87,15 +87,15 @@
 
     <string-array name="tags">
 		<item>""</item>
-        <item>Gift</item>
-        <item>Food</item>
-        <item>Cloth</item>
-        <item>Gas</item>
-        <item>Mobile</item>
-        <item>Hydro</item>
-        <item>Rent</item>
-        <item>Internet</item>
-        <item>Drugs</item>
+        <item>gift</item>
+        <item>food</item>
+        <item>cloth</item>
+        <item>gas</item>
+        <item>mobile</item>
+        <item>hydro</item>
+        <item>rent</item>
+        <item>internet</item>
+        <item>drugs</item>
     </string-array>
 
 

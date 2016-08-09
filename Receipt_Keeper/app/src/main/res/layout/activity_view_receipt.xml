@@ -26,7 +26,9 @@
             android:columnOrderPreserved="false"
             android:nestedScrollingEnabled="false"
             android:padding="2dp"
-            android:useDefaultMargins="true">
+            android:useDefaultMargins="true"
+            android:focusable="true"
+            android:clickable="true">
 
 
             <ImageButton

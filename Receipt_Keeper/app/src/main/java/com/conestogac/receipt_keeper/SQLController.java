@@ -64,7 +64,7 @@ public class SQLController {
                 + " ON re." + DBHelper.RECEIPT_ID
                 + " =tg." + DBHelper.TAG_ID
                 + " WHERE tg." + DBHelper.TAG_NAME + "= '" + tagName + "'"
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
+                + " AND (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
@@ -99,7 +99,7 @@ public class SQLController {
                 + DBHelper.TABLE_RECEIPT + " re "
                 + " INNER JOIN " + DBHelper.TABLE_STORE + " st "
                 + " ON re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " WHERE re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
+                + " WHERE (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
@@ -123,7 +123,7 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1"
+                + " AND (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
                 + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
 

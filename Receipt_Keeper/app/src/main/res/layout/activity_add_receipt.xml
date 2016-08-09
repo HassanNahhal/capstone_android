@@ -35,7 +35,11 @@
                 android:layout_columnSpan="2"
                 android:layout_marginBottom="20dp"
                 android:layout_row="0"
-                android:contentDescription="@string/image_of_the_receipt" />
+                android:contentDescription="@string/image_of_the_receipt"
+                android:clickable="true"
+                android:focusable="true"
+                android:adjustViewBounds="true"
+                android:focusableInTouchMode="true"/>
 
 
             <ImageView
@@ -71,19 +75,22 @@
                 android:layout_gravity="center_vertical|left"
                 android:layout_row="2"
                 android:src="@drawable/ic_attach_money_black_24dp" />
-
-            <EditText
-                android:id="@+id/totalEditText"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="220dp"
                 android:layout_height="50dp"
                 android:layout_column="1"
                 android:layout_marginLeft="@dimen/edittext_horizontal_margin"
-                android:layout_row="2"
+                android:layout_row="2">
+            <EditText
+                android:id="@+id/totalEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:ems="10"
                 android:gravity="center_vertical"
                 android:hint="Total"
                 android:inputType="numberDecimal"
                 android:singleLine="true" />
+            </android.support.design.widget.TextInputLayout>
 
             <ImageView
                 android:id="@+id/paymentTextView"
@@ -176,16 +183,20 @@
                 android:layout_row="7"
                 android:src="@drawable/ic_comment_black_24dp" />
 
-            <EditText
-                android:id="@+id/commentEditText"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="220dp"
                 android:layout_height="50dp"
                 android:layout_column="1"
                 android:layout_marginLeft="@dimen/edittext_horizontal_margin"
-                android:layout_row="7"
+                android:layout_row="7">
+            <EditText
+                android:id="@+id/commentEditText"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:hint="@string/comment"
                 android:singleLine="true" />
+            </android.support.design.widget.TextInputLayout>
         </GridLayout>
     </ScrollView>
 
