@@ -23,31 +23,13 @@
         app:showAsAction="never">
     </item>
     <item
+        android:id="@+id/action_filter"
+        android:title="Setting Filter"
+        app:showAsAction="never">
+    </item>
+    <item
         android:id="@+id/action_sync_now"
         android:title="Sync Now"
         app:showAsAction="never">
     </item>
-    <item
-        android:id="@+id/action_insert_receipt"
-        android:title="InsertReceipt Test"
-        app:showAsAction="never">
-    </item>
-
-    <item
-        android:id="@+id/action_filter"
-        android:title="Filter Test"
-        app:showAsAction="never">
-    </item>
-
-
-    <item
-        android:id="@+id/action_upload_test"
-        android:orderInCategory="100"
-        android:title="Upload Test"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_test_ocr"
-        android:orderInCategory="100"
-        android:title="@string/ocr_test"
-        app:showAsAction="never" />
 </menu>

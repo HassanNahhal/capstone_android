@@ -23,7 +23,6 @@ public class SQLController {
     private Context ourContext;
     private SQLiteDatabase database;
 
-    // Logcat tag
     private static final String LOG_NAME = "DatabaseHelper";
 
 
@@ -65,6 +64,7 @@ public class SQLController {
                 + " ON re." + DBHelper.RECEIPT_ID
                 + " =tg." + DBHelper.TAG_ID
                 + " WHERE tg." + DBHelper.TAG_NAME + "= '" + tagName + "'"
+                + " AND (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
@@ -74,25 +74,20 @@ public class SQLController {
     }
 
     public Cursor getAllReceiptsBetweenDate(String fromDate, String toDate) {
-
-        String sqlQuery = "SELECT re.*, tg.* , st.*" + " FROM "
-                + DBHelper.TABLE_STORE + " st, "
+        Log.d("SQLController", "getAllReceiptsBetweenDate");
+        String sqlQuery = "SELECT re.*, st.*" + " FROM "
                 + DBHelper.TABLE_RECEIPT + " re "
-                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
-                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-                + " AND re." + DBHelper.RECEIPT_DATE + " BETWEEN ('" + fromDate + "') AND ('" + toDate + "')"
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
+                + " INNER JOIN " + DBHelper.TABLE_STORE + " st "
+                + " ON re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " WHERE (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
+                + " AND re." + DBHelper.RECEIPT_DATE + " BETWEEN '" + fromDate + "' AND '" + toDate + "'"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
-        Log.d(LOG_NAME, sqlQuery);
+        Log.d(LOG_NAME,sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
-        /*if (localCursor != null)
-            localCursor.moveToFirst();*/
+        if (localCursor != null)
+            localCursor.moveToFirst();
         return localCursor;
 
     }
@@ -100,24 +95,16 @@ public class SQLController {
 
     public Cursor getAllReceipts() {
 
-        String sqlQuery = "SELECT re.*, tg.* , st.*" + " FROM "
-                + DBHelper.TABLE_STORE + " st, "
+        String sqlQuery = "SELECT re.*, st.*" + " FROM "
                 + DBHelper.TABLE_RECEIPT + " re "
-                + " INNER JOIN " + DBHelper.TABLE_RECEIPT_TAG + " rt "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
-                + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
-                + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
-                + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
-                + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
-//                + " AND re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + "<> -1"
-                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
+                + " INNER JOIN " + DBHelper.TABLE_STORE + " st "
+                + " ON re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
+                + " WHERE (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE + " DESC"
                 + " , re." + DBHelper.RECEIPT_ID + " DESC";
 
-        Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
+        Log.d("SQLController", "getAllReceipts");
         if (localCursor != null)
             localCursor.moveToFirst();
         return localCursor;
@@ -134,15 +121,12 @@ public class SQLController {
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=re." + DBHelper.RECEIPT_ID
                 + " INNER JOIN " + DBHelper.TABLE_TAG + " tg "
                 + " ON rt." + DBHelper.RECEIPT_TAG_FK_TAG_ID + "=tg." + DBHelper.TAG_ID
-                //+ " WHERE re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.FK_RECEIPT_ID
                 + " WHERE re." + DBHelper.RECEIPT_FK_STORE_ID + "=st." + DBHelper.STORE_ID
                 + " AND re." + DBHelper.RECEIPT_ID + "=rt." + DBHelper.RECEIPT_TAG_FK_RECEIPT_ID
+                + " AND (re." + DBHelper.RECEIPT_FK_CUSTOMER_ID + " IS NULL or re.customer_id<>-1)"
                 + " AND tg." + DBHelper.TAG_NAME + "= '" + tagName + "'" + " COLLATE NOCASE "
-                // + " AND tg." + DBHelper.TAG_ID + "=rt." + DBHelper.FK_TAG_ID
-                + " GROUP BY re." + DBHelper.RECEIPT_ID
                 + " ORDER BY re." + DBHelper.RECEIPT_DATE;
 
-        Log.d(LOG_NAME, sqlQuery);
         Cursor localCursor = this.database.rawQuery(sqlQuery, null);
         if (localCursor != null)
             localCursor.moveToFirst();
@@ -166,8 +150,10 @@ public class SQLController {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
         }
 
-        long receiptId = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
+        database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
                 + " = '" + receipt.getLocalId() + "'", null);
+
+        long receiptId  = receipt.getLocalId();
 
         //First delete all receipt_tag and insert
         database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receipt.getLocalId())});
@@ -289,6 +275,7 @@ public class SQLController {
         values.put(DBHelper.RECEIPT_TOTAL, receipt.getTotal());
         values.put(DBHelper.RECEIPT_PAYMENT_METHOD, receipt.getPaymentMethod());
 
+        Log.d("InsertReceipt", receipt.getDate());
 
         if (receipt.getUrl() != null) {
             values.put(DBHelper.RECEIPT_URL, receipt.getUrl());
@@ -401,11 +388,12 @@ public class SQLController {
     }
 
     public long insertReceiptTag(long receiptId, long tagId) {
+        long ret_value;
         ContentValues values = new ContentValues();
         values.put(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID, receiptId);
         values.put(DBHelper.RECEIPT_TAG_FK_TAG_ID, tagId);
-
-        return database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
+        ret_value = database.insert(DBHelper.TABLE_RECEIPT_TAG, null, values);
+        return ret_value;
     }
 
 
@@ -574,7 +562,6 @@ public class SQLController {
                     + " WHERE re." + DBHelper.RECEIPT_ID + "=" + String.valueOf(receiptId);
         }
 
-        Log.d(LOG_NAME, sqlQuery);
         localCursor = this.database.rawQuery(sqlQuery, null);
 
         if (localCursor != null) {
@@ -704,50 +691,37 @@ public class SQLController {
                 new String[]{String.valueOf(receiptId)},
                 null, null, null);
 
-        if (localCursor != null) {
+        if (localCursor != null)
             localCursor.moveToFirst();
-            if (localCursor.getInt(localCursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED)) == 1) {
-                flag = true;
-            } else {
-                flag = false;
-            }
+
+        if (localCursor.getInt(localCursor.getColumnIndexOrThrow(DBHelper.RECEIPT_IS_SYNCED)) == 1) {
+            flag = true;
+        } else {
+            flag = false;
         }
+
         return flag;
     }
 
-    // [ Delete record using id in the database]
-    // [if isSync with remote set customerId to -1 , else delete it ]
+    //  Delete record using id in the database
+    // if isSync with remote set customerId to -1 , else delete it
     public void deleteReceipt(int receiptID) {
         long id;
-        if (!isSync(receiptID)) {
-            id = database.delete(DBHelper.TABLE_RECEIPT,
-                    DBHelper.RECEIPT_ID + "=?",
-                    new String[]{String.valueOf(receiptID)});
-
-            database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receiptID)});
-
-        } else {
+        if (isSync(receiptID)) {
             ContentValues values = new ContentValues();
-            values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, -1);
+            values.put(DBHelper.RECEIPT_FK_CUSTOMER_ID, "-1");
 
             id = database.update(DBHelper.TABLE_RECEIPT, values, DBHelper.RECEIPT_ID
                     + " = '" + receiptID + "'", null);
+
+        } else {
+            id = database.delete(DBHelper.TABLE_RECEIPT,
+                    DBHelper.RECEIPT_ID + "=?",
+                    new String[]{String.valueOf(receiptID)});
+            database.delete(DBHelper.TABLE_RECEIPT_TAG, DBHelper.RECEIPT_TAG_FK_RECEIPT_ID + "=?", new String[]{String.valueOf(receiptID)});
+
         }
     }
-
-
-
-
-    /*public String convertDateToString() {
-        String datetime;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        Date date = new Date();
-        datetime = dateFormat.format(date);
-        System.out.println("Current Date Time : " + datetime);
-
-
-        return datetime;
-    }*/
 
 
 }

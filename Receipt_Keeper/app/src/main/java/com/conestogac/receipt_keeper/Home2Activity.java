@@ -9,10 +9,16 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,10 +34,11 @@ import com.conestogac.receipt_keeper.helpers.BaseActivity;
 import com.conestogac.receipt_keeper.helpers.DBHelper;
 import com.conestogac.receipt_keeper.ocr.CaptureActivity;
 import com.conestogac.receipt_keeper.uploader.ItemUploadTaskFragment;
-import com.conestogac.receipt_keeper.uploader.TestUploadActivity;
+import com.conestogac.receipt_keeper.webview.WebViewActivity;
 
 public class Home2Activity extends BaseActivity
-        implements ItemUploadTaskFragment.TaskCallbacks {
+        implements ItemUploadTaskFragment.TaskCallbacks,
+        NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = Home2Activity.class.getSimpleName();
     private ListView receiptListView;
@@ -41,10 +48,7 @@ public class Home2Activity extends BaseActivity
     SharedPreferences loginPreferences;
     SharedPreferences.Editor loginPrefsEditor;
     int receiptId;
-
     SharedPreferences filterPreferences;
-
-
     public static final String TAG_TASK_FRAGMENT = "ItemUploadTaskFragment";
     private ItemUploadTaskFragment mTaskFragment;
 
@@ -73,14 +77,26 @@ public class Home2Activity extends BaseActivity
         }
 
         dbController.open();
-        final Cursor cursor = dbController.getAllReceipts();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor));
+        final Cursor cursor = dbController.getAllTags();
+        Log.v("getAllTags", DatabaseUtils.dumpCursorToString(cursor));
         dbController.close();
 
-        /*dbController.open();
-        final Cursor cursor1 = dbController.getReceiptTagIds(-1);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Get Drwaer pointer and settup  - listener, toolbar
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        NavigationView navView = (NavigationView) findViewById(R.id.nav_view);
+        navView.setNavigationItemSelectedListener(this);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        dbController.open();
+        final Cursor cursor1 = dbController.getAllReceipts();
         dbController.close();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));*/
+        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
 
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -93,11 +109,9 @@ public class Home2Activity extends BaseActivity
                 // [Get cursor items based on position in the ListView]
                 Cursor cursorItem = (Cursor) receiptAdapter.getItem(position);
                 if (cursorItem != null) {
-                    Log.v("Receipt Cursor", DatabaseUtils.dumpCursorToString(cursorItem));
                     int receiptId = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_ID));
-                    Log.d(TAG, "receiptId :" + receiptId);
                     String storeName = cursorItem.getString(cursorItem.getColumnIndex(DBHelper.STORE_NAME));
-                    int total = cursorItem.getInt(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
+                    float total = cursorItem.getFloat(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL));
                     String date = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_DATE));
                     String comment = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_COMMENT));
                     String paymentMethod = cursorItem.getString(cursorItem.getColumnIndexOrThrow(DBHelper.RECEIPT_PAYMENT_METHOD));
@@ -168,7 +182,7 @@ public class Home2Activity extends BaseActivity
         });
 
 
-        // [ Go to AddReceiptActivity when clicked]
+        //  Go to AddReceiptActivity when clicked
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         //fab.setImageResource(R.drawable.ic_add);
@@ -176,8 +190,8 @@ public class Home2Activity extends BaseActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent goToOcrIntent = new Intent(fab.getContext(), CaptureActivity.class);
-                    startActivity(goToOcrIntent);
+                    Intent gotoAddReceipt = new Intent(fab.getContext(), AddReceiptActivity.class);
+                    startActivity(gotoAddReceipt);
                 }
             });
 
@@ -187,31 +201,33 @@ public class Home2Activity extends BaseActivity
     // [ Retrieve data from database and set to ListView]
     private void readAllDataFromDatabase() {
         dbController.open();
+        final String fromDate = filterPreferences.getString(FilterActivity.FROM_DATE, "");
+        final String toDate = filterPreferences.getString(FilterActivity.TO_DATE, "");
         // Database query can be a time consuming task ..
         // so its safe to call database query in another thread
         new Handler().post(new Runnable() {
             @Override
             public void run() {
                 //get cursor and load data into adapter
-                Cursor cursor;
-                if (filterPreferences.contains(FilterActivity.FILTER_PREF))
-                    cursor = dbController.getAllReceiptsBetweenDate(
-                            filterPreferences.getString(FilterActivity.FROM_DATE, ""),
-                            filterPreferences.getString(FilterActivity.TO_DATE, ""));
-                else {
+                Cursor cursor = null;
+                if (filterPreferences.contains(FilterActivity.FILTER_PREF) &&
+                        !(fromDate.equals("") && toDate.equals(""))) {
+                    cursor = dbController.getAllReceiptsBetweenDate(fromDate, toDate);
+                } else {
                     cursor = dbController.getAllReceipts();
-
                 }
 
-                if (cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
-                    homeTotalTextView.setText("$ " + Float.toString(getTotalOfReceipts(cursor)));
-                    dbController.close();
+               /* if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();*/
+                receiptAdapter = new ReceiptCursorAdapter(Home2Activity.this, cursor);
+                String total = String.format("%.2f", getTotalOfReceipts(cursor));
+                homeTotalTextView.setText("$ " + total);
+                dbController.close();
 
-                    //set cursor adapter to listview
-                    receiptListView.setAdapter(receiptAdapter);
-                }
+                //set cursor adapter to listview
+                receiptListView.setAdapter(receiptAdapter);
+
+                //}
             }
         });
     }
@@ -227,26 +243,31 @@ public class Home2Activity extends BaseActivity
 
     @Override
     protected void onResume() {
-
         super.onResume();
+        this.invalidateOptionsMenu();
         readAllDataFromDatabase();
     }
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle("Exit the receipt keeper")
-                .setMessage(getString(R.string.message_to_confirm_exit))
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            new AlertDialog.Builder(this)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle("Exit the receipt keeper")
+                    .setMessage(getString(R.string.message_to_confirm_exit))
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            android.os.Process.killProcess(android.os.Process.myPid());
+                        }
 
-                })
-                .setNegativeButton("No", null)
-                .show();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
     }
 
     @Override
@@ -255,6 +276,47 @@ public class Home2Activity extends BaseActivity
 
         dbController.close();
         super.onDestroy();
+    }
+
+
+    /**
+     * For selecting each item at drawer, proper fragement will be called
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Todo Handle navigation view item clicks here.
+        int id = item.getItemId();
+        Intent goWebView;
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String hostAddress = prefs.getString("preference_host_address", "http://receipt-keeper.herokuapp.com");
+
+        switch (id) {
+            case R.id.nav_dashboard:
+                goWebView = new Intent(this, WebViewActivity.class);
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, hostAddress+"/#/Dashboard");
+                startActivity(goWebView);
+                break;
+
+//            case R.id.nav_chart:
+//                goWebView = new Intent(this, WebViewActivity.class);
+//                goWebView.putExtra(WebViewActivity.EXTRA_URL, "http://receipt-keeper.herokuapp.com/#/chart");
+//                startActivity(goWebView);
+//                break;
+
+            case R.id.nav_about:
+                goWebView = new Intent(this, WebViewActivity.class);
+                goWebView.putExtra(WebViewActivity.EXTRA_URL, hostAddress);
+                startActivity(goWebView);
+                break;
+            default:
+                break;
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
     @Override
@@ -288,7 +350,8 @@ public class Home2Activity extends BaseActivity
                     receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
                 }
 
-
+                String total = String.format("%.2f", getTotalOfReceipts(cursor));
+                homeTotalTextView.setText("$ " + total);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
@@ -366,20 +429,6 @@ public class Home2Activity extends BaseActivity
             case R.id.action_setting:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
-
-            case R.id.action_upload_test:
-                startActivity(new Intent(this, TestUploadActivity.class));
-                return true;
-
-            case R.id.action_test_ocr:
-                Intent ocrIntent = new Intent(this, CaptureActivity.class);
-                startActivity(ocrIntent);
-                return true;
-
-            case R.id.action_insert_receipt:
-                Intent goInsert = new Intent(this, AddReceiptActivity.class);
-                startActivity(goInsert);
-                return true;
 
             case R.id.action_filter:
                 Intent goToFilter = new Intent(this, FilterActivity.class);

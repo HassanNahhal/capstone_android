@@ -1,5 +1,12 @@
 package com.conestogac.receipt_keeper.uploader;
 
+/**
+ * Uploading Items at Mobile to Server
+ * Todo: Update Sync
+ * Todo: Delete Sync
+ * Todo: 2-way Sync
+ */
+
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -357,10 +364,17 @@ public class ItemUploadTaskFragment extends Fragment {
             return;
         }
 
-        tag  = tagRepository.createObject(ImmutableMap.of(
-                "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)),
-                "customerId", customerID,
-                "groupId", groupId));
+        try {
+            tag = tagRepository.createObject(ImmutableMap.of(
+                    "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.TAG_NAME)),
+                    "customerId", customerID,
+                    "groupId", groupId));
+        } catch (Exception e) {
+            Log.e(TAG, "Null TagID, so it will be skipped");
+            cursor.moveToNext();
+            saveTag(cursor, customerID);
+            return;
+        }
 
         tag.save(new VoidCallback() {
             @Override
@@ -420,10 +434,17 @@ public class ItemUploadTaskFragment extends Fragment {
             return;
         }
 
-        store  = storeRepository.createObject(ImmutableMap.of(
-                "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)),
-                "customerId", customerID,
-                "groupId", groupId));
+        try {
+            store = storeRepository.createObject(ImmutableMap.of(
+                    "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.STORE_NAME)),
+                    "customerId", customerID,
+                    "groupId", groupId));
+        } catch (Exception e) {
+            Log.e(TAG, "Null StoreID, so it will be skipped");
+            cursor.moveToNext();
+            saveStore(cursor, customerID);
+            return;
+        }
 
         store.save(new VoidCallback() {
             @Override
@@ -482,10 +503,17 @@ public class ItemUploadTaskFragment extends Fragment {
             return;
         }
 
-        category  = categoryRepository.createObject(ImmutableMap.of(
-                "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.CATEGORY_NAME)),
-                "customerId", customerID,
-                "groupId", groupId));
+        try {
+            category = categoryRepository.createObject(ImmutableMap.of(
+                    "name", cursor.getString(cursor.getColumnIndexOrThrow(DBHelper.CATEGORY_NAME)),
+                    "customerId", customerID,
+                    "groupId", groupId));
+        } catch (Exception e) {
+            Log.e(TAG, "Null categoryID, so it will be skipped");
+            cursor.moveToNext();
+            saveCategory(cursor, customerID);
+            return;
+        }
 
         category.save(new VoidCallback() {
             @Override
@@ -544,12 +572,18 @@ public class ItemUploadTaskFragment extends Fragment {
             uploadReceipt();
             return;
         }
-
-        storeCategory  = storeCategoryRepository.createObject(ImmutableMap.of(
-                "storeId", dbController.getStoreRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STORE_CATEGORY_FK_STORE_ID))),
-                "categoryId", dbController.getCategoryRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID))),
-                "customerId", customerID,
-                "groupId", groupId));
+        try {
+            storeCategory = storeCategoryRepository.createObject(ImmutableMap.of(
+                    "storeId", dbController.getStoreRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STORE_CATEGORY_FK_STORE_ID))),
+                    "categoryId", dbController.getCategoryRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.STORE_CATEGORY_FK_CATEGORY_ID))),
+                    "customerId", customerID,
+                    "groupId", groupId));
+        } catch (Exception e) {
+            Log.e(TAG, "Null storeCategory ID, it will be skipped");
+            cursor.moveToNext();
+            saveStoreCategory(cursor, customerID);
+            return;
+        }
 
         storeCategory.save(new VoidCallback() {
             @Override
@@ -608,12 +642,20 @@ public class ItemUploadTaskFragment extends Fragment {
             return;
         }
         Date currentDate = new Date();
-        receipt  = receiptRepository.createObject(ImmutableMap.of(
-                "total", cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL)),
-                "customerId", customerID,
-                "numberOfItem", 1,
-                "storeId", dbController.getStoreRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_STORE_ID))),
-                "groupId", groupId));
+        try {
+            receipt = receiptRepository.createObject(ImmutableMap.of(
+                    "total", cursor.getFloat(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TOTAL)),
+                    "customerId", customerID,
+                    "numberOfItem", 1,
+                    "storeId", dbController.getStoreRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_FK_STORE_ID))),
+                    "groupId", groupId));
+        }  catch (Exception e) {
+            Log.e(TAG, "Null receipt ID, it will be skipped");
+            cursor.moveToNext();
+            saveReceipt(cursor, customerID);
+            return;
+        }
+
         receipt.setImageFilePath(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_REMOTE_URL)));
         receipt.setComment(cursor.getString(cursor.getColumnIndex(DBHelper.RECEIPT_COMMENT)));
         receipt.setCategoryId(dbController.getCategoryRemoteId(cursor.getInt(cursor.getColumnIndex(DBHelper.RECEIPT_FK_CATEGORY_ID))));
@@ -689,11 +731,18 @@ public class ItemUploadTaskFragment extends Fragment {
             return;
         }
 
-        receiptTag  = receiptTagRepository.createObject(ImmutableMap.of(
-                "receiptId", dbController.getReceiptRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID))),
-                "tagId", dbController.getTagRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TAG_FK_TAG_ID))),
-                "customerId", customerID,
-                "groupId", groupId));
+        try {
+            receiptTag = receiptTagRepository.createObject(ImmutableMap.of(
+                    "receiptId", dbController.getReceiptRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TAG_FK_RECEIPT_ID))),
+                    "tagId", dbController.getTagRemoteId(cursor.getInt(cursor.getColumnIndexOrThrow(DBHelper.RECEIPT_TAG_FK_TAG_ID))),
+                    "customerId", customerID,
+                    "groupId", groupId));
+        }  catch (Exception e) {
+            Log.e(TAG, "Null receiptTag ID, it will be skipped");
+            cursor.moveToNext();
+            saveReceiptTag(cursor, customerID);
+            return;
+        }
 
         receiptTag.save(new VoidCallback() {
             @Override

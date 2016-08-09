@@ -138,6 +138,12 @@ public final class PlanarYUVLuminanceSource extends LuminanceSource {
       inputOffset += dataWidth;
     }
 
+    if (width <= 0) {
+      width = 50;
+    }
+    if (height <=0) {
+      height = 50;
+    }
     Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
     bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
     return bitmap;

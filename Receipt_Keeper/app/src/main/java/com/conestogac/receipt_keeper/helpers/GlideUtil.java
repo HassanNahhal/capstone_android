@@ -20,10 +20,9 @@ import java.io.File;
 public class GlideUtil {
     public static void loadImage(File url, ImageView imageView) {
         Context context = imageView.getContext();
-        ColorDrawable cd = new ColorDrawable(ContextCompat.getColor(context, R.color.blue_grey_500));
         Glide.with(context)
                 .load(url)
-                .placeholder(cd)
+                .placeholder(R.drawable.bill_receipt_check)
                 .crossFade()
                 .centerCrop()
                 .into(imageView);

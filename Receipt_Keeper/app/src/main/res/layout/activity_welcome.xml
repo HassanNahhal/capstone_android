@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="LearnMore"
+            android:text="@string/learn_more"
             android:id="@+id/learnMore"
             android:layout_gravity="center_horizontal"
             android:background="@android:color/transparent"

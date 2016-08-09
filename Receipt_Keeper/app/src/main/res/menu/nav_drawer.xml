@@ -1,20 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group
-        android:checkableBehavior="single">
-        <!--        <item
-             android:id="@+id/drawer_profile"
-             android:checked="true"
-      android:icon="@drawable/ic_person_outline_black_24dp"
-             android:title="@string/drawer_profile_title"/>
-         <item
-             android:id="@+id/drawer_your_feed"
-              android:icon="@drawable/ic_whatshot_black_24dp"
-              android:title="@string/drawer_your_feed_title"/>
-          <item
-              android:id="@+id/drawer_settings"
-              android:icon="@android:drawable/ic_menu_preferences"
-              android:title="@string/drawer_settings_title"/>  -->
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_av_timer_white_24dp"
+            android:title="Dashboard" />
+        <!--<item-->
+            <!--android:id="@+id/nav_chart"-->
+            <!--android:icon="@drawable/ic_assessment_white_24dp"-->
+            <!--android:title="Charts" />-->
+    <!--Can add Add Store or Category Setting  -->
+    </group>
 
-     </group>
-
+    <item android:title="About">
+        <menu>
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_info_black_24dp"
+                android:title="About" />
+        </menu>
+    </item>
  </menu>
