@@ -320,11 +320,7 @@ public class AddReceiptActivity extends Activity {
 
     private void updateDate() {
 
-        String dateString = DateUtils
-                .formatDateTime(this,
-                        dateAndTime.getTimeInMillis(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR);
-
-        dateEditText.setText(PublicHelper.formatDateToString(dateString));
+        dateEditText.setText(ReceiptCursorAdapter.sdf_user.format(dateAndTime.getTime()));
 
     }
 

@@ -190,8 +190,8 @@ public class Home2Activity extends BaseActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent goToOcrIntent = new Intent(fab.getContext(), CaptureActivity.class);
-                    startActivity(goToOcrIntent);
+                    Intent gotoAddReceipt = new Intent(fab.getContext(), AddReceiptActivity.class);
+                    startActivity(gotoAddReceipt);
                 }
             });
 
@@ -350,7 +350,8 @@ public class Home2Activity extends BaseActivity
                     receiptListView.setEmptyView(findViewById(R.id.empty_list_item));
                 }
 
-
+                String total = String.format("%.2f", getTotalOfReceipts(cursor));
+                homeTotalTextView.setText("$ " + total);
                 // workaround to avoid issues with some emulators and keyboard devices firing twice if a keyboard enter is used
                 // see https://code.google.com/p/android/issues/detail?id=24599
                 searchView.clearFocus();
