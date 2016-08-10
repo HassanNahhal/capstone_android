@@ -150,7 +150,11 @@ public class ItemUploadTaskFragment extends Fragment {
     private boolean isLogin(int callbacKId) {
         if ((userRepo.getCurrentUserId() == null) || (groupId == null)){
             groupId = "";
-            silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
+            try {
+                silentLogin(app.getCurrentUser().getEmail(), app.getCurrentUser().getPassword(), callbacKId);
+            } catch (Exception e) {
+                return false;
+            }
             return false;
         }
         customerId = userRepo.getCurrentUserId().toString();
