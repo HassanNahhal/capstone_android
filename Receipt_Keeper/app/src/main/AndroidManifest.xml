@@ -16,7 +16,8 @@
           package="com.conestogac.receipt_keeper"
           android:installLocation="preferExternal"
           android:versionCode="1"
-          android:versionName="0.1.0">
+          android:versionName="0.1.0"
+          android:largeHeap="true" >
 
     <supports-screens
         android:largeScreens="true"
@@ -43,8 +44,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".authenticate.WelcomeActivity"
-            android:theme="@style/AppTheme.NoActionBar.Fullscreen"
-            android:screenOrientation="portrait">
+            android:theme="@style/AppTheme.NoActionBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -64,50 +64,33 @@
         <activity
             android:name=".authenticate.UserProfileActivity"
             android:excludeFromRecents="true"
-            android:taskAffinity=""
-            android:screenOrientation="portrait"/>
+            android:taskAffinity=""/>
         <activity android:name=".helpers.BaseActivity"/>
         <activity
             android:name=".Home2Activity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".Home2Activity"
-            android:theme="@style/Theme.AppCompat.Light"
-            android:screenOrientation="portrait">
+            android:theme="@style/Theme.AppCompat.Light">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.conestogac.receipt_keeper.Home2Activity"/>
         </activity>
 
-        <receiver android:name=".widget.GoOCRWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget_provider"/>
-        </receiver>
 
         <activity
             android:name=".Pop"
-            android:theme="@style/AppTheme.CustomTheme"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ViewReceiptActivity"
-                  android:screenOrientation="portrait"/>
-        <activity android:name=".UpdateReceiptActivity"
-                  android:screenOrientation="portrait"/>
+            android:theme="@style/AppTheme.CustomTheme"/>
+        <activity android:name=".ViewReceiptActivity"/>
+        <activity android:name=".UpdateReceiptActivity"/>
         <activity
             android:name=".FilterActivity"
-            android:theme="@style/MyTheme"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/MyTheme"/>
         <activity
             android:name=".webview.WebViewActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
