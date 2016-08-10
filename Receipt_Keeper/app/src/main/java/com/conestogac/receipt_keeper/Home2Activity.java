@@ -76,11 +76,6 @@ public class Home2Activity extends BaseActivity
             fm.beginTransaction().add(mTaskFragment, TAG_TASK_FRAGMENT).commit();
         }
 
-        dbController.open();
-        final Cursor cursor = dbController.getAllTags();
-        Log.v("getAllTags", DatabaseUtils.dumpCursorToString(cursor));
-        dbController.close();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -96,8 +91,6 @@ public class Home2Activity extends BaseActivity
         dbController.open();
         final Cursor cursor1 = dbController.getAllReceipts();
         dbController.close();
-        Log.v("readAllReceiptsTags", DatabaseUtils.dumpCursorToString(cursor1));
-
 
         receiptListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -190,7 +183,7 @@ public class Home2Activity extends BaseActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent gotoAddReceipt = new Intent(fab.getContext(), AddReceiptActivity.class);
+                    Intent gotoAddReceipt = new Intent(fab.getContext(), CaptureActivity.class);
                     startActivity(gotoAddReceipt);
                 }
             });

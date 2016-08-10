@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.conestogac.receipt_keeper.helpers.DBHelper;
+import com.conestogac.receipt_keeper.helpers.GlideUtil;
 import com.conestogac.receipt_keeper.helpers.KeyPairBoolData;
 import com.conestogac.receipt_keeper.helpers.PublicHelper;
 import com.conestogac.receipt_keeper.models.Receipt;
@@ -168,14 +169,9 @@ public class AddReceiptActivity extends Activity {
 
             File Dir = new File(imagePath);
             File file = new File(Dir, imageFileName);
+            File f = new File(imagePath, imageFileName);
+            GlideUtil.loadImage(f,receiptImageButton);
 
-            try {
-                File f = new File(imagePath, imageFileName);
-                Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
-                receiptImageButton.setImageBitmap(b);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             paymentMethod = extras.getString("paymentMethod");
 

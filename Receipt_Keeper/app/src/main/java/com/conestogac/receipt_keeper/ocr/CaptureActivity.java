@@ -70,6 +70,7 @@ import com.conestogac.receipt_keeper.R;
 import com.conestogac.receipt_keeper.SQLController;
 import com.conestogac.receipt_keeper.camera.CameraManager;
 import com.conestogac.receipt_keeper.camera.ShutterButton;
+import com.conestogac.receipt_keeper.helpers.GlideUtil;
 import com.conestogac.receipt_keeper.language.LanguageCodeHelper;
 import com.conestogac.receipt_keeper.language.TranslateAsyncTask;
 import com.conestogac.receipt_keeper.models.Receipt;
@@ -497,9 +498,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 
         addReceiptIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         addReceiptIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         //  cameraManager = null;
         //    finish();
-        cameraManager.paused = true;
+        //cameraManager.paused = true;
+        cameraManager.stopPreview();
         startActivity(addReceiptIntent);
     }
 
@@ -673,10 +676,11 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
     protected void onPause() {
         if (handler != null) {
             handler.quitSynchronously();
+            stopHandler();
+            // Stop using the camera, to avoid conflicting with other camera-based apps
+            cameraManager.closeDriver();
         }
 
-        // Stop using the camera, to avoid conflicting with other camera-based apps
-        cameraManager.closeDriver();
 
         if (!hasSurface) {
             SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
@@ -1233,16 +1237,16 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
         viewfinderView.setVisibility(View.GONE);
         resultView.setVisibility(View.VISIBLE);
 
-        ImageView bitmapImageView = (ImageView) findViewById(R.id.image_view);
+//        ImageView bitmapImageView = (ImageView) findViewById(R.id.image_view);
         lastBitmap = ocrResult.getBitmap();
 
-        if (lastBitmap == null) {
-                bitmapImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
-                          R.mipmap.ic_launcher));
-        } else {
-            bitmapImageView.setImageBitmap(lastBitmap);
-
-        }
+//        if (lastBitmap == null) {
+//                bitmapImageView.setImageBitmap(BitmapFactory.decodeResource(getResources(),
+//                          R.mipmap.ic_launcher));
+//        } else {
+//            bitmapImageView.setImageBitmap(lastBitmap);
+//
+//        }
         String state;
         state = Environment.getExternalStorageState();
 
@@ -1257,15 +1261,15 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
             imageDirectory = Dir.toString();
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
             Date now = new Date();
-            String fileName = formatter.format(now) + ".Receipt.bmp";
+            String fileName = formatter.format(now) + ".Receipt.jpg";
             File file = new File(Dir, fileName);
             imageFilename = fileName;
             try {
                 FileOutputStream fileOutPutStream = new FileOutputStream(file);
                 Bitmap bmpToSave = lastBitmap;
-                bmpToSave.compress(Bitmap.CompressFormat.PNG, 100, fileOutPutStream);
+                bmpToSave.compress(Bitmap.CompressFormat.JPEG, 100, fileOutPutStream);
                 fileOutPutStream.close();
-                Toast.makeText(getApplicationContext(), "Message Saved", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Message Saved", Toast.LENGTH_SHORT).show();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
