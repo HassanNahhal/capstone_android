@@ -7,7 +7,7 @@ Tools:
 - Android Studio 2.1
 - Android SDK: 23.0.3
 
-<img src="https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-230913.png" width=“100”>
+<img src="https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-230913.png" width=“40”>
 
 ![Build Status](https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-230913.png)
 ![Build Status](https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-231004.png)
