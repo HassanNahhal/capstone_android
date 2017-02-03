@@ -7,7 +7,10 @@ Tools:
 - Android Studio 2.1
 - Android SDK: 23.0.3
 
-<img src="https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-230913.png" width=“40”>
+
+<img src="https://github.com/HassanNahhal/capstone_android/blob/master/Images/receiptKeeper_short_clip.gif" width=“40”>
+
+
 <img src="https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-231004.png" width=“40”>
 <img src="https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-231558.png" width=“40”>
 <img src="https://github.com/infomat/capstone_android/blob/master/Images/Screenshot_20160808-231616.png" width=“40”>
